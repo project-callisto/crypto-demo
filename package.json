@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/project-callisto/valkyrie-demo#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "@angular/core": "^5.2.3",
+    "express": "^4.16.2",
+    "zone.js": "^0.8.20"
   },
   "devDependencies": {
     "@angular/cli": "^1.6.7"
