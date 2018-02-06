@@ -1,7 +1,11 @@
-describe('Protractor Demo App', function() {
-  it('should have a title', function() {
-    browser.get('http://juliemr.github.io/protractor-demo/');
+describe('Valkyrie Demo', function() {
 
-    expect(browser.getTitle()).toEqual('Super Calculator');
+  beforeEach(function() {
+    browser.get('/');
   });
+
+  it('should have a title', function() {
+    expect(browser.getTitle()).toEqual('Valkyrie Demo');
+  });
+
 });
