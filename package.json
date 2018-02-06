@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "webdriver": "npx webdriver-manager start &",
     "test": "npx protractor protractor/conf.js",
     "start": "node src/server.js"
   },
