@@ -4,9 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "webdriver": "npx webdriver-manager start &",
-    "test": "npx protractor protractor/conf.js",
-    "start": "node src/server.js"
+    "test": "npx --no-install ng e2e",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -18,13 +17,21 @@
   },
   "homepage": "https://github.com/project-callisto/valkyrie-demo#readme",
   "dependencies": {
+    "@angular/common": "^5.2.3",
+    "@angular/compiler": "^5.2.0",
     "@angular/core": "^5.2.3",
+    "@angular/platform-browser": "^5.2.3",
+    "@angular/platform-browser-dynamic": "^5.2.3",
     "express": "^4.16.2",
     "zone.js": "^0.8.20"
   },
   "devDependencies": {
     "@angular/cli": "^1.6.7",
+    "@angular/compiler-cli": "^5.2.3",
+    "jasmine": "^3.0.0",
+    "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.3.0",
+    "tslint": "~5.9.1",
     "typescript": "~2.5.3",
     "webdriver-manager": "^12.0.6"
   }
