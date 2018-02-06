@@ -1,0 +1,10 @@
+sudo: false
+language: node_js
+install:
+- npm install
+script:
+- npm run test
+notifications:
+  email: false
+  slack:
+    secure: CqCIWOL6adhpkwxhpbEWec7zSd/XAFvDKLzDDWb2Yu2pcqSIavocv95gH1Uxf5Bp8TA6xNaVSs2TmWf9MGn5sC2OB6U8oXqdgPmiAFjvPjM9ismITr0oLecdAfJfK7oVizL/P1CI1gddfEZjq6N/hkD/el+6lRgApB2+E+oldJU=
