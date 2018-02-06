@@ -2,7 +2,8 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 
 exports.config = {
   framework: 'jasmine',
-  seleniumAddress: 'http://localhost:4444/wd/hub',
+  directConnect: true,
+  baseUrl: 'http://localhost:49152/',
   capabilities: {
     'browserName': 'chrome'
   },
