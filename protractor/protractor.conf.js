@@ -8,7 +8,10 @@ exports.config = {
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    'chromeOptions': {
+        'args': ['no-sandbox']
+    }
   },
   specs: ['spec.js'],
   jasmineNodeOpts: {
