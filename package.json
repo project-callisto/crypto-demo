@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "npx --no-install ng e2e --port 4200",
+    "test": "npx --no-install ng e2e --port 4201",
     "start": "npx --no-install ng server"
   },
   "repository": {
