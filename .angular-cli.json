@@ -8,6 +8,7 @@
       "root": "src",
       "outDir": "dist",
       "index": "index.html",
+      "polyfills": "polyfills.ts",
       "main": "main.ts"
     }
   ],
