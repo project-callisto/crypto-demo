@@ -1,11 +1,22 @@
 <html>
 <head>
+
+    <!-- 3rd party libs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+    <script src="http://bitwiseshiftleft.github.io/sjcl/sjcl.js"></script>
+    <script
+        src="http://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <!-- callisto deps -->
+    <script src="./client.js"></script>
 </head>
 
 <body>
+    <button id="submitBtn" value="submit">Submit</button>
     <canvas id="myChart" width="100" height="100"></canvas>
 <script>
+
 
 const ctx = document.getElementById("myChart").getContext('2d');
 
@@ -19,6 +30,8 @@ const rid = getIntercept(c1, c2);
 const c0 = {x: 0, y: rid};
 
 createChart(ctx, c0, c1, c2);
+
+
 
 function getIntercept(c1, c2) {
     var a = (c2.y - c1.y) / (c2.x - c1.x);
