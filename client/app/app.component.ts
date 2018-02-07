@@ -1,4 +1,9 @@
 import { Component } from '@angular/core';
+import { OnInit } from '@angular/core';
+
+import { CryptoService } from './crypto.service';
+import { GraphService } from './graph.service';
+
 
 @Component({
   selector: 'app-root',
@@ -7,6 +12,12 @@ import { Component } from '@angular/core';
     './app.component.css',
   ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Valkyrie Demo';
+  graph = new GraphService();
+
+  ngOnInit() {
+    this.graph.generateGraph();
+  }
+
 }
