@@ -1,16 +1,16 @@
 var path = require('path');
 var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var angularPolyfills = path.join(__dirname, '/../angular-client/polyfills.ts');
-var angularVendor = path.join(__dirname, '/../angular-client/vendor.ts');
-var angularMain = path.join(__dirname, '/../angular-client/main.ts');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var NpmInstallPlugin = require('npm-install-webpack-plugin');
 
 module.exports = {
   entry: {
-    angularPolyfills: angularPolyfills,
-    angularVendor: angularVendor,
-    angularMain: angularMain,
+    vendor: [
+      path.join(__dirname, '/../angular-client/polyfills.ts'),
+      path.join(__dirname, '/../angular-client/vendor.ts'),
+    ],
+    app: path.join(__dirname, '/../angular-client/main.ts'),
   },
   output: {
     filename: "[name].js",
@@ -53,14 +53,12 @@ module.exports = {
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
-      name: [
-        'angularPolyfills',
-        'angularVendor',
-        'angularMain',
-      ]
+      name: 'vendor',
+      minChunks: Infinity,
     }),
     new HtmlWebpackPlugin({
-      template: 'angular-client/index.html'
-    })
+      template: 'angular-client/index.html',
+    }),
+    new NpmInstallPlugin()
   ]
 };
