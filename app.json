@@ -1,0 +1,23 @@
+{
+  "name": "valkyrie-demo",
+  "scripts": {
+  },
+  "env": {
+    "PAPERTRAIL_API_TOKEN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "papertrail"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
