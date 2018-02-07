@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { CryptoService } from './crypto.service';
+import { GraphService } from './graph.service';
 
 
 @NgModule({
@@ -11,7 +13,19 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [
+    CryptoService,
+    GraphService,
+  ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(
+    // access services defined in this constructor with this.VAR
+    // eg. this.crypto, this.graph
+    private crypto: CryptoService,
+    private graph: GraphService,
+   ) { }
+
+}
