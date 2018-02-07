@@ -2,13 +2,15 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var angularClient = path.join(__dirname, '/../angular-client/main.ts');
-var polyfills = path.join(__dirname, '/../angular-client/polyfills.ts');
+var angularPolyfills = path.join(__dirname, '/../angular-client/polyfills.ts');
+var angularVendor = path.join(__dirname, '/../angular-client/vendor.ts');
+var angularMain = path.join(__dirname, '/../angular-client/main.ts');
 
 module.exports = {
   entry: {
-    angularClient: angularClient,
-    polyfills: polyfills,
+    angularPolyfills: angularPolyfills,
+    angularVendor: angularVendor,
+    angularMain: angularMain,
   },
   output: {
     filename: "[name].js",
@@ -26,7 +28,7 @@ module.exports = {
       loaders: [
       {
         loader: 'awesome-typescript-loader',
-        options: { configFileName: path.join(__dirname, '/../angular-client/tsconfig.json') }
+        options: { configFileName: path.join(__dirname, '/../tsconfig.json') }
       } , 'angular2-template-loader'
       ]
     },
@@ -52,8 +54,9 @@ module.exports = {
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
       name: [
-        'angularClient',
-        'polyfills',
+        'angularPolyfills',
+        'angularVendor',
+        'angularMain',
       ]
     }),
     new HtmlWebpackPlugin({
