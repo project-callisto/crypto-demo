@@ -1,12 +1,12 @@
 # Valkyrie Demo
 
-## running the dev server
+## running a dev server
 
 ```
 npm start
 ```
 
-## running a (mock, local) production server
+## running a (mock) production server (locally)
 
 ```
 npm run heroku-postbuild
