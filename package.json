@@ -2,7 +2,7 @@
   "name": "valkyrie-demo",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "web-server/server.js",
   "scripts": {
     "test": "npx --no-install ng e2e --port 4201",
     "start": "npx --no-install ng server --port 4202"
