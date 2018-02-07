@@ -44,15 +44,6 @@ module.exports = function(env, argv) {
       },
       {
         test: /\.css$/,
-        exclude: path.join(__dirname, '/../client/app'),
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        })
-      },
-      {
-        test: /\.css$/,
-        include: path.join(__dirname, '/../client/app'),
         loader: 'raw-loader'
       }
       ]
