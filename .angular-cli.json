@@ -5,10 +5,11 @@
   },
   "apps": [
     {
-      "root": "src",
+      "root": "client",
       "outDir": "dist",
       "index": "index.html",
       "polyfills": "polyfills.ts",
+      "tsconfig": "../tsconfig.json",
       "main": "main.ts"
     }
   ],
