@@ -5,11 +5,11 @@ const app = express();
 const DEFAULT_PORT = 8080
 
 // automatically run webpack, unless running on production
-if process.env.NODE_ENV !== 'production' {
+if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
   const webpackDevMiddleware = require('webpack-dev-middleware');
-  const config = require('./webpack.config.js');
 
+  const config = require(path.join(__dirname, 'webpack.config.js'))();
   const compiler = webpack(config);
 
   app.use(webpackDevMiddleware(compiler, {
