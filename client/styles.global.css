@@ -1,0 +1,9 @@
+html,
+body {
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+.text-centered {
+  text-align: center;
+}

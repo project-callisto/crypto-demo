@@ -8,7 +8,7 @@ const {getIfUtils} = require('webpack-config-utils')
 module.exports = function(env, argv) {
   const {ifDev} = getIfUtils(process.env.NODE_ENV || "dev")
 
-  return {
+  let config = {
     entry: {
       vendor: [
         path.join(__dirname, '/../client/polyfills.ts'),
@@ -25,16 +25,17 @@ module.exports = function(env, argv) {
       extensions: ['.ts', '.js']
     },
     watch: ifDev(),
-    devtool: 'cheap-source-map',
+    devtool: 'source-map',
     module: {
       rules: [
       {
         test: /\.ts$/,
         loaders: [
-        {
-          loader: 'awesome-typescript-loader',
-          options: { configFileName: path.join(__dirname, '/../tsconfig.json') }
-        } , 'angular2-template-loader'
+          {
+            loader: 'awesome-typescript-loader',
+            options: { configFileName: path.join(__dirname, '/../tsconfig.json') }
+          },
+          'angular2-template-loader',
         ]
       },
       {
@@ -70,5 +71,7 @@ module.exports = function(env, argv) {
       new NpmInstallPlugin(),
     ]
   }
+
+  return config
 
 }
