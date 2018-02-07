@@ -1,5 +1,13 @@
 # Valkyrie Demo
 
+## setting up a dev server
+
+Install dependencies:
+
+```
+npm install
+```
+
 ## running a dev server
 
 ```
