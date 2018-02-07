@@ -4,8 +4,9 @@
   "description": "",
   "main": "web-server/server.js",
   "scripts": {
-    "test": "npx --no-install ng e2e --port 4201",
-    "start": "npx --no-install webpack-dev-server --inline --progress --port 4202"
+    "test": "npx ng e2e --port 4201",
+    "start": "npx webpack-dev-server --config web-server/webpack.config.js --inline --progress --port 4202",
+    "build": "npx rimraf dist && npx webpack --config web-server/webpack.config.js --progress --profile --bail"
   },
   "repository": {
     "type": "git",
@@ -28,13 +29,22 @@
   "devDependencies": {
     "@angular/cli": "^1.6.7",
     "@angular/compiler-cli": "^5.2.3",
+    "angular2-template-loader": "^0.6.2",
+    "awesome-typescript-loader": "^3.4.1",
+    "css-loader": "^0.28.9",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^2.30.1",
     "jasmine": "^3.0.0",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.3.0",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
+    "style-loader": "^0.20.1",
     "tslint": "^5.9.1",
     "typescript": "^2.5.3",
     "webdriver-manager": "^12.0.6",
+    "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"
   }
 }
