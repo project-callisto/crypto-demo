@@ -28,8 +28,22 @@ app.post('/postPID', function(req,res) {
     // TODO: switch HMAC out for OPRF
     var out = (new sjcl.misc.hmac(key, sjcl.hash.sha256)).mac(pid);
     var rid = sjcl.codec.hex.fromBits(out)
-    console.log('rid', rid);
-
+    console.log('sending random id: ', rid);
     res.send({'rid': rid});
+});
 
+
+var data = [];
+
+app.post('/postData', function(req, res) {
+
+    var y = req.body.y;
+    var x = req.body.x;
+
+    data.push({x: x, y: y});
+    if (data.length >= 2) {
+        res.send(data);
+    } else {
+        res.sendStatus(200);
+    }
 });
