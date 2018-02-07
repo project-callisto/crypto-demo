@@ -8,9 +8,7 @@
   },
   "scripts": {
     "test": "ng e2e --port 4201",
-    "start": "webpack-dev-server --config web-server/webpack.config.js --inline --progress --port 4202",
-    "start:dev": "npm start",
-    "start:prod": "node web-server/server.js",
+    "start": "node web-server/server.js",
     "webpack-build": "webpack --config web-server/webpack.config.js --progress --profile --bail",
     "heroku-postbuild": "NODE_ENV=production npm run webpack-build"
   },
@@ -53,6 +51,6 @@
     "tslint": "^5.9.1",
     "typescript": "^2.5.3",
     "webdriver-manager": "^12.0.6",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-dev-middleware": "^2.0.4"
   }
 }
