@@ -3,7 +3,7 @@
 ## running a dev server
 
 ```
-DEBUG=* npm start
+NODE_ENV=dev DEBUG=* npm start
 ```
 
 ## running a (mock) production server (locally)

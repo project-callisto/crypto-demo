@@ -57,6 +57,9 @@ module.exports = function(env, argv) {
       ]
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || "dev"),
+      }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         minChunks: Infinity,
@@ -64,7 +67,7 @@ module.exports = function(env, argv) {
       new HtmlWebpackPlugin({
         template: 'client/index.html',
       }),
-      new NpmInstallPlugin()
+      new NpmInstallPlugin(),
     ]
   }
 
