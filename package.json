@@ -5,7 +5,7 @@
   "main": "web-server/server.js",
   "scripts": {
     "test": "npx --no-install ng e2e --port 4201",
-    "start": "npx --no-install ng server --port 4202"
+    "start": "npx --no-install webpack-dev-server --inline --progress --port 4202"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,10 @@
     "jasmine": "^3.0.0",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.3.0",
-    "tslint": "~5.9.1",
-    "typescript": "~2.5.3",
-    "webdriver-manager": "^12.0.6"
+    "rimraf": "^2.6.2",
+    "tslint": "^5.9.1",
+    "typescript": "^2.5.3",
+    "webdriver-manager": "^12.0.6",
+    "webpack-dev-server": "^2.11.1"
   }
 }
