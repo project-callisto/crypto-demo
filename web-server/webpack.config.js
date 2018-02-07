@@ -6,9 +6,7 @@ const NpmInstallPlugin = require('npm-install-webpack-plugin');
 const {getIfUtils} = require('webpack-config-utils')
 
 module.exports = function(env, argv) {
-  const {ifDev} = getIfUtils(
-    Object.is(process.env.NODE_ENV, undefined) ? "dev" : process.env.NODE_ENV
-  )
+  const {ifDev} = getIfUtils(process.env.NODE_ENV || "dev")
 
   return {
     entry: {

@@ -3,12 +3,11 @@
 ## running a dev server
 
 ```
-npm start
+DEBUG=* npm start
 ```
 
 ## running a (mock) production server (locally)
 
 ```
-npm run heroku-postbuild
-heroku local
+NODE_ENV=production npm run heroku-postbuild && NODE_ENV=production heroku local
 ```

@@ -9,8 +9,7 @@
   "scripts": {
     "test": "ng e2e --port 4201",
     "start": "node web-server/server.js",
-    "webpack-build": "webpack --config web-server/webpack.config.js --progress --profile --bail",
-    "heroku-postbuild": "NODE_ENV=production npm run webpack-build"
+    "heroku-postbuild": "webpack --config web-server/webpack.config.js --bail"
   },
   "repository": {
     "type": "git",
