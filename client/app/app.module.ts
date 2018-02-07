@@ -26,6 +26,6 @@ export class AppModule {
     // eg. this.crypto, this.graph
     private crypto: CryptoService,
     private graph: GraphService,
-   ) { }
+  ) { }
 
 }
