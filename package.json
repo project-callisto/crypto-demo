@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npx ng e2e --port 4201",
     "start": "npx webpack-dev-server --config web-server/webpack.config.js --inline --progress --port 4202",
-    "build": "npx webpack --config web-server/webpack.config.js --progress --profile --bail"
+    "postinstall": "npx webpack --config web-server/webpack.config.js --progress --profile --bail"
   },
   "repository": {
     "type": "git",
