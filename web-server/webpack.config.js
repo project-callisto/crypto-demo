@@ -7,10 +7,10 @@ var NpmInstallPlugin = require('npm-install-webpack-plugin');
 module.exports = {
   entry: {
     vendor: [
-      path.join(__dirname, '/../angular-client/polyfills.ts'),
-      path.join(__dirname, '/../angular-client/vendor.ts'),
+      path.join(__dirname, '/../client/polyfills.ts'),
+      path.join(__dirname, '/../client/vendor.ts'),
     ],
-    app: path.join(__dirname, '/../angular-client/main.ts'),
+    app: path.join(__dirname, '/../client/main.ts'),
   },
   output: {
     filename: "[name].js",
@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       test: /\.css$/,
-      exclude: path.join(__dirname, '/../angular-client/app'),
+      exclude: path.join(__dirname, '/../client/app'),
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader',
         use: 'css-loader'
@@ -46,7 +46,7 @@ module.exports = {
     },
     {
       test: /\.css$/,
-      include: path.join(__dirname, '/../angular-client/app'),
+      include: path.join(__dirname, '/../client/app'),
       loader: 'raw-loader'
     }
     ]
@@ -57,7 +57,7 @@ module.exports = {
       minChunks: Infinity,
     }),
     new HtmlWebpackPlugin({
-      template: 'angular-client/index.html',
+      template: 'client/index.html',
     }),
     new NpmInstallPlugin()
   ]

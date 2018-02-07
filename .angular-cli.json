@@ -5,7 +5,7 @@
   },
   "apps": [
     {
-      "root": "angular-client",
+      "root": "client",
       "outDir": "dist",
       "index": "index.html",
       "polyfills": "polyfills.ts",
