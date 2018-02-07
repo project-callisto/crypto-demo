@@ -1,9 +1,50 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css");
+
+@import url("https://fonts.googleapis.com/css?family=Montserrat|Playfair+Display:900");
+
 html,
 body {
   font-size: 16px;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .text-centered {
   text-align: center;
+}
+
+.starter-card {
+  color: white;
+  background-color: #353E42;
+  background-image: url("assets/headerimage.png");
+  background-size: cover;
+  padding: 20px 5%;
+}
+
+.starter-card a {
+  color: white;
+  text-decoration: none;
+}
+
+.starter-header-1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  letter-spacing: 3px;
+  font-weight: 900;
+}
+
+.starter-header-2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  padding-top: 14%;
+  padding-bottom: 20px;
+  font-weight: 900;
+}
+
+.starter-header-3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  padding-bottom: 16%;
+  letter-spacing: 2px;
 }
