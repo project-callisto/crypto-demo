@@ -44,8 +44,11 @@ module.exports = function(env, argv) {
         loader: 'html-loader'
       },
       {
-        test: /\.css$/,
-        loader: 'raw-loader'
+        test: /\.scss$/,
+        use: [
+          {loader: "raw-loader"},
+          {loader: "sass-loader"},
+        ]
       },
       ]
     },

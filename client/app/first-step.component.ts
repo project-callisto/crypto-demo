@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   selector: 'content-root',
   templateUrl: './first-step.component.html',
   styleUrls: [
-    './app.component.css',
+    './app.component.scss',
   ],
 })
 export class FirstStepComponent {
