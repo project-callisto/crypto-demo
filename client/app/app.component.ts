@@ -4,6 +4,7 @@ import { OnInit } from '@angular/core';
 import { CryptoService } from './crypto.service';
 import { GraphService } from './graph.service';
 
+var $ = require('jquery');
 
 @Component({
   selector: 'app-root',
@@ -15,10 +16,11 @@ import { GraphService } from './graph.service';
 export class AppComponent implements OnInit {
   title = 'Callisto'; // only used as an example, not a necessary variable
   graph = new GraphService();
-
+  crypto = new CryptoService();
   // angular lifecycle hooks ref: https://angular.io/guide/lifecycle-hooks
+
   ngOnInit() {
     this.graph.generateGraph();
+    this.crypto.run();
   }
-
 }

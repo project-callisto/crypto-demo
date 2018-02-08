@@ -1,8 +1,16 @@
 const express = require('express');
 const path = require('path');
+const http = require('http');
+const bodyParser = require('body-parser');
+const sjcl = require('sjcl');
 
 const app = express();
 const DEFAULT_PORT = 8080
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
 
 // automatically run webpack, unless running on production
 if (process.env.NODE_ENV !== 'production') {
@@ -28,4 +36,16 @@ app.use(express.static(path.join(__dirname, '/../dist')));
 // IMPORTANT: this route needs to come last
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/../dist/index.html'));
+});
+
+
+app.post('/postPerpId', function(req,res) {
+  var pid = req.body.pid;
+
+  var key = sjcl.codec.utf8String.toBits("Pr0j3cT c@lL!$T0");
+  // TODO: switch HMAC out for OPRF
+  var prfOut = (new sjcl.misc.hmac(key, sjcl.hash.sha256)).mac(pid);
+  var rid = sjcl.codec.hex.fromBits(prfOut)
+  console.log('sending random id: ', rid);
+  res.send({'rid': rid})
 });
