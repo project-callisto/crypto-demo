@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const NpmInstallPlugin = require('npm-install-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const {getIfUtils} = require('webpack-config-utils')
 
 module.exports = function(env, argv) {
@@ -43,9 +44,12 @@ module.exports = function(env, argv) {
         loader: 'html-loader'
       },
       {
-        test: /\.css$/,
-        loader: 'raw-loader'
-      }
+        test: /\.scss$/,
+        use: [
+          {loader: "raw-loader"},
+          {loader: "sass-loader"},
+        ]
+      },
       ]
     },
     plugins: [
@@ -60,6 +64,10 @@ module.exports = function(env, argv) {
         template: 'client/index.html',
       }),
       new NpmInstallPlugin(),
+      new CopyWebpackPlugin([{
+        from: path.join(__dirname, '/../client/app/assets'),
+        to: 'assets',
+      }]),
     ]
   }
 

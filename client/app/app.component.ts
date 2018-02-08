@@ -9,11 +9,11 @@ import { GraphService } from './graph.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [
-    './app.component.css',
+    './styles/base.scss',
   ],
 })
 export class AppComponent implements OnInit {
-  title = 'Valkyrie Demo';
+  title = 'Callisto'; // only used as an example, not a necessary variable
   graph = new GraphService();
 
   // angular lifecycle hooks ref: https://angular.io/guide/lifecycle-hooks
