@@ -65,7 +65,7 @@ module.exports = function(env, argv) {
       }),
       new NpmInstallPlugin(),
       new CopyWebpackPlugin([{
-        from: path.join(__dirname, '/../client/assets'),
+        from: path.join(__dirname, '/../client/app/assets'),
         to: 'assets',
       }]),
     ]

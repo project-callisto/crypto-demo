@@ -9,7 +9,7 @@ import { GraphService } from './graph.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [
-    './app.component.scss',
+    './styles/base.scss',
   ],
 })
 export class AppComponent implements OnInit {
