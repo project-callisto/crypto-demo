@@ -28,14 +28,14 @@ content-root {
 }
 
 .starter-card {
-  color: white;
+  color: $color-white;
   background-color: $color-gray-4;
   background-image: url("/../assets/headerimage.png");
   background-size: cover;
   padding: 20px 5%;
 
   a {
-    color: white;
+    color: $color-white;
     text-decoration: none;
   }
 
