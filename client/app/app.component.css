@@ -36,7 +36,7 @@ content-root {
 .starter-card {
   color: white;
   background-color: #353E42;
-  background-image: url("assets/headerimage.png");
+  background-image: url("/../assets/headerimage.png");
   background-size: cover;
   padding: 20px 5%;
 }
