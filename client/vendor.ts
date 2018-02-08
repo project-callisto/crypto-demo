@@ -1,8 +1,8 @@
 // Angular
-import '@angular/platform-browser';
-import '@angular/platform-browser-dynamic';
-import '@angular/core';
-import '@angular/common';
+import "@angular/common";
+import "@angular/core";
+import "@angular/platform-browser";
+import "@angular/platform-browser-dynamic";
 
 // RxJS
-import 'rxjs';
+import "rxjs";

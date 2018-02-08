@@ -8,6 +8,7 @@
     "npm": "5.6.0"
   },
   "scripts": {
+    "clean": "tslint -p . --fix --force",
     "test": "ng e2e --port 4201",
     "start": "node web-server/server.js",
     "heroku-postbuild": "webpack --config web-server/webpack.config.js --bail"
@@ -16,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/project-callisto/valkyrie-demo.git"
   },
-  "author": "",
+  "author": "https://github.com/project-callisto",
   "bugs": {
     "url": "https://github.com/project-callisto/valkyrie-demo/issues"
   },
@@ -32,7 +33,6 @@
     "awesome-typescript-loader": "^3.4.1",
     "copy-webpack-plugin": "^4.3.1",
     "core-js": "^2.5.3",
-    "css-loader": "^0.28.9",
     "express": "^4.16.2",
     "extract-text-webpack-plugin": "^3.0.2",
     "html-loader": "^0.5.5",
@@ -43,9 +43,12 @@
     "raw-loader": "^0.5.1",
     "rxjs": "^5.5.6",
     "sass-loader": "^6.0.6",
+<<<<<<< HEAD
     "sjcl": "^1.0.7",
     "style-loader": "^0.20.1",
     "typescript": "^2.5.3",
+=======
+>>>>>>> 5d2ccccd6d6a8ac9e20fc5e41235f4ee74eb6a4a
     "webpack": "^3.10.0",
     "webpack-config-utils": "^2.3.0",
     "zone.js": "^0.8.20"
@@ -57,6 +60,7 @@
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.3.0",
     "tslint": "^5.9.1",
+    "typescript": "^2.7.1",
     "webdriver-manager": "^12.0.6",
     "webpack-dev-middleware": "^2.0.4"
   }
