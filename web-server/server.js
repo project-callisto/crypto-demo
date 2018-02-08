@@ -58,13 +58,26 @@ var data = [];
 // CALLISTO SERVER
 app.post('/postData', function(req, res) {
 
-    var y = req.body.y;
-    var x = req.body.x;
+  var y = req.body.y;
+  var x = req.body.x;
+  var hashedPerpId = req.body.hashedPerpId;
+  var encryptedRecordKey = req.body.encryptedRecord;
+  var encryptedRecord = req.body.encryptedRecordKey;
 
-    data.push({x: x, y: y});
-    if (data.length >= 2) {
-        res.send(data);
-    } else {
-        res.sendStatus(200);
-    }
+  console.log('received ', hashedPerpId);
+
+  data.push({
+    x: x, 
+    y: y, 
+    hashedPerpId: hashedPerpId, 
+    encryptedRecordKey: encryptedRecordKey, 
+    encryptedRecord: encryptedRecord});
+
+  if (data.length >= 2) {
+      res.send(data);
+      // NOTE: counting 2 submissions as a session
+      data = [];
+  } else {
+      res.sendStatus(200);
+  }
 });
