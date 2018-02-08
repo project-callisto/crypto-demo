@@ -39,6 +39,7 @@ app.get('*', (req, res) => {
 });
 
 
+// KEY SERVER
 app.post('/postPerpId', function(req,res) {
   var pid = req.body.pid;
 
@@ -48,4 +49,22 @@ app.post('/postPerpId', function(req,res) {
   var rid = sjcl.codec.hex.fromBits(prfOut)
   console.log('sending random id: ', rid);
   res.send({'rid': rid})
+});
+
+
+// DATABASE
+var data = [];
+
+// CALLISTO SERVER
+app.post('/postData', function(req, res) {
+
+    var y = req.body.y;
+    var x = req.body.x;
+
+    data.push({x: x, y: y});
+    if (data.length >= 2) {
+        res.send(data);
+    } else {
+        res.sendStatus(200);
+    }
 });
