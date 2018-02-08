@@ -2,8 +2,11 @@
 
 for file in $(find . -name '*json' -not -path './node_modules/*'); do
     data=$(npx json --validate -f $file 2>&1)
-    if [[ $? -ne 0 ]]; then
+    return_val=$?
+
+    if [[ $return_val -ne 0 ]]; then
 	echo "JSON validation error in: $file"
 	printf "$data\n"
+	exit $?
     fi
 done
