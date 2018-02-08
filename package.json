@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/project-callisto/valkyrie-demo.git"
   },
-  "author": "",
+  "author": "https://github.com/project-callisto",
   "bugs": {
     "url": "https://github.com/project-callisto/valkyrie-demo/issues"
   },
