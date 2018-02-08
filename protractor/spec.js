@@ -9,7 +9,7 @@ describe('Valkyrie Demo', function() {
   });
 
   it('should start with a perp name displayed', function() {
-    const text = element(by.css('app-root')).getText();
+    const text = element(by.css('section:first-child')).getText();
     expect(text).toContain('PERP NAME');
   });
 
