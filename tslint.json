@@ -5,6 +5,7 @@
     "exclude": "node_modules/*"
   },
   "rules": {
+    "object-literal-sort-keys": false,
     "no-console": false
   }
 }
