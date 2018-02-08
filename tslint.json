@@ -1,5 +1,8 @@
 {
-  "extends": "tslint:recommended",
+  "extends": [
+    "tslint:recommended",
+    "tslint-angular",
+  ]
   "rules": {
     "no-consecutive-blank-lines": false
   }
