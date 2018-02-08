@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { FirstStepComponent } from './first-step.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,

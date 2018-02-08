@@ -4,7 +4,6 @@ import { OnInit } from '@angular/core';
 import { CryptoService } from './crypto.service';
 import { GraphService } from './graph.service';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

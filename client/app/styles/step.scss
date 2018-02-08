@@ -39,7 +39,7 @@ section {
     font-size: 0.85rem;
     letter-spacing: 1px;
     border: 1px solid $color-dark-blue;
-    background-color: white;
+    background-color: $color-white;
     white-space: nowrap;
   }
 
@@ -47,13 +47,13 @@ section {
     margin-right: 20px;
   }
 
-  li.activated-step {
-    color: white;
+  .activated-step {
+    color: $color-white;
     background-color: $color-dark-blue;
   }
 }
 
-form.input-row {
+.input-row {
   display: flex;
   align-items: center;
   margin: 40px 0;
@@ -88,7 +88,7 @@ form.input-row {
 
   > [type="submit"] {
     flex: 1;
-    color: white;
+    color: $color-white;
     background-color: $color-dark-blue;
     font-size: 0.85rem;
     letter-spacing: 1px;
