@@ -1,8 +1,9 @@
-import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
 
-import { AppComponent } from "./app.component";
-import { FirstStepComponent } from "./first-step.component";
+import { AppComponent } from './app.component';
+import { FirstStepComponent } from './first-step.component';
+
 
 @NgModule({
   declarations: [
@@ -16,7 +17,7 @@ import { FirstStepComponent } from "./first-step.component";
   bootstrap: [
     AppComponent,
     FirstStepComponent,
-  ],
+  ]
 })
 export class AppModule {
 }

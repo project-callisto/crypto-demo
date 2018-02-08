@@ -1,8 +1,3 @@
-// protractor (angular + selenium) docs: http://www.protractortest.org/#/api
-// // protractor defines methods like browser.get, element.getText
-// jasmine docs https://jasmine.github.io/api/3.0/matchers.html
-// // jasmine defines methods like toEqual, expect, toContain
-
 describe('Valkyrie Demo', function() {
 
   beforeEach(function() {

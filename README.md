@@ -1,11 +1,5 @@
 # Valkyrie Demo
 
-## running the auto-linter
-
-```
-npm run clean
-```
-
 ## setting up a dev server
 
 Install dependencies:

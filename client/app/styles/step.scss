@@ -11,7 +11,7 @@ section {
   }
 }
 
-.rid-display {
+.RID-display {
   color: $color-dark-blue;
   letter-spacing: 2px;
   text-align: center;
@@ -39,7 +39,7 @@ section {
     font-size: 0.85rem;
     letter-spacing: 1px;
     border: 1px solid $color-dark-blue;
-    background-color: $color-white;
+    background-color: white;
     white-space: nowrap;
   }
 
@@ -47,13 +47,13 @@ section {
     margin-right: 20px;
   }
 
-  .activated-step {
-    color: $color-white;
+  li.activated-step {
+    color: white;
     background-color: $color-dark-blue;
   }
 }
 
-.input-row {
+form.input-row {
   display: flex;
   align-items: center;
   margin: 40px 0;
@@ -88,7 +88,7 @@ section {
 
   > [type="submit"] {
     flex: 1;
-    color: $color-white;
+    color: white;
     background-color: $color-dark-blue;
     font-size: 0.85rem;
     letter-spacing: 1px;
