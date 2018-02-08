@@ -1,7 +1,4 @@
 {
-  "rules": {
-    "no-consecutive-blank-lines": false
-  },
   "compileOnSave": true,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
