@@ -9,4 +9,11 @@ import { Component } from "@angular/core";
   ],
 })
 export class FirstStepComponent {
+    perp = '';
+    addPerp(newPerp: string) {
+	if (newPerp) {
+	    this.perp = newPerp;
+	    console.log(newPerp);
+	}
+    }
 }
