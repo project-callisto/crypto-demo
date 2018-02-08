@@ -1,0 +1,23 @@
+linters:
+
+  # configuring the linter to best practices
+  DuplicateProperty:
+    ignore_consecutive:
+      - background
+      - transition
+
+  # loosening the linter for the personal styles of our local devs
+  HexNotation:
+    enabled: false
+  StringQuotes:
+    enabled: false
+  ColorKeyword:
+    enabled: false
+  Comment:
+    enabled: false
+  LeadingZero:
+    enabled: false
+  PropertySortOrder:
+    enabled: false
+  ImportPath:
+    enabled: false

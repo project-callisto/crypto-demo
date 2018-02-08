@@ -1,0 +1,11 @@
+{
+  "extends": "tslint:recommended",
+  "rulesDirectory": ["."],
+  "linterOptions": {
+    "exclude": "node_modules/*"
+  },
+  "rules": {
+    "object-literal-sort-keys": false,
+    "no-console": false
+  }
+}
