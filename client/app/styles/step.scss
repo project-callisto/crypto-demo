@@ -1,0 +1,63 @@
+@import "_meta";
+
+section {
+  margin: 60px 15%;
+  padding: 40px;
+  background-color: $color-gray-1;
+}
+
+.step-display {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 0;
+
+  li {
+    text-transform: uppercase;
+    color: $color-dark-blue;
+    padding: 10px;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    border: 1px solid $color-dark-blue;
+    background-color: white;
+    white-space: nowrap;
+  }
+
+  li:not(:last-child) {
+    margin-right: 20px;
+  }
+
+  li.activated-step {
+    color: white;
+    background-color: $color-dark-blue;
+  }
+}
+
+form.input-row {
+  display: flex;
+  align-items: center;
+  margin: 40px 0;
+
+  > span {
+    flex: 1;
+    line-height: 40px;
+  }
+
+  > [type="text"] {
+    flex: 2;
+    padding: 10px 20px;
+    color: $color-gray-3;
+    height: 25px;
+    font-size: 0.85rem;
+  }
+
+  > [type="submit"] {
+    flex: 1;
+    color: white;
+    background-color: $color-dark-blue;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 15px 10px;
+  }
+}

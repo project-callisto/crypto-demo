@@ -1,15 +1,4 @@
-@import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css");
-
-@import url("https://fonts.googleapis.com/css?family=Montserrat|Playfair+Display:900");
-
-$font-body: "Montserrat", sans-serif;
-$font-headers: "Playfair Display", serif;
-
-$color-dark-blue: #385C6C;
-$color-gray-1: #F1F3F4;
-$color-gray-2: #4F4F4F;
-$color-gray-3: #777777;
-$color-gray-4: #353E42;
+@import "_meta";
 
 content-root {
   font-family: $font-body;
@@ -72,67 +61,5 @@ content-root {
     font-size: 1.2rem;
     padding-bottom: 16%;
     letter-spacing: 2px;
-  }
-}
-
-section {
-  margin: 60px 15%;
-  padding: 40px;
-  background-color: $color-gray-1;
-}
-
-.step-display {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-  padding: 0;
-
-  li {
-    text-transform: uppercase;
-    color: $color-dark-blue;
-    padding: 10px;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    border: 1px solid $color-dark-blue;
-    background-color: white;
-    white-space: nowrap;
-  }
-
-  li:not(:last-child) {
-    margin-right: 20px;
-  }
-
-  li.activated-step {
-    color: white;
-    background-color: $color-dark-blue;
-  }
-}
-
-form.input-row {
-  display: flex;
-  align-items: center;
-  margin: 40px 0;
-
-  > span {
-    flex: 1;
-    line-height: 40px;
-  }
-
-  > [type="text"] {
-    flex: 2;
-    padding: 10px 20px;
-    color: $color-gray-3;
-    height: 25px;
-    font-size: 0.85rem;
-  }
-
-  > [type="submit"] {
-    flex: 1;
-    color: white;
-    background-color: $color-dark-blue;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    padding: 15px 10px;
   }
 }
