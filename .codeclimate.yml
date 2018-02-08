@@ -19,3 +19,4 @@ ratings:
   - "**.scss"
 exclude_paths:
 - "protractor/"
+- ".*"
