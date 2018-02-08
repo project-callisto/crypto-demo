@@ -9,7 +9,7 @@ plugins:
     enabled: true
   tslint:
     enabled: true
-    config: tslint.yaml
+    config: tslint.json
   scss-lint:
     enabled: true
 ratings:
