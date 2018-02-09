@@ -13,11 +13,17 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public crypto = new CryptoService();
+
+  public encryptedDataArr = [];
+
   public addPerp(event: Event) {
     event.preventDefault();
 
     const newPerpInput: string = $("#newPerpInput").val();
-    const encryptedData = this.crypto.run(newPerpInput);
+    const encryptedData = this.crypto.encryptData(newPerpInput);
+
+    this.encryptedDataArr.push(encryptedData);
+    console.log("encrypted", encryptedData);
     // encryptedData spec:
     // {
     //   'calcPrg': string,
@@ -26,15 +32,21 @@ export class FirstStepComponent {
     // }
 
     // populate values
-    $("#calc-prg").text(encryptedData.calcPrg);
-    $("#calc-prg").text(encryptedData.calcKRecord);
-    $("#calc-prg").text(encryptedData.calcDerivedS);
+    $("#calc-prg").text(encryptedData.hashedPerpId);
+
+    $("#calc-prg").text(encryptedData.encryptedRecord);
+    // $("#calc-prg").text(encryptedData.calcDerivedS);
+
+    // derived S
+    $("#calc-prg").text(encryptedData.y);
 
     // display step
     $("#second-step").show();
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
     }, 2000);
+
+
 
   }
 }
