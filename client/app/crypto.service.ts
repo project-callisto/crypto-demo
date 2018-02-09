@@ -90,7 +90,7 @@ function decryptRecords(data, rid) {
     decryptedRecords.push(decryptedRecord);
   }
 
-  return decryptedRecord;
+  return decryptedRecords;
 
 }
 
