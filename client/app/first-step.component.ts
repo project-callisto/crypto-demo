@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import * as $ from "jquery"
+import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
