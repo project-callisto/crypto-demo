@@ -1,4 +1,6 @@
 import { Component } from "@angular/core";
+import { CryptoService } from "./crypto.service";
+
 import * as $ from "jquery";
 
 @Component({
@@ -10,8 +12,10 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
+  public crypto = new CryptoService();
   public addPerp(event: Event) {
     const newPerpInput: string = $("#newPerpInput").val();
     event.preventDefault();
+    this.crypto.run(newPerpInput);
   }
 }
