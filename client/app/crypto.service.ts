@@ -136,14 +136,7 @@ function getIntercept(c1, slope) {
 
 export class CryptoService {
   public encryptData(perpId: string) {
-    let encryptedData = [];
-
-    // for (let i = 0; i < 2; i++) {
-    let submission = createDataSubmission("aaaa", generateRandNum());
-      // encryptedData.push(submission);
-    // }
-
-    return submission;
+    return createDataSubmission(perpId, generateRandNum());
   }
 
   public decryptData(submissions) {
