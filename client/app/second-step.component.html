@@ -7,12 +7,20 @@
     <li><span class="step-explainer">STEP</span> 4</li>
   </ul>
   <div class='row'>
-    <div class='col-half'>
-      <h3>Now, we’re in the browser</h3>
-      <p>COMPUTE PRG (RID) A, K ID: <span id="calc-prg"></span></p>
-      <p>GENERATE K<sub>RECORD</sub>: <span id="calc-k-record"></span></p>
-      <p>HASH USERID: <span id="calc-user-id"></span></p>
-      <p>DERIVE S=AX + RID: <span id="calc-derived-s"></span></p>
+    <div class='col-half calc-display'>
+      <h3>Client Side Perp Name Encryption</h3>
+      <p>
+        COMPUTED <code>PRG</code>:
+        <code class="calc-display-value"><span id="calc-prg"></span></code>
+      </p>
+      <p>
+        GENERATED <code>K</code><sub>RECORD</sub>:
+        <code class="calc-display-value"><span id="calc-k-record"></span></code>
+      </p>
+      <p>
+        DERIVED <code>S (AX + RID)</code>:
+        <code class="calc-display-value"><span id="calc-derived-s"></span></code>
+      </p>
     </div>
     <div class='col-half' id='second-step-graph'></div>
   </div>
