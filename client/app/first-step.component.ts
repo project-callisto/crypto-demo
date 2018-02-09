@@ -3,7 +3,7 @@ import { CryptoService } from "./crypto.service";
 
 
 @Component({
-  selector: "content-root",
+  selector: "first-step",
   templateUrl: "./first-step.component.html",
   styleUrls: [
     "./styles/base.scss",
