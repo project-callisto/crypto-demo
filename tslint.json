@@ -5,6 +5,8 @@
     "exclude": "node_modules/*"
   },
   "rules": {
+    "indent": [true, "spaces", 2],
+    "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
     "no-console": false
   }

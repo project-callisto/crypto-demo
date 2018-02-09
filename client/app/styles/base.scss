@@ -10,7 +10,8 @@ content-root {
   text-align: center;
 }
 
-.main-header {
+h1,
+h2 {
   font-family: $font-headers;
   font-size: 3rem;
 }
@@ -49,6 +50,7 @@ content-root {
   .starter-header-2 {
     padding-top: 14%;
     padding-bottom: 20px;
+    margin: 0;
     font-weight: 900;
   }
 

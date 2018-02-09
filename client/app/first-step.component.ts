@@ -1,7 +1,8 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
+import * as $ from "jquery";
 
 @Component({
-  selector: "content-root",
+  selector: "first-step",
   templateUrl: "./first-step.component.html",
   styleUrls: [
     "./styles/base.scss",
@@ -9,4 +10,12 @@ import { Component } from "@angular/core";
   ],
 })
 export class FirstStepComponent {
+  @Input() public perp: string;
+
+  public addPerp(event: Event) {
+    const newPerpInput: string = $("#newPerpInput").val();
+    event.preventDefault();
+    this.perp = newPerpInput;
+    console.log("newPerpInput", newPerpInput);
+  }
 }
