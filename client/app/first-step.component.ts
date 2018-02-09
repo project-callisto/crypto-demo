@@ -14,11 +14,23 @@ import * as $ from "jquery";
 export class FirstStepComponent {
   public crypto = new CryptoService();
   public addPerp(event: Event) {
-    const newPerpInput: string = $("#newPerpInput").val();
     event.preventDefault();
 
-    this.crypto.run(newPerpInput);
+    const newPerpInput: string = $("#newPerpInput").val();
+    const encryptedData = this.crypto.run(newPerpInput);
+    // encryptedData spec:
+    // {
+    //   'calcPrg': string,
+    //   'calcKRecord': string,
+    //   'calcDerivedS': string,
+    // }
 
+    // populate values
+    $("#calc-prg").text(encryptedData.calcPrg);
+    $("#calc-prg").text(encryptedData.calcKRecord);
+    $("#calc-prg").text(encryptedData.calcDerivedS);
+
+    // display step
     $("#second-step").show();
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
