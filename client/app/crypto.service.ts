@@ -18,7 +18,7 @@ let record = {
 
 function encryptRecord(kId, record) {
   let kRecord = sjcl.random.randomWords(8);
-  let c_record = sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'});
+  let c_record = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: 'gcm'});
   let encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: 'gcm'});
 
   return {record: c_record, key: encryptedRecordKey};
@@ -48,7 +48,6 @@ function createDataSubmission(rid, userId) {
   let derived = deriveFromRid(rid);
   let slope = derived.slope;
   let kId = derived.kId;
-  console.log('original kId', kId);
 
   // encrypt record and key
   let encryptedRecord = encryptRecord(kId, record);
@@ -56,14 +55,12 @@ function createDataSubmission(rid, userId) {
   // TODO: base x off of session ID
   // var x = parseInt(hashData(userId), HEX);
   let x = generateRandNum();
-  console.log('x', x);
 
   // derive secret
   let int_rid = parseInt(rid, HEX);
   let prod = (slope*x);
   let y = ((slope * x) + int_rid);
-  // console.log('original y', y,'prod',prod, 'minus', y-prod);
-  console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
+
 
   let submission = {
       x: x,
@@ -86,16 +83,14 @@ function decryptRecords(data, rid) {
     let encryptedRecordKey = data[i].encryptedRecordKey;
     let encryptedRecord = data[i].encryptedRecord;
 
-    // TODO:
+    // TODO: 
     let decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
-    console.log('decrypted ', sjcl);
+    var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
 
-    // var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
-
-    // decryptedRecords.push(decryptedRecord);
+    decryptedRecords.push(decryptedRecord);
   }
-  return [record, record];
-  // return decryptedRecord;
+
+  return decryptedRecord;
 
 }
 
@@ -121,9 +116,7 @@ function unmaskData(data) {
   // TODO: fix rid
 
   let decryptedRecords = decryptRecords(data, strRid);
-  for (let i = 0; i < decryptedRecords.length; i++) {
-    console.log(decryptedRecords[i])
-  }
+  console.log(decryptedRecords)
 }
 
 function getSlope(c1, c2) {
