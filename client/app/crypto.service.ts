@@ -135,7 +135,7 @@ function getIntercept(c1, slope) {
 }
 
 export class CryptoService {
-  public run(perpId) {
+  public run(perpId: string) {
     for (let i = 0; i < 2; i++) {
       const submission = createDataSubmission("aaaa", generateRandNum());
       $.post("http://localhost:8080/postData", submission, function(data, status) {

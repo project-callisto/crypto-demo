@@ -16,6 +16,13 @@ export class FirstStepComponent {
   public addPerp(event: Event) {
     const newPerpInput: string = $("#newPerpInput").val();
     event.preventDefault();
+
     this.crypto.run(newPerpInput);
+
+    $("#second-step").show();
+    $('html, body').animate({
+        scrollTop: $("#second-step").offset().top
+    }, 2000);
+
   }
 }
