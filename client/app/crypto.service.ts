@@ -68,6 +68,7 @@ function createDataSubmission(rid, userId) {
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid),
+      rid: int_rid,
   };
   return submission;
 }
