@@ -26,15 +26,19 @@ export class FirstStepComponent {
     // }
 
     // populate values
-    $("#calc-prg").text(encryptedData.calcPrg);
-    $("#calc-prg").text(encryptedData.calcKRecord);
-    $("#calc-prg").text(encryptedData.calcDerivedS);
+    try {
+      $("#calc-prg").text(encryptedData.calcPrg);
+      $("#calc-prg").text(encryptedData.calcKRecord);
+      $("#calc-prg").text(encryptedData.calcDerivedS);
+    } catch (error) {
+      console.log(error);
+    }
 
     // display step
     $("#second-step").show();
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
-    }, 2000);
+    }, 100);
 
   }
 }
