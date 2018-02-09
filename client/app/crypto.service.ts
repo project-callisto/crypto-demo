@@ -18,8 +18,9 @@ var record = {
 
 function encryptRecord(kId, record) {
   var kRecord = sjcl.random.randomWords(8);
-  var c_record = JSON.parse(sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'}));
-  var encryptedRecordKey = sjcl.encrypt(kId, kRecord, {mode: 'gcm'});
+  var c_record = sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'});
+  var encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: 'gcm'});
+
   return {record: c_record, key: encryptedRecordKey};
 }
 
@@ -28,26 +29,41 @@ function hashData(data) {
     return sjcl.codec.hex.fromBits(bitArray); 
   }
 
+
+function deriveFromRid(rid) {
+
+  var ridLen = rid.length;
+  
+  var slope = parseInt(rid.substr(0,ridLen/2), HEX);         
+  
+  var kId = rid.substr(ridLen/2, ridLen);
+
+  return {slope: slope, kId: kId};
+}
+
+
 function createDataSubmission(rid, userId) {
   // TODO: put rid into prg
   // derive slope & kId from rid
-  var slope = parseInt(rid.substr(0,32), HEX);         
-  var kId = rid.substr(32, 64);
+  var derived = deriveFromRid(rid);
+  var slope = derived.slope;
+  var kId = derived.kId;
+  console.log('original kId', kId);
 
   // encrypt record and key
   var encryptedRecord = encryptRecord(kId, record);
 
   // TODO: base x off of session ID
-  var x = parseInt(hashData(userId), HEX);
+  // var x = parseInt(hashData(userId), HEX);
+  var x = generateRandNum();
   console.log('x', x);
 
   // derive secret
   var int_rid = parseInt(rid, HEX);
   var prod = (slope*x);
-  var y = ((slope * x) + int_rid) % PRIME;
-  console.log('original y', y,'prod',prod, y-prod);
+  var y = ((slope * x) + int_rid);
+  // console.log('original y', y,'prod',prod, 'minus', y-prod);
   console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
-  console.log('original kId', kId);
 
   var submission = {
       x: x,
@@ -56,12 +72,35 @@ function createDataSubmission(rid, userId) {
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid)
   };
-  console.log('submission', submission)
   return submission;
 }
 
 
 // UNMASKING
+function decryptRecords(data, rid) {
+
+  var decryptedRecords = [];
+  var derived = deriveFromRid(rid);
+
+  for (var i = 0; i < data.length; i++) {
+    var encryptedRecordKey = data[i].encryptedRecordKey;
+    var encryptedRecord = data[i].encryptedRecord;
+
+    console.log('enc', encryptedRecordKey);
+    // console.log('enc',JSON.parse(JSON.parse(encryptedRecordKey)));
+
+    var decryptedRecordKey = sjcl.decrypt(derived.kId, JSON.parse(encryptedRecordKey));
+    console.log('decryptedRecordKey', decryptedRecordKey);
+
+    // var decryptedRecord = sjcl.decrypt(decryptedRecordKey, JSON.parse(encryptedRecord));
+
+    // decryptedRecords.push(decryptedRecord);
+  }
+  return [];
+  // return decryptedRecord;
+
+}
+
 
 function unmaskData(data) {
   var coordA, coordB;
@@ -80,74 +119,41 @@ function unmaskData(data) {
 
   var slope = getSlope(coordA, coordB);
   var rid = getIntercept(coordA, slope);
+  var strRid = rid.toString(HEX);
+  // TODO: fix rid
 
-  console.log('rid', rid, 'slope', slope);
-  
+  var decryptedRecords = decryptRecords(data, strRid);
+  for (var i = 0; i < decryptedRecords.length; i++) {
+    console.log(decryptedRecords[i])
+  }
 }
 
 function getSlope(c1, c2) {
   return (c2.y - c1.y) / (c2.x - c1.x);
  }
- function getIntercept(c1, slope) {
+
+function getIntercept(c1, slope) {
   var x = c1.x;
   var y = c1.y;
   var prod = slope*x;
-  console.log('prod',y-prod);
 
   return y - prod;
 }
 
 
-// all of crypto functions
 export class CryptoService {
   public run() {
     for (var i = 0; i < 2; i++) {
       $.post('http://localhost:8080/postPerpId', {
         'pid':'https://www.facebook.com/weinsteinharvey/?ref=br_rs'
       }, function(data, status) {
-        var submission = createDataSubmission(data.rid, generateRandNum());
+        var submission = createDataSubmission('aaaa', generateRandNum());
         $.post('http://localhost:8080/postData', submission, function (data, status) {
           if (Object.keys(data[0]).length >= 2) {
               unmaskData(data);
           }
         });
       });
-    // public run() {
-    //     let record = {
-    //         perpName: "harvey weinstein",
-    //         perpEmail: "harvey@weinstein.com",
-    //     };
-
-    //     for (let i = 0; i < 2; i++) {
-    //         $.post("http://localhost:8080/postPerpId", {
-    //             pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
-    //           }, function(data, status) {
-    //               // output from PRF
-
-    //             var rid = data.rid;
-
-    //             // TODO: put rid into prg
-    //             // derive slope & kId from rid
-    //             var slope = parseInt(rid.substr(0,32), HEX);         
-    //             var kId = rid.substr(32, 64);
-
-    //             // encrypt record and key
-    //             var kRecord = sjcl.random.randomWords(8);
-    //             var c_record = JSON.parse(sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'}));
-    //             var encryptedRecordKey = sjcl.encrypt(kId, kRecord, {mode: 'gcm'});
-
-    //             // TODO: base x off of session ID
-    //             var x = generateRandNum();
-
-    //             // derive secret
-    //             var y = ((slope * x) + parseInt(rid, HEX)) % PRIME;
-
-
-    //             console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
-    //             console.log('original kId', kId);
-    //         });
-    //     }
-    // }
+    }
   }
 }
-

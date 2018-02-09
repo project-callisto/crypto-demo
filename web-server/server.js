@@ -58,20 +58,18 @@ var data = [];
 // CALLISTO SERVER
 app.post('/postData', function(req, res) {
 
-  var y = req.body.y;
-  var x = req.body.x;
-  var hashedPerpId = req.body.hashedPerpId;
-  var encryptedRecordKey = req.body.encryptedRecord;
-  var encryptedRecord = req.body.encryptedRecordKey;
+  console.log(req.body);
 
-  console.log('received ', hashedPerpId);
+  var submission = {
+    x: req.body.x,
+    y: req.body.y, 
+    hashedPerpId: req.body.hashedPerpId, 
+    encryptedRecordKey: req.body.encryptedRecordKey, 
+    encryptedRecord: req.body.encryptedRecord
+  }
+  console.log('received new submission: ', submission);
 
-  data.push({
-    x: x, 
-    y: y, 
-    hashedPerpId: hashedPerpId, 
-    encryptedRecordKey: encryptedRecordKey, 
-    encryptedRecord: encryptedRecord});
+  data.push(submission);
 
   if (data.length >= 2) {
       res.send(data);
