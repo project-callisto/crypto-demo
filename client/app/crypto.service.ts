@@ -97,7 +97,8 @@ function unmaskData(data) {
 
   var slope = getSlope(coordA, coordB);
   var rid = getIntercept(coordA, slope);
-  var decryptedRecords = decryptRecords(data, rid);
+  // TODO: fix rid
+  // var decryptedRecords = decryptRecords(data, rid);
 
   console.log('rid', rid, 'slope', slope);
   

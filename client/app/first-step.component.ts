@@ -1,4 +1,6 @@
 import { Component } from "@angular/core";
+import { CryptoService } from "./crypto.service";
+
 
 @Component({
   selector: "content-root",
@@ -8,12 +10,17 @@ import { Component } from "@angular/core";
     "./styles/step.scss",
   ],
 })
+
+
 export class FirstStepComponent {
-    perp = '';
-    addPerp(newPerp: string) {
-	if (newPerp) {
-	    this.perp = newPerp;
-	    console.log(newPerp);
-	}
-    }
+  public crypto = new CryptoService();
+
+  perp = '';
+  
+  addPerp(newPerp: string) {
+	  if (newPerp) {
+      this.perp = newPerp;
+      this.crypto.run();
+	  }
+  }
 }
