@@ -15,12 +15,12 @@ import { CryptoService } from "./crypto.service";
 export class FirstStepComponent {
   public crypto = new CryptoService();
 
-  perp = '';
-  
-  addPerp(newPerp: string) {
-	  if (newPerp) {
+  public perp = "";
+
+  public addPerp(newPerp: string) {
+    if (newPerp) {
       this.perp = newPerp;
       this.crypto.run();
-	  }
+    }
   }
 }

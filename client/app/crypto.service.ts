@@ -1,73 +1,73 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
-let $ = require('jquery');
-let sjcl = require('sjcl');
+const $ = require("jquery");
+const sjcl = require("sjcl");
 
 const HEX = 16;
-const PRIME = ((2^128) - 157);
+const PRIME = ((2 ^ 128) - 157);
 
 
 function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-let record = {
-  perpName: 'harvey weinstein',
-  perpEmail: 'harvey@weinstein.com'
-}
+const record = {
+  perpName: "harvey weinstein",
+  perpEmail: "harvey@weinstein.com",
+};
 
 function encryptRecord(kId, record) {
-  let kRecord = sjcl.random.randomWords(8);
-  let c_record = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: 'gcm'});
-  let encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: 'gcm'});
+  const kRecord = sjcl.random.randomWords(8);
+  const c_record = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: "gcm"});
+  const encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: "gcm"});
 
   return {record: c_record, key: encryptedRecordKey};
 }
 
 function hashData(data) {
-    let bitArray = sjcl.hash.sha256.hash(data);
+    const bitArray = sjcl.hash.sha256.hash(data);
     return sjcl.codec.hex.fromBits(bitArray);
   }
 
 
 function deriveFromRid(rid) {
 
-  let ridLen = rid.length;
+  const ridLen = rid.length;
 
-  let slope = parseInt(rid.substr(0,ridLen/2), HEX);
+  const slope = parseInt(rid.substr(0, ridLen / 2), HEX);
 
-  let kId = rid.substr(ridLen/2, ridLen);
+  const kId = rid.substr(ridLen / 2, ridLen);
 
-  return {slope: slope, kId: kId};
+  return {slope, kId};
 }
 
 
 function createDataSubmission(rid, userId) {
   // TODO: put rid into prg
   // derive slope & kId from rid
-  let derived = deriveFromRid(rid);
-  let slope = derived.slope;
-  let kId = derived.kId;
+  const derived = deriveFromRid(rid);
+  const slope = derived.slope;
+  const kId = derived.kId;
 
   // encrypt record and key
-  let encryptedRecord = encryptRecord(kId, record);
+  const encryptedRecord = encryptRecord(kId, record);
 
   // TODO: base x off of session ID
   // var x = parseInt(hashData(userId), HEX);
-  let x = generateRandNum();
+  const x = generateRandNum();
 
   // derive secret
-  let int_rid = parseInt(rid, HEX);
-  let prod = (slope*x);
-  let y = ((slope * x) + int_rid);
+  const int_rid = parseInt(rid, HEX);
+  const prod = (slope * x);
+  const y = ((slope * x) + int_rid);
 
 
-  let submission = {
-      x: x,
-      y: y,
+  const submission = {
+      x,
+      y,
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
-      hashedPerpId: hashData(rid)
+      hashedPerpId: hashData(rid),
   };
   return submission;
 }
@@ -76,16 +76,16 @@ function createDataSubmission(rid, userId) {
 // UNMASKING
 function decryptRecords(data, rid) {
 
-  let decryptedRecords = [];
-  let derived = deriveFromRid(rid);
+  const decryptedRecords = [];
+  const derived = deriveFromRid(rid);
 
   for (let i = 0; i < data.length; i++) {
-    let encryptedRecordKey = data[i].encryptedRecordKey;
-    let encryptedRecord = data[i].encryptedRecord;
+    const encryptedRecordKey = data[i].encryptedRecordKey;
+    const encryptedRecord = data[i].encryptedRecord;
 
-    // TODO: 
-    let decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
-    var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
+    // TODO:
+    const decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
+    const decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
 
     decryptedRecords.push(decryptedRecord);
   }
@@ -110,13 +110,13 @@ function unmaskData(data) {
   // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
   // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
 
-  let slope = getSlope(coordA, coordB);
-  let rid = getIntercept(coordA, slope);
-  let strRid = rid.toString(HEX);
+  const slope = getSlope(coordA, coordB);
+  const rid = getIntercept(coordA, slope);
+  const strRid = rid.toString(HEX);
   // TODO: fix rid
 
-  let decryptedRecords = decryptRecords(data, strRid);
-  console.log(decryptedRecords)
+  const decryptedRecords = decryptRecords(data, strRid);
+  console.log(decryptedRecords);
 }
 
 function getSlope(c1, c2) {
@@ -124,9 +124,9 @@ function getSlope(c1, c2) {
  }
 
 function getIntercept(c1, slope) {
-  let x = c1.x;
-  let y = c1.y;
-  let prod = slope*x;
+  const x = c1.x;
+  const y = c1.y;
+  const prod = slope * x;
 
   return y - prod;
 }
@@ -135,11 +135,11 @@ function getIntercept(c1, slope) {
 export class CryptoService {
   public run() {
     for (let i = 0; i < 2; i++) {
-      $.post('http://localhost:8080/postPerpId', {
-        'pid':'https://www.facebook.com/weinsteinharvey/?ref=br_rs'
+      $.post("http://localhost:8080/postPerpId", {
+        pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
       }, function(data, status) {
-        let submission = createDataSubmission('aaaa', generateRandNum());
-        $.post('http://localhost:8080/postData', submission, function (data, status) {
+        const submission = createDataSubmission("aaaa", generateRandNum());
+        $.post("http://localhost:8080/postData", submission, function(data, status) {
           if (Object.keys(data[0]).length >= 2) {
               unmaskData(data);
           }
