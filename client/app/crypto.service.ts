@@ -68,6 +68,7 @@ function createDataSubmission(rid, userId) {
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid),
+      rid: int_rid,
   };
   return submission;
 }
@@ -135,10 +136,13 @@ function getIntercept(c1, slope) {
 }
 
 export class CryptoService {
-  public run(perpId: string) {
-    for (let i = 0; i < 2; i++) {
-      const submission = createDataSubmission("aaaa", generateRandNum());
-      $.post("http://localhost:8080/postData", submission, function(data, status) {
+  public encryptData(perpId: string) {
+    return createDataSubmission(perpId, generateRandNum());
+  }
+
+  public decryptData(submissions) {
+    for (let i = 0; i < submissions.lengt; i++) {
+      $.post("http://localhost:8080/postData", submissions[i], function(data, status) {
         if (Object.keys(data[0]).length >= 2) {
           const unmasked = unmaskData(data);
           console.log("unmasked", unmasked);
@@ -146,4 +150,7 @@ export class CryptoService {
       });
     }
   }
+
+
+
 }
