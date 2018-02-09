@@ -10,11 +10,10 @@
   <form class="input-row">
     <span class="subtext">ENTER PERP NAME</span>
     <input #newPerp
-	   type="text"
-	   (keyup.enter)="addPerp(newPerp.value)"
-	   (blur)="addPerp(newPerp.value); newPerp.value='' " />
-
-  <input (click)="addPerp(newPerp.value)" value="submit" type="submit"/>
+      type="text"
+      (keyup.enter)="addPerp(newPerp.value)"
+      (blur)="addPerp(newPerp.value); newPerp.value='' " />
+    <input (click)="addPerp(newPerp.value)" value="submit" type="submit"/>
   </form>
   </div>
   <p class="subtext">RETURNS: RID USING OPRF</p>
