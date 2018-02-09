@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import * as $ from "jquery"
 
 @Component({
   selector: "first-step",
@@ -11,10 +12,10 @@ import { Component } from "@angular/core";
 export class FirstStepComponent {
   public perp = "";
 
-  public addPerp(newPerp: string) {
-    if (newPerp) {
-      this.perp = newPerp;
-      console.log(newPerp);
-    }
+  public addPerp(event: Event) {
+    const newPerpInput: string = $("#newPerpInput").val();
+    event.preventDefault();
+    this.perp = newPerpInput;
+    console.log("newPerpInput", newPerpInput);
   }
 }
