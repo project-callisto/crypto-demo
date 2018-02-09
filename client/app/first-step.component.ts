@@ -29,7 +29,12 @@ export class FirstStepComponent {
     //   'calcDerivedS': string,
     // }
 
+    // console.log('URLSearchParams(document.cookie).get("PHPSESSID")')
+    // const cookie = new URLSearchParams(document.cookie)
+    // console.log(cookie.get("PHPSESSID"))
+
     // populate values
+    $("#calc-rid").text(encryptedData.rid);
     $("#calc-prg").text(encryptedData.hashedPerpId);
     $("#calc-k-record").text(encryptedData.encryptedRecord);
     $("#calc-derived-s").text(encryptedData.y);
