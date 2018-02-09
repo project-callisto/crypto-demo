@@ -20,7 +20,7 @@ export class FirstStepComponent {
   public addPerp(newPerp: string) {
     if (newPerp) {
       this.perp = newPerp;
-      this.crypto.run();
+      this.crypto.run(newPerp);
     }
   }
 }

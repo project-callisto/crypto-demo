@@ -133,10 +133,10 @@ function getIntercept(c1, slope) {
 
 
 export class CryptoService {
-  public run() {
+  public run(perpId) {
     for (let i = 0; i < 2; i++) {
       $.post("http://localhost:8080/postPerpId", {
-        pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
+        pid: perpId,
       }, function(data, status) {
         const submission = createDataSubmission("aaaa", generateRandNum());
         $.post("http://localhost:8080/postData", submission, function(data, status) {
