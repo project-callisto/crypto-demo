@@ -86,17 +86,15 @@ function decryptRecords(data, rid) {
     var encryptedRecordKey = data[i].encryptedRecordKey;
     var encryptedRecord = data[i].encryptedRecord;
 
-    console.log('enc', encryptedRecordKey);
-    // console.log('enc',JSON.parse(JSON.parse(encryptedRecordKey)));
+    // TODO:
+    var decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
+    console.log('decrypted ', sjcl);
 
-    var decryptedRecordKey = sjcl.decrypt(derived.kId, JSON.parse(encryptedRecordKey));
-    console.log('decryptedRecordKey', decryptedRecordKey);
-
-    // var decryptedRecord = sjcl.decrypt(decryptedRecordKey, JSON.parse(encryptedRecord));
+    // var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
 
     // decryptedRecords.push(decryptedRecord);
   }
-  return [];
+  return [record, record];
   // return decryptedRecord;
 
 }
