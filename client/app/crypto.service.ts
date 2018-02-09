@@ -115,8 +115,11 @@ function unmaskData(data) {
   const strRid = rid.toString(HEX);
   // TODO: fix rid
 
-  const decryptedRecords = decryptRecords(data, strRid);
-  console.log(decryptedRecords);
+  return {
+    decryptedRecords: decryptRecords(data, strRid),
+    slope: slope,
+    strRid: strRid
+  };
 }
 
 function getSlope(c1, c2) {
@@ -141,7 +144,9 @@ export class CryptoService {
         const submission = createDataSubmission("aaaa", generateRandNum());
         $.post("http://localhost:8080/postData", submission, function(data, status) {
           if (Object.keys(data[0]).length >= 2) {
-              unmaskData(data);
+              var unmasked = unmaskData(data);
+              console.log('unmasked', unmasked);
+              // console.log($('#second-step-graph'));
           }
         });
       });

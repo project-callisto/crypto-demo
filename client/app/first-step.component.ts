@@ -21,6 +21,8 @@ export class FirstStepComponent {
     if (newPerp) {
       this.perp = newPerp;
       this.crypto.run(newPerp);
+      // TODO: wrap this around a promise
+
     }
   }
 }
