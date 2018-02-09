@@ -1,4 +1,4 @@
-<section>
+<section id='first-step'>
   <h2 class="main-header text-centered">Demo</h2>
   <ul class="step-display">
     <li class="activated-step"><span class="step-explainer">STEP</span> 1</li>
@@ -6,10 +6,22 @@
     <li><span class="step-explainer">STEP</span> 3</li>
     <li><span class="step-explainer">STEP</span> 4</li>
   </ul>
-  <form class="input-row">
+  <form
+    class="input-row"
+    action="#"
+  >
     <span class="subtext">ENTER PERP NAME</span>
-    <input type="text" placeholder="INPUT" />
-    <input type="submit" value="submit" />
+    <input
+      required
+      type="text"
+      id="newPerpInput"
+      (blur)="addPerp($event);"
+    />
+    <input
+      value="submit"
+      type="submit"
+      (click)="addPerp($event);"
+    />
   </form>
   <p class="subtext">RETURNS: RID USING OPRF</p>
   <p class='rid-display'>435489THJ2WI3J4290WJPEOIRYT08345U2JTWER8UG934JTWUERGO</p>
