@@ -15,6 +15,28 @@ section {
   }
 }
 
+@media (min-width: $breakpoint-sm) {
+  .row {
+    display: flex;
+  }
+
+  .col-half {
+    width: 50%;
+  }
+
+  .col-half:first-child {
+    margin-right: 5%;
+  }
+}
+
+.calc-display {
+  word-wrap: break-word;
+
+  h3 {
+    margin: 0;
+  }
+}
+
 .rid-display {
   color: $color-dark-blue;
   letter-spacing: 2px;
