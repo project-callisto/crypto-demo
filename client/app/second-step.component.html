@@ -1,4 +1,4 @@
-<section id='second-step'>
+<section id='second-step' style="display: none;">
   <h2 class="main-header text-centered">Demo</h2>
   <ul class="step-display">
     <li class="activated-step"><span class="step-explainer">STEP</span> 1</li>
@@ -9,10 +9,10 @@
   <div class='row'>
     <div class='col-half'>
       <h3>Now, we’re in the browser</h3>
-      <p>COMPUTE PRG (RID) A, K ID</p>
-      <p>GENERATE K<sub>RECORD</sub></p>
-      <p>HASH USERID</p>
-      <p>DERIVE S=AX + RID</p>
+      <p>COMPUTE PRG (RID) A, K ID: <span id="calc-prg"></span></p>
+      <p>GENERATE K<sub>RECORD</sub>: <span id="calc-k-record"></span></p>
+      <p>HASH USERID: <span id="calc-user-id"></span></p>
+      <p>DERIVE S=AX + RID: <span id="calc-derived-s"></span></p>
     </div>
     <div class='col-half' id='second-step-graph'></div>
   </div>

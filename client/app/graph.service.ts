@@ -2,9 +2,7 @@
 export class GraphService {
 
   public generateGraph() {
-    console.log("graph initialization");
-    console.log("graph initialization");
-    console.log("graph initialization");
+
   }
 
 }

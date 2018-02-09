@@ -1,4 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { Component } from "@angular/core";
+import { CryptoService } from "./crypto.service";
+
 import * as $ from "jquery";
 
 @Component({
@@ -10,12 +12,17 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
-  @Input() public perp: string;
-
+  public crypto = new CryptoService();
   public addPerp(event: Event) {
     const newPerpInput: string = $("#newPerpInput").val();
     event.preventDefault();
-    this.perp = newPerpInput;
-    console.log("newPerpInput", newPerpInput);
+
+    this.crypto.run(newPerpInput);
+
+    $("#second-step").show();
+    $("html, body").animate({
+        scrollTop: $("#second-step").offset().top,
+    }, 2000);
+
   }
 }
