@@ -1,11 +1,11 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
-let $ = require("jquery");
+const $ = require("jquery");
 
 // all of crypto functions
 export class CryptoService {
     public run() {
-        let record = {
+        const record = {
             perpName: "harvey weinstein",
             perpEmail: "harvey@weinstein.com",
         };
@@ -15,7 +15,7 @@ export class CryptoService {
                 pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
               }, function(data, status) {
                   // output from PRF
-                let rid = parseInt(data.rid, 16);
+                const rid = parseInt(data.rid, 16);
                 console.log("original rid: ", rid);
 
             });
