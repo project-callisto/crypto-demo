@@ -16,6 +16,16 @@ h2 {
   font-size: 3rem;
 }
 
+.calc-display-value {
+  display: block;
+  margin: 10px 5%;
+  padding: 10px;
+  color: darkslategray;
+  background-color: #eaeef3;
+  border: 1px solid #ccc;
+  font-family: "Courier New", monospace;
+}
+
 .subtext {
   font-size: 0.85rem;
   color: $color-gray-3;
