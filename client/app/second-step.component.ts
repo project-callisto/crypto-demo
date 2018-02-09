@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
 
 @Component({
-  selector: "first-step",
-  templateUrl: "./first-step.component.html",
+  selector: "second-step",
+  templateUrl: "./second-step.component.html",
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
   ],
 })
-export class FirstStepComponent {
+export class SecondStepComponent {
 }
