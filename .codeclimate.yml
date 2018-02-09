@@ -21,4 +21,4 @@ ratings:
 exclude_paths:
 - "protractor/"
 - ".*"
-- "*config.js"
+- "web-server/*.config.js"
