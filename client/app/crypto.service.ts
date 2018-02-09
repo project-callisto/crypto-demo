@@ -18,8 +18,9 @@ var record = {
 
 function encryptRecord(kId, record) {
   var kRecord = sjcl.random.randomWords(8);
-  var c_record = JSON.parse(sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'}));
-  var encryptedRecordKey = sjcl.encrypt(kId, kRecord, {mode: 'gcm'});
+  var c_record = sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'});
+  var encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: 'gcm'});
+
   return {record: c_record, key: encryptedRecordKey};
 }
 
@@ -28,24 +29,40 @@ function hashData(data) {
     return sjcl.codec.hex.fromBits(bitArray); 
   }
 
+
+function deriveFromRid(rid) {
+
+  var ridLen = rid.length;
+  
+  var slope = parseInt(rid.substr(0,ridLen/2), HEX);         
+  
+  var kId = rid.substr(ridLen/2, ridLen);
+
+  return {slope: slope, kId: kId};
+}
+
+
 function createDataSubmission(rid, userId) {
   // TODO: put rid into prg
   // derive slope & kId from rid
-  var slope = parseInt(rid.substr(0,32), HEX);         
-  var kId = rid.substr(32, 64);
+  var derived = deriveFromRid(rid);
+  var slope = derived.slope;
+  var kId = derived.kId;
+  console.log('original kId', kId);
 
   // encrypt record and key
   var encryptedRecord = encryptRecord(kId, record);
 
   // TODO: base x off of session ID
-  var x = parseInt(hashData(userId), HEX);
+  // var x = parseInt(hashData(userId), HEX);
+  var x = generateRandNum();
   console.log('x', x);
 
   // derive secret
   var int_rid = parseInt(rid, HEX);
   var prod = (slope*x);
   var y = ((slope * x) + int_rid);
-  console.log('original y', y,'prod',prod, y-prod);
+  // console.log('original y', y,'prod',prod, 'minus', y-prod);
   console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
 
   var submission = {
@@ -63,19 +80,24 @@ function createDataSubmission(rid, userId) {
 function decryptRecords(data, rid) {
 
   var decryptedRecords = [];
-  var kId = rid.toString(HEX).substr(32, 64);
+  var derived = deriveFromRid(rid);
 
   for (var i = 0; i < data.length; i++) {
-    var encryptedRecord = data[i].encryptedRecord;
     var encryptedRecordKey = data[i].encryptedRecordKey;
+    var encryptedRecord = data[i].encryptedRecord;
 
-    var decryptedRecordKey = sjcl.decrypt(kId, encryptedRecordKey);
-    var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
+    console.log('enc', encryptedRecordKey);
+    // console.log('enc',JSON.parse(JSON.parse(encryptedRecordKey)));
 
-    decryptedRecords.push(decryptedRecord);
+    var decryptedRecordKey = sjcl.decrypt(derived.kId, JSON.parse(encryptedRecordKey));
+    console.log('decryptedRecordKey', decryptedRecordKey);
+
+    // var decryptedRecord = sjcl.decrypt(decryptedRecordKey, JSON.parse(encryptedRecord));
+
+    // decryptedRecords.push(decryptedRecord);
   }
-
-  return decryptedRecord;
+  return [];
+  // return decryptedRecord;
 
 }
 
@@ -97,11 +119,13 @@ function unmaskData(data) {
 
   var slope = getSlope(coordA, coordB);
   var rid = getIntercept(coordA, slope);
+  var strRid = rid.toString(HEX);
   // TODO: fix rid
-  // var decryptedRecords = decryptRecords(data, rid);
 
-  console.log('rid', rid, 'slope', slope);
-  
+  var decryptedRecords = decryptRecords(data, strRid);
+  for (var i = 0; i < decryptedRecords.length; i++) {
+    console.log(decryptedRecords[i])
+  }
 }
 
 function getSlope(c1, c2) {
@@ -123,7 +147,7 @@ export class CryptoService {
       $.post('http://localhost:8080/postPerpId', {
         'pid':'https://www.facebook.com/weinsteinharvey/?ref=br_rs'
       }, function(data, status) {
-        var submission = createDataSubmission(data.rid, generateRandNum());
+        var submission = createDataSubmission('aaaa', generateRandNum());
         $.post('http://localhost:8080/postData', submission, function (data, status) {
           if (Object.keys(data[0]).length >= 2) {
               unmaskData(data);
