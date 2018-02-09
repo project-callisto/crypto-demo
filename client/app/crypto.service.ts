@@ -13,17 +13,18 @@ function generateRandNum() {
 
 // all of crypto functions
 export class CryptoService {
-    run() {
-        var record = {
-            perpName: 'harvey weinstein',
-            perpEmail: 'harvey@weinstein.com'
-        }
+    public run() {
+        let record = {
+            perpName: "harvey weinstein",
+            perpEmail: "harvey@weinstein.com",
+        };
 
-        for (var i = 0; i < 2; i++) {
-            $.post('http://localhost:8080/postPerpId', {
-                'pid':'https://www.facebook.com/weinsteinharvey/?ref=br_rs'
+        for (let i = 0; i < 2; i++) {
+            $.post("http://localhost:8080/postPerpId", {
+                pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
               }, function(data, status) {
                   // output from PRF
+
                 var rid = data.rid;
 
                 // TODO: put rid into prg
@@ -41,6 +42,7 @@ export class CryptoService {
 
                 // derive secret
                 var y = ((slope * x) + parseInt(rid, HEX)) % PRIME;
+
 
                 console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
                 console.log('original kId', kId);
