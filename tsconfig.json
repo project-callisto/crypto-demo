@@ -1,13 +1,15 @@
 {
+
   "compileOnSave": true,
   "compilerOptions": {
+    "module": "system",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
+    "target": "es6",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -15,5 +17,8 @@
       "es2017",
       "dom"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

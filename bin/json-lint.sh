@@ -7,6 +7,6 @@ for file in $(find . -name '*json' -not -path './node_modules/*'); do
     if [[ $return_val -ne 0 ]]; then
 	echo "JSON validation error in: $file"
 	printf "$data\n"
-	exit $?
+	exit $return_val
     fi
 done

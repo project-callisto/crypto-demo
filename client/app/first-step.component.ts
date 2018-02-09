@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { CryptoService } from "./crypto.service";
 
+import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
@@ -10,19 +11,11 @@ import { CryptoService } from "./crypto.service";
     "./styles/step.scss",
   ],
 })
-
-
 export class FirstStepComponent {
   public crypto = new CryptoService();
-
-  public perp = "";
-
-  public addPerp(newPerp: string) {
-    if (newPerp) {
-      this.perp = newPerp;
-      this.crypto.run(newPerp);
-      // TODO: wrap this around a promise
-
-    }
+  public addPerp(event: Event) {
+    const newPerpInput: string = $("#newPerpInput").val();
+    event.preventDefault();
+    this.crypto.run(newPerpInput);
   }
 }

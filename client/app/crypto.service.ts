@@ -1,6 +1,6 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
-const $ = require("jquery");
+import * as $ from "jquery";
 const sjcl = require("sjcl");
 
 const HEX = 16;
@@ -134,21 +134,15 @@ function getIntercept(c1, slope) {
   return y - prod;
 }
 
-
 export class CryptoService {
   public run(perpId) {
     for (let i = 0; i < 2; i++) {
-      $.post("http://localhost:8080/postPerpId", {
-        pid: perpId,
-      }, function(data, status) {
-        const submission = createDataSubmission("aaaa", generateRandNum());
-        $.post("http://localhost:8080/postData", submission, function(data, status) {
-          if (Object.keys(data[0]).length >= 2) {
-              var unmasked = unmaskData(data);
-              console.log('unmasked', unmasked);
-              // console.log($('#second-step-graph'));
-          }
-        });
+      const submission = createDataSubmission("aaaa", generateRandNum());
+      $.post("http://localhost:8080/postData", submission, function(data, status) {
+        if (Object.keys(data[0]).length >= 2) {
+          var unmasked = unmaskData(data);
+          console.log('unmasked', unmasked);
+        }
       });
     }
   }
