@@ -44,10 +44,9 @@ function createDataSubmission(rid, userId) {
   // derive secret
   var int_rid = parseInt(rid, HEX);
   var prod = (slope*x);
-  var y = ((slope * x) + int_rid) % PRIME;
+  var y = ((slope * x) + int_rid);
   console.log('original y', y,'prod',prod, y-prod);
   console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
-  console.log('original kId', kId);
 
   var submission = {
       x: x,
@@ -56,12 +55,30 @@ function createDataSubmission(rid, userId) {
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid)
   };
-  console.log('submission', submission)
   return submission;
 }
 
 
 // UNMASKING
+function decryptRecords(data, rid) {
+
+  var decryptedRecords = [];
+  var kId = rid.toString(HEX).substr(32, 64);
+
+  for (var i = 0; i < data.length; i++) {
+    var encryptedRecord = data[i].encryptedRecord;
+    var encryptedRecordKey = data[i].encryptedRecordKey;
+
+    var decryptedRecordKey = sjcl.decrypt(kId, encryptedRecordKey);
+    var decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
+
+    decryptedRecords.push(decryptedRecord);
+  }
+
+  return decryptedRecord;
+
+}
+
 
 function unmaskData(data) {
   var coordA, coordB;
@@ -80,6 +97,7 @@ function unmaskData(data) {
 
   var slope = getSlope(coordA, coordB);
   var rid = getIntercept(coordA, slope);
+  var decryptedRecords = decryptRecords(data, rid);
 
   console.log('rid', rid, 'slope', slope);
   
@@ -88,17 +106,16 @@ function unmaskData(data) {
 function getSlope(c1, c2) {
   return (c2.y - c1.y) / (c2.x - c1.x);
  }
- function getIntercept(c1, slope) {
+
+function getIntercept(c1, slope) {
   var x = c1.x;
   var y = c1.y;
   var prod = slope*x;
-  console.log('prod',y-prod);
 
   return y - prod;
 }
 
 
-// all of crypto functions
 export class CryptoService {
   public run() {
     for (var i = 0; i < 2; i++) {
@@ -112,42 +129,6 @@ export class CryptoService {
           }
         });
       });
-    // public run() {
-    //     let record = {
-    //         perpName: "harvey weinstein",
-    //         perpEmail: "harvey@weinstein.com",
-    //     };
-
-    //     for (let i = 0; i < 2; i++) {
-    //         $.post("http://localhost:8080/postPerpId", {
-    //             pid: "https://www.facebook.com/weinsteinharvey/?ref=br_rs",
-    //           }, function(data, status) {
-    //               // output from PRF
-
-    //             var rid = data.rid;
-
-    //             // TODO: put rid into prg
-    //             // derive slope & kId from rid
-    //             var slope = parseInt(rid.substr(0,32), HEX);         
-    //             var kId = rid.substr(32, 64);
-
-    //             // encrypt record and key
-    //             var kRecord = sjcl.random.randomWords(8);
-    //             var c_record = JSON.parse(sjcl.encrypt(kRecord, JSON.stringify(record), {mode: 'gcm'}));
-    //             var encryptedRecordKey = sjcl.encrypt(kId, kRecord, {mode: 'gcm'});
-
-    //             // TODO: base x off of session ID
-    //             var x = generateRandNum();
-
-    //             // derive secret
-    //             var y = ((slope * x) + parseInt(rid, HEX)) % PRIME;
-
-
-    //             console.log('original rid: ',rid, 'int rid: ', parseInt(rid, HEX), 'original slope: ', slope);
-    //             console.log('original kId', kId);
-    //         });
-    //     }
-    // }
+    }
   }
 }
-
