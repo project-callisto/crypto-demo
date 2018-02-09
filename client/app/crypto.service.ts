@@ -140,7 +140,7 @@ export class CryptoService {
       const submission = createDataSubmission("aaaa", generateRandNum());
       $.post("http://localhost:8080/postData", submission, function(data, status) {
         if (Object.keys(data[0]).length >= 2) {
-          let unmasked = unmaskData(data);
+          const unmasked = unmaskData(data);
           console.log("unmasked", unmasked);
         }
       });

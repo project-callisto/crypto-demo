@@ -20,8 +20,8 @@ export class FirstStepComponent {
     this.crypto.run(newPerpInput);
 
     $("#second-step").show();
-    $('html, body').animate({
-        scrollTop: $("#second-step").offset().top
+    $("html, body").animate({
+        scrollTop: $("#second-step").offset().top,
     }, 2000);
 
   }
