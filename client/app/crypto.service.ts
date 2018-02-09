@@ -1,6 +1,6 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
-const $ = require("jquery");
+import * as $ from "jquery"
 
 // all of crypto functions
 export class CryptoService {
