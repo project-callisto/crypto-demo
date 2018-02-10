@@ -4,6 +4,9 @@
 // // jasmine defines methods like toEqual, expect, toContain
 
 describe('Valkyrie Demo', function() {
+  const FirstSection = element(by.css('#first-step'));
+  const PerpNameInput = element(by.css('.perp-name-form [type="text"]'));
+  const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
 
   beforeEach(function() {
     browser.get('/');
@@ -14,20 +17,17 @@ describe('Valkyrie Demo', function() {
   });
 
   it('should start with a perp name displayed', function() {
-    const text = element(by.css('#first-step')).getText();
-    expect(text).toContain('PERP NAME');
+    expect(FirstSection.getText()).toContain('PERP NAME');
   });
 
   it('starts with no RID rendered', function() {
-    const RIDElement = element(by.css('#first-step'));
-    expect(RIDElement.getText()).toContain('[[ RID ]]');
+    expect(FirstSection.getText()).toContain('[[ RID ]]');
   });
 
   it('renders a RID after perp name input', function() {
-    element(by.css('.perp-name-form [type="text"]')).sendKeys('facebook.com/callistoorg');
-    element(by.css('.perp-name-form [type="submit"]')).click();
-    const RIDElement = element(by.css('#first-step'));
-    expect(RIDElement.getText()).not.toContain('[[ RID ]]');
+    PerpNameInput.sendKeys('facebook.com/callistoorg');
+    PerpNameSubmit.click();
+    expect(FirstSection.getText()).not.toContain('[[ RID ]]');
   });
 
 });
