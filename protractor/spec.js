@@ -14,8 +14,20 @@ describe('Valkyrie Demo', function() {
   });
 
   it('should start with a perp name displayed', function() {
-    const text = element(by.css('section:first-child')).getText();
+    const text = element(by.css('#first-step')).getText();
     expect(text).toContain('PERP NAME');
+  });
+
+  it('starts with no RID rendered', function() {
+    const RIDElement = element(by.css('#first-step'));
+    expect(RIDElement.getText()).toContain('[[ RID ]]');
+  });
+
+  it('renders a RID after perp name input', function() {
+    element(by.css('.perp-name-form [type="text"]')).sendKeys('facebook.com/callistoorg');
+    element(by.css('.perp-name-form [type="submit"]')).click();
+    const RIDElement = element(by.css('#first-step'));
+    expect(RIDElement.getText()).not.toContain('[[ RID ]]');
   });
 
 });

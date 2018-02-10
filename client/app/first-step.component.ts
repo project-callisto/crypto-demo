@@ -22,16 +22,6 @@ export class FirstStepComponent {
     const encryptedData = this.crypto.encryptData(newPerpInput);
 
     this.encryptedDataArr.push(encryptedData);
-    // encryptedData spec:
-    // {
-    //   'calcPrg': string,
-    //   'calcKRecord': string,
-    //   'calcDerivedS': string,
-    // }
-
-    // console.log('URLSearchParams(document.cookie).get("PHPSESSID")')
-    // const cookie = new URLSearchParams(document.cookie)
-    // console.log(cookie.get("PHPSESSID"))
 
     // populate values
     $("#calc-rid").text(encryptedData.rid);
