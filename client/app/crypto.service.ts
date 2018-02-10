@@ -1,7 +1,7 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
 import * as $ from "jquery";
-const sjcl = require("sjcl");
+import * as sjcl from "sjcl";
 
 const HEX = 16;
 const PRIME = ((2 ^ 128) - 157);
