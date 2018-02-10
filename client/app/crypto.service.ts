@@ -4,30 +4,25 @@ import * as $ from "jquery";
 import * as sjcl from "sjcl";
 
 const HEX = 16;
-const PRIME = ((2 ^ 128) - 157);
+const PRIME = ((2 ** 128) - 157);
 
 
 function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-const record = {
-  perpName: "harvey weinstein",
-  perpEmail: "harvey@weinstein.com",
-};
-
 function encryptRecord(kId, record) {
   const kRecord = sjcl.random.randomWords(8);
-  const c_record = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: "gcm"});
+  const cRecord = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: "gcm"});
   const encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: "gcm"});
 
-  return {record: c_record, key: encryptedRecordKey};
+  return {record: cRecord, key: encryptedRecordKey};
 }
 
 function hashData(data) {
-    const bitArray = sjcl.hash.sha256.hash(data);
-    return sjcl.codec.hex.fromBits(bitArray);
-  }
+  const bitArray = sjcl.hash.sha256.hash(data);
+  return sjcl.codec.hex.fromBits(bitArray);
+}
 
 
 function deriveFromRid(rid) {
@@ -48,6 +43,10 @@ function createDataSubmission(rid, userId) {
   const derived = deriveFromRid(rid);
   const slope = derived.slope;
   const kId = derived.kId;
+  const record = {
+    perpName: "harvey weinstein",
+    perpEmail: "harvey@weinstein.com",
+  };
 
   // encrypt record and key
   const encryptedRecord = encryptRecord(kId, record);
@@ -57,20 +56,18 @@ function createDataSubmission(rid, userId) {
   const x = generateRandNum();
 
   // derive secret
-  const int_rid = parseInt(rid, HEX);
+  const intRID = parseInt(rid, HEX);
   const prod = (slope * x);
-  const y = ((slope * x) + int_rid);
+  const y = ((slope * x) + intRID);
 
-
-  const submission = {
+  return {
       x,
       y,
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid),
-      rid: int_rid,
+      rid: intRID,
   };
-  return submission;
 }
 
 
@@ -97,7 +94,8 @@ function decryptRecords(data, rid) {
 
 
 function unmaskData(data) {
-  let coordA, coordB;
+  let coordA;
+  let coordB;
 
   if (data[0].x < data[1].x) {
     coordA = data[0];
@@ -136,13 +134,14 @@ function getIntercept(c1, slope) {
 }
 
 export class CryptoService {
-  public encryptData(perpId: string) {
+
+  public encryptData(perpId: string): object {
     return createDataSubmission(perpId, generateRandNum());
   }
 
   public decryptData(submissions) {
     for (let i = 0; i < submissions.lengt; i++) {
-      $.post("http://localhost:8080/postData", submissions[i], function(data, status) {
+      $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
         if (Object.keys(data[0]).length >= 2) {
           const unmasked = unmaskData(data);
           console.log("unmasked", unmasked);
@@ -150,7 +149,5 @@ export class CryptoService {
       });
     }
   }
-
-
 
 }

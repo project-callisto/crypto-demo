@@ -8,6 +8,18 @@
     "indent": [true, "spaces", 2],
     "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
+    "typedef": [
+      true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "variable-declaration",
+      "member-variable-declaration",
+      "object-destructuring",
+      "array-destructuring"
+    ],
     "no-console": false
   }
 }

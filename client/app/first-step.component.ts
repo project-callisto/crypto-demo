@@ -12,14 +12,14 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
-  public crypto = new CryptoService();
-  public encryptedDataArr = [];
+  public crypto: CryptoService = new CryptoService();
+  public encryptedDataArr: object = [];
 
-  public addPerp(event: Event) {
+  public addPerp(event: Event): void {
     event.preventDefault();
 
     const newPerpInput: string = $("#newPerpInput").val();
-    const encryptedData = this.crypto.encryptData(newPerpInput);
+    const encryptedData: object = this.crypto.encryptData(newPerpInput);
 
     this.encryptedDataArr.push(encryptedData);
 
