@@ -7,6 +7,7 @@ describe('Valkyrie Demo', function() {
   const FirstSection = element(by.css('#first-step'));
   const PerpNameInput = element(by.css('.perp-name-form [type="text"]'));
   const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
+  const RIDDisplay = element(by.css('.rid-display'));
 
   beforeEach(function() {
     browser.get('/');
@@ -21,13 +22,25 @@ describe('Valkyrie Demo', function() {
   });
 
   it('starts with no RID rendered', function() {
-    expect(FirstSection.getText()).toContain('[[ RID ]]');
+    expect(RIDDisplay.getText()).toContain('[[ RID ]]');
   });
 
   it('renders a RID after perp name input', function() {
     PerpNameInput.sendKeys('facebook.com/callistoorg');
     PerpNameSubmit.click();
-    expect(FirstSection.getText()).not.toContain('[[ RID ]]');
+    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
   });
+
+  it('renders a RID for perp names starting with a', function() {
+    PerpNameInput.sendKeys('apple');
+    PerpNameSubmit.click();
+    expect(RIDDisplay.getText()).not.toContain('NaN');
+  });
+
+  // it('renders a RID for perp names starting with z', function() {
+  //   PerpNameInput.sendKeys('zebra');
+  //   PerpNameSubmit.click();
+  //   expect(RIDDisplay.getText()).not.toContain('NaN');
+  // });
 
 });
