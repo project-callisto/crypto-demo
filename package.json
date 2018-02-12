@@ -9,7 +9,7 @@
   },
   "scripts": {
     "clean": "tslint -p . --fix --force",
-    "test": "ng jasmine",
+    "test": "jasmine-ts",
     "e2e-test": "ng e2e --port 4201",
     "start": "node web-server/server.js",
     "heroku-postbuild": "webpack --config web-server/webpack.config.js --bail"

@@ -1,7 +1,8 @@
 {
   "spec_dir": "spec",
   "spec_files": [
-    "client/*[sS]pec.ts"
+    "client/*[sS]pec.ts",
+    "server/*[sS]pec.ts"
   ],
   "helpers": [
     "helpers/**/*.ts"
