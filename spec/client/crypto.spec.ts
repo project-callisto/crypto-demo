@@ -10,35 +10,34 @@ interface EncryptedData {
 }
 
 describe("Crypto services tests", function() {
-    let crypto = new CryptoService();
+    const crypto = new CryptoService();
 
     it("has an encryptData method", function() {
-	expect(crypto.encryptData).toBeDefined();
+  expect(crypto.encryptData).toBeDefined();
     });
 
     it("has an decryptData method", function() {
-	expect(crypto.decryptData).toBeDefined();
+  expect(crypto.decryptData).toBeDefined();
     });
 
     it("can encrypt data", function() {
-	const data: EncryptedData = crypto.encryptData('a');
-	expect(data.encryptedRecordKey).toBeTruthy();
+  const data: EncryptedData = crypto.encryptData("a");
+  expect(data.encryptedRecordKey).toBeTruthy();
     });
 
     it("has an RID", function() {
-	const data: EncryptedData = crypto.encryptData('a');
-	expect(data.rid).toBeTruthy();
+  const data: EncryptedData = crypto.encryptData("a");
+  expect(data.rid).toBeTruthy();
     });
 
     it("returns RID for perpIDs starting with A-Z", function() {
-	var perpID: number = 65;
-	var maxPerpID: number = 90;
-	
-	while (perpID <= maxPerpID)
-	{
-	    const data: EncryptedData = crypto.encryptData(String.fromCharCode(perpID));
-	    expect(data.rid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
-	    perpID++;
-	}
+  let perpID: number = 65;
+  const maxPerpID: number = 90;
+
+  while (perpID <= maxPerpID) {
+      const data: EncryptedData = crypto.encryptData(String.fromCharCode(perpID));
+      expect(data.rid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+      perpID++;
+  }
     });
 });
