@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { CryptoService } from "./crypto.service";
+import { GraphService } from "./graph.service";
 
 import * as $ from "jquery";
 
@@ -13,6 +14,8 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public crypto: CryptoService = new CryptoService();
+  public graph: GraphService = new GraphService();
+
   public encryptedDataArr: object = [];
 
   public addPerp(event: Event): void {
@@ -22,12 +25,6 @@ export class FirstStepComponent {
     const encryptedData: object = this.crypto.encryptData(newPerpInput);
 
     this.encryptedDataArr.push(encryptedData);
-    // encryptedData spec:
-    // {
-    //   'calcPrg': string,
-    //   'calcKRecord': string,
-    //   'calcDerivedS': string,
-    // }
 
     // populate values
     $("#calc-rid").text(encryptedData.rid);
@@ -39,22 +36,18 @@ export class FirstStepComponent {
     $("#second-step").show();
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
-<<<<<<< HEAD
-    }, 2000);
-
-    if (this.encryptedDataArr.length >= 2) {
-      console.log('decrypting', this.encryptedDataArr)
-      var decryptedData = this.crypto.decryptData(this.encryptedDataArr);
-      //  TODO: must wrap this in a promise so that you get value after callback.
-      //  this should contain all decrypted data needed to graph!
-      //  line is y = mx + b AKA y = slope * x + rid
-    
-   
-      this.encryptedDataArr = [];
-    }
-=======
     }, 400);
->>>>>>> a6f5f3508dc0d82e3b5039c3eba945e886cf0456
+  }
+
+  public unmaskData(event: Event): void {
+
+    const decryptedData: object = this.crypto.decryptData(encryptedDataArr);
+
+    this.graph.displayGraph(decryptedData);
+
+    // const unmaskedRecods = this.crypto.unmaskRecords(decryptedData.
 
   }
+
+
 }
