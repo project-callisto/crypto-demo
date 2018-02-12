@@ -4,8 +4,8 @@
     "client/*[sS]pec.ts",
   ],
   "helpers": [
-    "helpers/**/*.ts"
+    "helpers/**/*.ts",
   ],
   "stopSpecOnExpectationFailure": false,
-  "random": true
+  "random": true,
 }
