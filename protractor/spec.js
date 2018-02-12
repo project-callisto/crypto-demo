@@ -4,6 +4,10 @@
 // // jasmine defines methods like toEqual, expect, toContain
 
 describe('Valkyrie Demo', function() {
+  const FirstSection = element(by.css('#first-step'));
+  const PerpNameInput = element(by.css('.perp-name-form [type="text"]'));
+  const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
+  const RIDDisplay = element(by.css('.rid-display'));
 
   beforeEach(function() {
     browser.get('/');
@@ -14,8 +18,29 @@ describe('Valkyrie Demo', function() {
   });
 
   it('should start with a perp name displayed', function() {
-    const text = element(by.css('section:first-child')).getText();
-    expect(text).toContain('PERP NAME');
+    expect(FirstSection.getText()).toContain('PERP NAME');
   });
+
+  it('starts with no RID rendered', function() {
+    expect(RIDDisplay.getText()).toContain('[[ RID ]]');
+  });
+
+  it('renders a RID after perp name input', function() {
+    PerpNameInput.sendKeys('facebook.com/callistoorg');
+    PerpNameSubmit.click();
+    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
+  });
+
+  it('renders a RID for perp names starting with a', function() {
+    PerpNameInput.sendKeys('apple');
+    PerpNameSubmit.click();
+    expect(RIDDisplay.getText()).not.toContain('NaN');
+  });
+
+  // it('renders a RID for perp names starting with z', function() {
+  //   PerpNameInput.sendKeys('zebra');
+  //   PerpNameSubmit.click();
+  //   expect(RIDDisplay.getText()).not.toContain('NaN');
+  // });
 
 });
