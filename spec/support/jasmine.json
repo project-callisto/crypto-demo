@@ -1,11 +1,11 @@
 {
   "spec_dir": "spec",
   "spec_files": [
-    "client/*[sS]pec.ts",
+    "client/*[sS]pec.ts"
   ],
   "helpers": [
-    "helpers/**/*.ts",
+    "helpers/**/*.ts"
   ],
   "stopSpecOnExpectationFailure": false,
-  "random": true,
+  "random": true
 }
