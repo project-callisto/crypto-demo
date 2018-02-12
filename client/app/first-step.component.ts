@@ -23,7 +23,6 @@ export class FirstStepComponent {
     const encryptedData = this.crypto.encryptData(newPerpInput);
 
     this.encryptedDataArr.push(encryptedData);
-    console.log("encrypted", encryptedData);
     // encryptedData spec:
     // {
     //   'calcPrg': string,
@@ -46,7 +45,16 @@ export class FirstStepComponent {
         scrollTop: $("#second-step").offset().top,
     }, 2000);
 
-
+    if (this.encryptedDataArr.length >= 2) {
+      console.log('decrypting', this.encryptedDataArr)
+      var decryptedData = this.crypto.decryptData(this.encryptedDataArr);
+      //  TODO: must wrap this in a promise so that you get value after callback.
+      //  this should contain all decrypted data needed to graph!
+      //  line is y = mx + b AKA y = slope * x + rid
+    
+   
+      this.encryptedDataArr = [];
+    }
 
   }
 }

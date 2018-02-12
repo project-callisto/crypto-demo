@@ -147,11 +147,12 @@ export class CryptoService {
   }
 
   public decryptData(submissions) {
-    for (let i = 0; i < submissions.lengt; i++) {
+
+    for (let i = 0; i < submissions.length; i++) {
       $.post("http://localhost:8080/postData", submissions[i], function(data, status) {
         if (Object.keys(data[0]).length >= 2) {
           const unmasked = unmaskData(data);
-          console.log("unmasked", unmasked);
+          return unmasked;
         }
       });
     }
