@@ -9,18 +9,18 @@ h2 {
   margin: 10px 5%;
   padding: 10px;
   color: darkslategray;
-  background-color: #eaeef3;
-  border: 1px solid #ccc;
+  background-color: $color-code-background;
+  border: 1px solid $color-code-border;
   font-family: "Courier New", monospace;
 }
 
 .subtext {
   font-size: 0.85rem;
-  color: $color-gray-3;
+  color: $color-text-faded;
 }
 
 .explainer {
-  color: $color-gray-2;
+  color: $color-explainer-text;
   letter-spacing: 2px;
   line-height: 30px;
   margin: 20px 0;
@@ -29,7 +29,7 @@ h2 {
 section {
   margin: 60px 15%;
   padding: 40px;
-  background-color: $color-gray-1;
+  background-color: $color-section-background;
 
   @media (max-width: $breakpoint-sm) {
     margin-left: 0;
@@ -56,7 +56,7 @@ section {
 }
 
 .rid-display {
-  color: $color-dark-blue;
+  color: $palette-dark-blue;
   letter-spacing: 2px;
   text-align: center;
   word-wrap: break-word;
@@ -77,13 +77,13 @@ section {
 
   li {
     text-transform: uppercase;
-    color: $color-dark-blue;
+    color: $palette-dark-blue;
     padding: 10px;
     margin: 15px 0;
     font-size: 0.85rem;
     letter-spacing: 1px;
-    border: 1px solid $color-dark-blue;
-    background-color: $color-white;
+    border: 1px solid $palette-dark-blue;
+    background-color: $palette-white;
     white-space: nowrap;
   }
 
@@ -92,8 +92,8 @@ section {
   }
 
   .activated-step {
-    color: $color-white;
-    background-color: $color-dark-blue;
+    color: $palette-white;
+    background-color: $palette-dark-blue;
   }
 }
 
@@ -120,7 +120,7 @@ section {
   > [type="text"] {
     flex: 2;
     padding: 10px 20px;
-    color: $color-gray-3;
+    color: $color-text-faded;
     height: 25px;
     font-size: 0.85rem;
 
@@ -132,8 +132,8 @@ section {
 
   > [type="submit"] {
     flex: 1;
-    color: $color-white;
-    background-color: $color-dark-blue;
+    color: $palette-white;
+    background-color: $palette-dark-blue;
     font-size: 0.85rem;
     letter-spacing: 1px;
     padding: 15px 10px;

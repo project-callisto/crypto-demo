@@ -1,14 +1,14 @@
 @import "_meta";
 
 .starter-card {
-  color: $color-white;
-  background-color: $color-gray-4;
+  color: $palette-white;
+  background-color: $color-header-background;
   background-image: url("/../assets/headerimage.png");
   background-size: cover;
   padding: 20px 5%;
 
   a {
-    color: $color-white;
+    color: $palette-white;
     text-decoration: none;
   }
 
