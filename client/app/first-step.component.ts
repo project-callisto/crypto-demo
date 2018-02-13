@@ -13,7 +13,7 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public crypto: CryptoService = new CryptoService();
-  public encryptedDataArr: object = [];
+  public encryptedDataArr: Array<object> = [];
 
   public addPerp(event: Event): void {
     event.preventDefault();
@@ -24,10 +24,10 @@ export class FirstStepComponent {
     this.encryptedDataArr.push(encryptedData);
 
     // populate values
-    $("#calc-rid").text(encryptedData.rid);
-    $("#calc-prg").text(encryptedData.hashedPerpId);
-    $("#calc-k-record").text(encryptedData.encryptedRecord);
-    $("#calc-derived-s").text(encryptedData.y);
+    $("#calc-rid").text(encryptedData['rid']);
+    $("#calc-prg").text(encryptedData['hashedPerpId']);
+    $("#calc-k-record").text(encryptedData['encryptedRecord']);
+    $("#calc-derived-s").text(encryptedData['y']);
 
     // display step
     $("#second-step").show();
