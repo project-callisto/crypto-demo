@@ -4,6 +4,28 @@ h2 {
   margin: 0;
 }
 
+.calc-display-value {
+  display: block;
+  margin: 10px 5%;
+  padding: 10px;
+  color: darkslategray;
+  background-color: #eaeef3;
+  border: 1px solid #ccc;
+  font-family: "Courier New", monospace;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  color: $color-gray-3;
+}
+
+.explainer {
+  color: $color-gray-2;
+  letter-spacing: 2px;
+  line-height: 30px;
+  margin: 20px 0;
+}
+
 section {
   margin: 60px 15%;
   padding: 40px;
