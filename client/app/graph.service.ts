@@ -95,5 +95,4 @@ export class GraphService {
     createChart(xInputs, chartData);
     displayLineString(decryptedData.slope, decryptedData.rid);
   }
-
 }
