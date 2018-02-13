@@ -13,7 +13,7 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public crypto: CryptoService = new CryptoService();
-  public encryptedDataArr: Array<object> = [];
+  public encryptedDataArr: object[] = [];
 
   public perpInputProcessing(perpInput: string): void {
     const encryptedData: object = this.crypto.encryptData(perpInput);
@@ -21,10 +21,10 @@ export class FirstStepComponent {
     this.encryptedDataArr.push(encryptedData);
 
     // populate values
-    $("#calc-rid").text(encryptedData['rid']);
-    $("#calc-prg").text(encryptedData['hashedPerpId']);
-    $("#calc-k-record").text(encryptedData['encryptedRecord']);
-    $("#calc-derived-s").text(encryptedData['y']);
+    $("#calc-rid").text(encryptedData.rid);
+    $("#calc-prg").text(encryptedData.hashedPerpId);
+    $("#calc-k-record").text(encryptedData.encryptedRecord);
+    $("#calc-derived-s").text(encryptedData.y);
 
     // display step
     $("#second-step").show();
@@ -36,8 +36,6 @@ export class FirstStepComponent {
   public perpInputEvent(event: Event): void {
     event.preventDefault();
     const perpInput: string = $("#perpInput").val();
-    if (perpInput) {
-      this.perpInputProcessing(perpInput);
-    }
+    if (perpInput) { this.perpInputProcessing(perpInput); }
   }
 }
