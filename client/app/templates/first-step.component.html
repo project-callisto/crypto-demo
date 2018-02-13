@@ -14,13 +14,13 @@
     <input
       required
       type="text"
-      id="newPerpInput"
-      (blur)="addPerp($event);"
+      id="perpInput"
+      (blur)="perpInputEvent($event);"
     />
     <input
       value="submit"
       type="submit"
-      (click)="addPerp($event);"
+      (click)="perpInputEvent($event);"
     />
   </form>
   <p class="subtext">RETURNS: RID USING OPRF</p>
