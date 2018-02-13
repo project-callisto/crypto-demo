@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { CryptoService } from "./services/crypto.service";
+import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
@@ -17,7 +17,7 @@ export class FirstStepComponent {
   constructor(private crypto: CryptoService) { }
 
   public perpInputProcessing(perpInput: string): void {
-    const encryptedData: object = this.crypto.encryptData(perpInput);
+    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
 
     this.encryptedDataArr.push(encryptedData);
 
