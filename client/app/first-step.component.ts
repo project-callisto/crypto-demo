@@ -15,11 +15,8 @@ export class FirstStepComponent {
   public crypto: CryptoService = new CryptoService();
   public encryptedDataArr: Array<object> = [];
 
-  public addPerp(event: Event): void {
-    event.preventDefault();
-
-    const newPerpInput: string = $("#newPerpInput").val();
-    const encryptedData: object = this.crypto.encryptData(newPerpInput);
+  public perpInputProcessing(perpInput: string): void {
+    const encryptedData: object = this.crypto.encryptData(perpInput);
 
     this.encryptedDataArr.push(encryptedData);
 
@@ -34,6 +31,13 @@ export class FirstStepComponent {
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
     }, 400);
+  }
 
+  public perpInputEvent(event: Event): void {
+    event.preventDefault();
+    const perpInput: string = $("#perpInput").val();
+    if (perpInput) {
+      this.perpInputProcessing(perpInput);
+    }
   }
 }
