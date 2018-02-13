@@ -5,7 +5,7 @@ import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
-  templateUrl: "./first-step.component.html",
+  templateUrl: "./templates/first-step.component.html",
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
