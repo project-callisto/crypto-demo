@@ -12,8 +12,9 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
-  public crypto: CryptoService = new CryptoService();
   public encryptedDataArr: object[] = [];
+
+  constructor(private crypto: CryptoService) { }
 
   public perpInputProcessing(perpInput: string): void {
     const encryptedData: object = this.crypto.encryptData(perpInput);
