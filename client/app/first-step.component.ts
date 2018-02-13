@@ -6,6 +6,9 @@ import * as $ from "jquery";
 @Component({
   selector: "first-step",
   templateUrl: "./templates/first-step.component.html",
+  providers: [
+    CryptoService,
+  ],
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",

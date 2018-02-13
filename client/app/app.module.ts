@@ -16,7 +16,6 @@ import { SecondStepComponent } from "./second-step.component";
   imports: [
     BrowserModule,
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {
