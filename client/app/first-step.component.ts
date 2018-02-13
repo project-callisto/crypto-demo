@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { CryptoService } from "./crypto.service";
+import { CryptoService } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
