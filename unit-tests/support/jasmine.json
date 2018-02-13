@@ -1,5 +1,5 @@
 {
-  "spec_dir": "spec",
+  "spec_dir": "unit-tests",
   "spec_files": [
     "client/*[sS]pec.ts"
   ],
