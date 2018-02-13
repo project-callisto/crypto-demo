@@ -1,25 +1,26 @@
 import { Component } from "@angular/core";
-import { CryptoService } from "./crypto.service";
+import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
-  templateUrl: "./first-step.component.html",
+  templateUrl: "./templates/first-step.component.html",
+  providers: [
+    CryptoService,
+  ],
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
   ],
 })
 export class FirstStepComponent {
-  public crypto: CryptoService = new CryptoService();
-  public encryptedDataArr: object = [];
+  public encryptedDataArr: object[] = [];
 
-  public addPerp(event: Event): void {
-    event.preventDefault();
+  constructor(private crypto: CryptoService) { }
 
-    const newPerpInput: string = $("#newPerpInput").val();
-    const encryptedData: object = this.crypto.encryptData(newPerpInput);
+  public perpInputProcessing(perpInput: string): void {
+    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
 
     this.encryptedDataArr.push(encryptedData);
 
@@ -34,6 +35,11 @@ export class FirstStepComponent {
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
     }, 400);
+  }
 
+  public perpInputEvent(event: Event): void {
+    event.preventDefault();
+    const perpInput: string = $("#perpInput").val();
+    if (perpInput) { this.perpInputProcessing(perpInput); }
   }
 }
