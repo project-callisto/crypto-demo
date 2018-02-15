@@ -31,6 +31,7 @@ module.exports = function(env, argv) {
       rules: [
       {
         test: /\.ts$/,
+        exclude: /unit-tests/,
         loaders: [
           {
             loader: 'awesome-typescript-loader',
