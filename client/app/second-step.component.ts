@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef } from "@angular/core";
+import { Component, Input, ViewContainerRef } from "@angular/core";
 import { EncryptedData } from "./services/crypto.service";
 
 @Component({
@@ -9,5 +9,5 @@ import { EncryptedData } from "./services/crypto.service";
   ],
 })
 export class SecondStepComponent {
-  public encryptedData: EncryptedData;
+  @Input() public encryptedData: EncryptedData;
 }

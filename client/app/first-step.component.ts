@@ -19,6 +19,7 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public encryptedDataArr: object[] = [];
+  private RID: string = "[[ RID ]]";
   @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
   constructor(
@@ -26,34 +27,37 @@ export class FirstStepComponent {
     private componentFactoryResolver: ComponentFactoryResolver,
   ) { }
 
-  public perpInputProcessing(perpInput: string): void {
+  public perpInputEvent(perpInput: string): void {
+    if (perpInput) {
+      this.getEncryptedData(perpInput);
+    }
+  }
+
+  public perpSubmitEvent(event: Event, perpInput: string): void {
+    event.preventDefault();
+    if (perpInput) {
+      const encryptedData: EncryptedData = this.getEncryptedData(perpInput);
+      this.encryptedDataArr.push(encryptedData);
+      const secondStep: SecondStepComponent = this.generateSecondStep();
+      secondStep.encryptedData = encryptedData;
+      $("html, body").animate({
+        scrollTop: $("#second-step").offset().top,
+      }, 400);
+    }
+  }
+
+  private getEncryptedData(perpInput: string): EncryptedData {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
+    this.RID = encryptedData.rid;
+    return encryptedData;
+  }
 
-    this.encryptedDataArr.push(encryptedData);
-
-    // populate values
-    $("#calc-rid").text(encryptedData.rid);
-    $("#calc-prg").text(encryptedData.hashedPerpId);
-    $("#calc-k-record").text(encryptedData.encryptedRecord);
-    $("#calc-derived-s").text(encryptedData.y);
-
-    // display step
+  private generateSecondStep(): SecondStepComponent {
     const componentFactory: ComponentFactory<SecondStepComponent> =
       this.componentFactoryResolver.resolveComponentFactory(SecondStepComponent);
     const viewContainerRef: ViewContainerRef = this.secondStepHost.viewContainerRef;
     viewContainerRef.clear();
-
     const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.encryptedData = encryptedData;
-
-    $("html, body").animate({
-        scrollTop: $("#second-step").offset().top,
-    }, 400);
-  }
-
-  public perpInputEvent(event: Event): void {
-    event.preventDefault();
-    const perpInput: string = $("#perpInput").val();
-    if (perpInput) { this.perpInputProcessing(perpInput); }
+    return componentRef.instance;
   }
 }
