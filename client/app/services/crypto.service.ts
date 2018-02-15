@@ -134,10 +134,11 @@ function getIntercept(c1, slope) {
 }
 
 export interface EncryptedData {
-    readonly rid: string;
-    readonly hashedPerpId: string;
-    readonly encryptedRecord: string;
-    readonly y: number;
+  readonly rid: string;
+  readonly hashedPerpId: string;
+  readonly encryptedRecord: string;
+  readonly encryptedRecordKey: string;
+  readonly y: number;
 }
 
 export class CryptoService {
