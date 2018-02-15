@@ -1,5 +1,7 @@
-import { Component, Input, ViewContainerRef } from "@angular/core";
+import { AfterViewInit, Component, Input, ViewContainerRef } from "@angular/core";
 import { EncryptedData } from "./services/crypto.service";
+
+import * as $ from "jquery";
 
 @Component({
   templateUrl: "./templates/second-step.component.html",
@@ -8,6 +10,13 @@ import { EncryptedData } from "./services/crypto.service";
     "./styles/step.scss",
   ],
 })
-export class SecondStepComponent {
+export class SecondStepComponent implements AfterViewInit {
   @Input() public encryptedData: EncryptedData;
+
+  public ngAfterViewInit(): void {
+    $("html, body").animate({
+      scrollTop: $("#second-step").offset().top,
+    }, 400);
+  }
+
 }

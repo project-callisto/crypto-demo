@@ -4,8 +4,6 @@ import { SecondStepComponent } from "./second-step.component";
 import { SecondStepDirective } from "./second-step.directive";
 import { CryptoService, EncryptedData } from "./services/crypto.service";
 
-import * as $ from "jquery";
-
 @Component({
   selector: "first-step",
   templateUrl: "./templates/first-step.component.html",
@@ -40,9 +38,6 @@ export class FirstStepComponent {
       this.encryptedDataArr.push(encryptedData);
       const secondStep: SecondStepComponent = this.generateSecondStep();
       secondStep.encryptedData = encryptedData;
-      $("html, body").animate({
-        scrollTop: $("#second-step").offset().top,
-      }, 400);
     }
   }
 
