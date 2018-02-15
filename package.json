@@ -33,6 +33,7 @@
         "awesome-typescript-loader": "^3.4.1",
         "big-number": "^0.4.0",
         "copy-webpack-plugin": "^4.4.1",
+        "core-js": "^2.5.3",
         "decimal": "0.0.2",
         "eslint": "^4.17.0",
         "extract-text-webpack-plugin": "^3.0.2",
