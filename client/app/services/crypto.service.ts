@@ -66,7 +66,7 @@ function createDataSubmission(rid, userId) {
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid),
-      rid: intRID,
+      rid: intRID.toString(),
   };
 }
 
@@ -134,7 +134,7 @@ function getIntercept(c1, slope) {
 }
 
 export interface EncryptedData {
-    readonly rid: number;
+    readonly rid: string;
     readonly hashedPerpId: string;
     readonly encryptedRecord: string;
     readonly y: number;

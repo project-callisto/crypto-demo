@@ -1,7 +1,8 @@
-import { Component } from "@angular/core";
+import {Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ViewChild,
+  ViewContainerRef } from "@angular/core";
+import { SecondStepComponent } from "./second-step.component";
+import { SecondStepDirective } from "./second-step.directive";
 import { CryptoService, EncryptedData } from "./services/crypto.service";
-
-import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
@@ -16,30 +17,42 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public encryptedDataArr: object[] = [];
+  private RID: string = "[[ RID ]]";
+  @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
-  constructor(private crypto: CryptoService) { }
+  constructor(
+    private crypto: CryptoService,
+    private componentFactoryResolver: ComponentFactoryResolver,
+  ) { }
 
-  public perpInputProcessing(perpInput: string): void {
-    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
-
-    this.encryptedDataArr.push(encryptedData);
-
-    // populate values
-    $("#calc-rid").text(encryptedData.rid);
-    $("#calc-prg").text(encryptedData.hashedPerpId);
-    $("#calc-k-record").text(encryptedData.encryptedRecord);
-    $("#calc-derived-s").text(encryptedData.y);
-
-    // display step
-    $("#second-step").show();
-    $("html, body").animate({
-        scrollTop: $("#second-step").offset().top,
-    }, 400);
+  public perpInputEvent(perpInput: string): void {
+    if (perpInput) {
+      this.getEncryptedData(perpInput);
+    }
   }
 
-  public perpInputEvent(event: Event): void {
+  public perpSubmitEvent(event: Event, perpInput: string): void {
     event.preventDefault();
-    const perpInput: string = $("#perpInput").val();
-    if (perpInput) { this.perpInputProcessing(perpInput); }
+    if (perpInput) {
+      const encryptedData: EncryptedData = this.getEncryptedData(perpInput);
+      this.encryptedDataArr.push(encryptedData);
+      const secondStep: SecondStepComponent = this.generateSecondStep();
+      secondStep.encryptedData = encryptedData;
+    }
+  }
+
+  private getEncryptedData(perpInput: string): EncryptedData {
+    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
+    this.RID = encryptedData.rid;
+    return encryptedData;
+  }
+
+  private generateSecondStep(): SecondStepComponent {
+    const componentFactory: ComponentFactory<SecondStepComponent> =
+      this.componentFactoryResolver.resolveComponentFactory(SecondStepComponent);
+    const viewContainerRef: ViewContainerRef = this.secondStepHost.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
+    return componentRef.instance;
   }
 }
