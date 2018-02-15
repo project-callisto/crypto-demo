@@ -1,13 +1,4 @@
-import { CryptoService } from "../../client/app/crypto.service";
-
-interface EncryptedData {
-    x?: number;
-    y?: number;
-    encryptedRecordKey?: object;
-    encryptedRecord?: object;
-    hashedPerpId?: string;
-    rid?: number;
-}
+import { CryptoService, EncryptedData } from "../../client/app/services/crypto.service";
 
 describe("Crypto services tests", function() {
     const crypto = new CryptoService();
