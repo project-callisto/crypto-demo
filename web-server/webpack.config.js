@@ -31,7 +31,8 @@ module.exports = function(env, argv) {
       rules: [
       {
         test: /\.ts$/,
-        loaders: [
+        include: /client/,
+        use: [
           {
             loader: 'awesome-typescript-loader',
             options: { configFileName: path.join(__dirname, '/../tsconfig.json') }

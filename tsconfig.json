@@ -19,6 +19,7 @@
     ]
   },
   "exclude": [
+    "unit-tests",
     "node_modules"
   ]
 }
