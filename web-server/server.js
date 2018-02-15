@@ -15,11 +15,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 const sodium = require('libsodium-wrappers');
 
 
-
-//   await _sodium.ready;
-//   const sodium = _sodium;
-// })();
-
 // automatically run webpack, unless running on production
 if (process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
@@ -61,17 +56,7 @@ app.post('/postPerpId', function(req,res) {
 
     res.send({rid});
   });
-
-  
-
-  // var key = sjcl.codec.utf8String.toBits("Pr0j3cT c@lL!$T0");
-  // TODO: switch HMAC out for OPRF
-  // var prfOut = (new sjcl.misc.hmac(key, sjcl.hash.sha256)).mac(pid);
-  // var rid = sjcl.codec.hex.fromBits(prfOut)
-  // console.log('sending random id: ', rid);
- 
 });
-
 
 
 // DATABASE
