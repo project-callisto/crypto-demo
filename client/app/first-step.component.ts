@@ -15,26 +15,32 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
-  public encryptedDataArr: object[] = [];
+  // public encryptedDataArr: object[] = [];
 
   constructor(private crypto: CryptoService) { }
 
   public perpInputProcessing(perpInput: string): void {
-    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
+    // const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
 
-    this.encryptedDataArr.push(encryptedData);
+    let dataPromise = this.crypto.encryptData(perpInput);
 
-    // populate values
-    $("#calc-rid").text(encryptedData.rid);
-    $("#calc-prg").text(encryptedData.hashedPerpId);
-    $("#calc-k-record").text(encryptedData.encryptedRecord);
-    $("#calc-derived-s").text(encryptedData.y);
+    // have to resolve this 'then' error
+    dataPromise.then(function(encryptedData) {
+      $("#calc-rid").text(encryptedData.rid);
+      $("#calc-prg").text(encryptedData.hashedPerpId);
+      $("#calc-k-record").text(encryptedData.encryptedRecord);
+      $("#calc-derived-s").text(encryptedData.y);
 
-    // display step
-    $("#second-step").show();
-    $("html, body").animate({
-        scrollTop: $("#second-step").offset().top,
-    }, 400);
+      // display step
+      $("#second-step").show();
+      $("html, body").animate({
+          scrollTop: $("#second-step").offset().top,
+      }, 400);
+      
+    }, function(err) {
+      // TODO: display error messages
+      console.log('Error');
+    });
   }
 
   public perpInputEvent(event: Event): void {

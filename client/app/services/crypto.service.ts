@@ -27,8 +27,6 @@ function encryptRecord(kId, record) {
   const nonceRecord = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
   const nonceKey = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
-  console.log(kId);
-
   const cRecord = sodium.crypto_secretbox_easy(JSON.stringify(record), nonceRecord, kRecord);
   // todo: change key to kId
   const encryptedRecordKey = sodium.crypto_secretbox_easy(JSON.stringify(kRecord), nonceKey, sodium.crypto_secretbox_keygen());
@@ -40,9 +38,7 @@ function encryptRecord(kId, record) {
 function deriveFromRid(rid) {
 
   const ridLen = rid.length;
-
   const slope = parseInt(rid.substr(0, ridLen / 2), HEX);
-
   const kId = rid.substr(ridLen / 2, ridLen);
 
   return {slope, kId};
@@ -68,7 +64,6 @@ function createDataSubmission(rid, userId) {
 
   // encrypt record and key
   const encryptedRecord = encryptRecord(kId, record);
-  console.log('enc', encryptedRecord);
 
   // TODO: base x off of session ID
   // var x = parseInt(hashData(userId), HEX);
@@ -76,6 +71,7 @@ function createDataSubmission(rid, userId) {
 
   // derive secret
   const intRID = parseInt(rid, HEX);
+  console.log('rid',intRID);
   const prod = (slope * x);
 
   const y = encryptSecretValue(intRID, prod);
@@ -179,21 +175,27 @@ export interface EncryptedData {
 
 export class CryptoService {
 
-  public encryptData(perpId: string): EncryptedData {
+  public encryptData(perpId: string): object {
     let rid = 0;
-    var data = {};
-
-
-    $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
-      // console.log(data, status);
-      // Promise.resolve(data);
-      console.log('data', data);
-      data = data;
+    
+    var dataPromise = new Promise(function(resolve, reject) {
+      $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
+        if (status === 'success') {
+          let rid = data.rid;
+          resolve(createDataSubmission(rid, generateRandNum()));
+        } else {
+          reject(Error('Post request failed'));
+        }
+      });  
     });
 
-
-    
-    return createDataSubmission(perpId, generateRandNum());
+    return dataPromise;
+    // dataPromise.then(function(result) {
+    //   // console.log('result', result); 
+    //   return result;
+    // }, function(err) {
+    //   return {};
+    // });
   }
 
   public decryptData(submissions) {
