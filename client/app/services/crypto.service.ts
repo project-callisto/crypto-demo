@@ -1,7 +1,20 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
 import * as $ from "jquery";
-import * as sjcl from "sjcl";
+import * as sodium from 'libsodium-wrappers';
+
+let sodium_promise = sodium.ready;
+
+var claKeys, userKeys;
+
+// user now needs public/private key pair
+// need public key & encrypted private key
+
+sodium_promise.then(function() {
+  claKeys = sodium.crypto_box_keypair();
+  userKeys = sodium.crypto_box_keypair();
+});
+
 
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157);
@@ -12,18 +25,21 @@ function generateRandNum() {
 }
 
 function encryptRecord(kId, record) {
-  const kRecord = sjcl.random.randomWords(8);
-  const cRecord = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: "gcm"});
-  const encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: "gcm"});
 
-  return {record: cRecord, key: encryptedRecordKey};
+  const kRecord = sodium.crypto_secretbox_keygen();
+  
+  const nonceRecord = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  const nonceKey = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
+  console.log(kId);
+
+  const cRecord = sodium.crypto_secretbox_easy(JSON.stringify(record), nonceRecord, kRecord);
+  // todo: change key to kId
+  const encryptedRecordKey = sodium.crypto_secretbox_easy(JSON.stringify(kRecord), nonceKey, sodium.crypto_secretbox_keygen());
+
+  return {record: cRecord + "$" + nonceRecord, key: encryptedRecordKey + "$" + nonceKey};
+
 }
-
-function hashData(data) {
-  const bitArray = sjcl.hash.sha256.hash(data);
-  return sjcl.codec.hex.fromBits(bitArray);
-}
-
 
 function deriveFromRid(rid) {
 
@@ -36,6 +52,11 @@ function deriveFromRid(rid) {
   return {slope, kId};
 }
 
+function encryptSecretValue(intRID, prod) {
+  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
+  const y = sodium.crypto_box_easy(JSON.stringify(prod + intRID), nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
+  return y;
+}
 
 function createDataSubmission(rid, userId) {
   // TODO: put rid into prg
@@ -50,6 +71,7 @@ function createDataSubmission(rid, userId) {
 
   // encrypt record and key
   const encryptedRecord = encryptRecord(kId, record);
+  console.log('enc', encryptedRecord);
 
   // TODO: base x off of session ID
   // var x = parseInt(hashData(userId), HEX);
@@ -58,16 +80,29 @@ function createDataSubmission(rid, userId) {
   // derive secret
   const intRID = parseInt(rid, HEX);
   const prod = (slope * x);
-  const y = ((slope * x) + intRID);
+
+  const y = encryptSecretValue(intRID, prod);
+
+
+  console.log(sodium);
 
   return {
       x,
       y,
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
-      hashedPerpId: hashData(rid),
+      hashedPerpId: sodium.crypto_hash(intRID.toString()),
       rid: intRID,
+      userPubKey: userKeys.publicKey
   };
+}
+
+function symmetricDecrypt(key, cipherText) {
+  const split = cipherText.split('$');
+  const cT = split[0];
+  const nonce = split[1];
+
+  return sodium.crypto_secretbox_open_easy(cT, nonce, key);
 }
 
 
@@ -81,15 +116,24 @@ function decryptRecords(data, rid) {
     const encryptedRecordKey = data[i].encryptedRecordKey;
     const encryptedRecord = data[i].encryptedRecord;
 
-    // TODO:
-    const decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
-    const decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
+    const decryptedRecordKey = symmetricDecrypt(derived.kId, encryptedRecordKey);    
+    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
 
     decryptedRecords.push(decryptedRecord);
   }
-
   return decryptedRecords;
+}
 
+
+// decrypt Y values
+function decryptSecrets(data) {
+  for (var i = 0; i < data.length; i++) {
+    var split = data[i].y.split("$");
+    var cY = split[0];
+    var nonce = split[1]; 
+
+    data[i].y = sodium.crypto_box_open_easy(cY, nonce, claKeys.publicKey, data[i].userPubKey);
+  }
 }
 
 
@@ -105,9 +149,7 @@ function unmaskData(data) {
     coordB = data[0];
   }
 
-    // TODO: decrypt secrets using CLA's private key
-  // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
-  // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
+  decryptSecrets([coordA, coordB]);
 
   const slope = getSlope(coordA, coordB);
   const rid = getIntercept(coordA, slope);
@@ -137,7 +179,8 @@ export interface EncryptedData {
     readonly rid: number;
     readonly hashedPerpId: string;
     readonly encryptedRecord: string;
-    readonly y: number;
+    readonly userPubKey: string;
+    // readonly y: number;
 }
 
 export class CryptoService {
@@ -156,5 +199,4 @@ export class CryptoService {
       });
     }
   }
-
 }

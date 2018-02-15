@@ -65,7 +65,8 @@ app.post('/postData', function(req, res) {
     y: req.body.y,
     hashedPerpId: req.body.hashedPerpId,
     encryptedRecordKey: req.body.encryptedRecordKey,
-    encryptedRecord: req.body.encryptedRecord
+    encryptedRecord: req.body.encryptedRecord,
+    userPubKey: req.body.userPubKey
   }
   console.log('received new submission: ', submission);
 
