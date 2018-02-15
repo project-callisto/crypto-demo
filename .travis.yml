@@ -16,11 +16,8 @@ before_script:
 script:
 - bin/json-lint.sh
 - npm run test
-<<<<<<< HEAD
 - npm run e2e-test
-=======
 - NODE_ENV=prod npm run heroku-postbuild
->>>>>>> ddb4694635dac95afda15fc6be6dd4d5954b14b6
 notifications:
   email: false
   slack:
