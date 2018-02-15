@@ -116,8 +116,8 @@ function unmaskData(data) {
 
   return {
     decryptedRecords: decryptRecords(data, strRid),
-    coordA: coordA,
-    coordB: coordB,
+    coordA,
+    coordB,
     slope,
     strRid,
   };

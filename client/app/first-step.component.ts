@@ -61,6 +61,4 @@ export class FirstStepComponent {
     const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
     return componentRef.instance;
   }
-
-
 }
