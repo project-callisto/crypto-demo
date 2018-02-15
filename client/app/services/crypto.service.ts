@@ -116,6 +116,8 @@ function unmaskData(data) {
 
   return {
     decryptedRecords: decryptRecords(data, strRid),
+    coordA,
+    coordB,
     slope,
     strRid,
   };
@@ -151,7 +153,7 @@ export class CryptoService {
       $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
         if (Object.keys(data[0]).length >= 2) {
           const unmasked = unmaskData(data);
-          console.log("unmasked", unmasked);
+          return unmasked;
         }
       });
     }

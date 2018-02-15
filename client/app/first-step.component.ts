@@ -41,6 +41,12 @@ export class FirstStepComponent {
     }
   }
 
+  public unmaskData(event: Event): void {
+    // const unmaskedRecods = this.crypto.unmaskRecords(decryptedData.
+    const decryptedData: object = this.crypto.decryptData(encryptedDataArr);
+    this.graph.displayGraph(decryptedData);
+  }
+
   private getEncryptedData(perpInput: string): EncryptedData {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
     this.RID = encryptedData.rid;
