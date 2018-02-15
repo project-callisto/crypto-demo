@@ -7,14 +7,10 @@ let sodium_promise = sodium.ready;
 
 var claKeys, userKeys;
 
-// user now needs public/private key pair
-// need public key & encrypted private key
-
 sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
-
 
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157);
@@ -59,6 +55,7 @@ function encryptSecretValue(intRID, prod) {
 }
 
 function createDataSubmission(rid, userId) {
+
   // TODO: put rid into prg
   // derive slope & kId from rid
   const derived = deriveFromRid(rid);
@@ -82,9 +79,6 @@ function createDataSubmission(rid, userId) {
   const prod = (slope * x);
 
   const y = encryptSecretValue(intRID, prod);
-
-
-  console.log(sodium);
 
   return {
       x,
@@ -180,12 +174,25 @@ export interface EncryptedData {
     readonly hashedPerpId: string;
     readonly encryptedRecord: string;
     readonly userPubKey: string;
-    // readonly y: number;
+    readonly y: string;
 }
 
 export class CryptoService {
 
   public encryptData(perpId: string): EncryptedData {
+    let rid = 0;
+    var data = {};
+
+
+    $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
+      // console.log(data, status);
+      // Promise.resolve(data);
+      console.log('data', data);
+      data = data;
+    });
+
+
+    
     return createDataSubmission(perpId, generateRandNum());
   }
 
@@ -193,6 +200,7 @@ export class CryptoService {
     for (let i = 0; i < submissions.lengt; i++) {
       $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
         if (Object.keys(data[0]).length >= 2) {
+
           const unmasked = unmaskData(data);
           console.log("unmasked", unmasked);
         }
