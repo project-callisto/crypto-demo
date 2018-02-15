@@ -66,7 +66,7 @@ function createDataSubmission(rid, userId) {
       encryptedRecordKey: encryptedRecord.key,
       encryptedRecord: encryptedRecord.record,
       hashedPerpId: hashData(rid),
-      rid: intRID,
+      rid: intRID.toString(),
   };
 }
 
@@ -135,9 +135,16 @@ function getIntercept(c1, slope) {
   return y - prod;
 }
 
+export interface EncryptedData {
+    readonly rid: string;
+    readonly hashedPerpId: string;
+    readonly encryptedRecord: string;
+    readonly y: number;
+}
+
 export class CryptoService {
 
-  public encryptData(perpId: string): object {
+  public encryptData(perpId: string): EncryptedData {
     return createDataSubmission(perpId, generateRandNum());
   }
 

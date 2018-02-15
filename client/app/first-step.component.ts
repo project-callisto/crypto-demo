@@ -1,52 +1,65 @@
-import { Component } from "@angular/core";
-import { CryptoService } from "./crypto.service";
-import { GraphService } from "./graph.service";
-
-import * as $ from "jquery";
+import {Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ViewChild,
+  ViewContainerRef } from "@angular/core";
+import { SecondStepComponent } from "./second-step.component";
+import { SecondStepDirective } from "./second-step.directive";
+import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "first-step",
-  templateUrl: "./first-step.component.html",
+  templateUrl: "./templates/first-step.component.html",
+  providers: [
+    CryptoService,
+  ],
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
   ],
 })
 export class FirstStepComponent {
-  public crypto: CryptoService = new CryptoService();
-  public graph: GraphService = new GraphService();
+  public encryptedDataArr: object[] = [];
+  private RID: string = "[[ RID ]]";
+  @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
-  public encryptedDataArr: object = [];
+  constructor(
+    private crypto: CryptoService,
+    private componentFactoryResolver: ComponentFactoryResolver,
+  ) { }
 
-  public addPerp(event: Event): void {
+  public perpInputEvent(perpInput: string): void {
+    if (perpInput) {
+      this.getEncryptedData(perpInput);
+    }
+  }
+
+  public perpSubmitEvent(event: Event, perpInput: string): void {
     event.preventDefault();
-
-    const newPerpInput: string = $("#newPerpInput").val();
-    const encryptedData: object = this.crypto.encryptData(newPerpInput);
-
-    this.encryptedDataArr.push(encryptedData);
-
-    // populate values
-    $("#calc-rid").text(encryptedData.rid);
-    $("#calc-prg").text(encryptedData.hashedPerpId);
-    $("#calc-k-record").text(encryptedData.encryptedRecord);
-    $("#calc-derived-s").text(encryptedData.y);
-
-    // display step
-    $("#second-step").show();
-    $("html, body").animate({
-        scrollTop: $("#second-step").offset().top,
-    }, 400);
+    if (perpInput) {
+      const encryptedData: EncryptedData = this.getEncryptedData(perpInput);
+      this.encryptedDataArr.push(encryptedData);
+      const secondStep: SecondStepComponent = this.generateSecondStep();
+      secondStep.encryptedData = encryptedData;
+    }
   }
 
   public unmaskData(event: Event): void {
-
-    const decryptedData: object = this.crypto.decryptData(encryptedDataArr);
-
-    this.graph.displayGraph(decryptedData);
-
     // const unmaskedRecods = this.crypto.unmaskRecords(decryptedData.
+    const decryptedData: object = this.crypto.decryptData(encryptedDataArr);
+    this.graph.displayGraph(decryptedData);
+  }
 
+  private getEncryptedData(perpInput: string): EncryptedData {
+    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
+    this.RID = encryptedData.rid;
+    return encryptedData;
+  }
+
+  private generateSecondStep(): SecondStepComponent {
+    const componentFactory: ComponentFactory<SecondStepComponent> =
+      this.componentFactoryResolver.resolveComponentFactory(SecondStepComponent);
+    const viewContainerRef: ViewContainerRef = this.secondStepHost.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
+    return componentRef.instance;
   }
 
 
