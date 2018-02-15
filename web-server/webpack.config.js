@@ -32,7 +32,7 @@ module.exports = function(env, argv) {
       {
         test: /\.ts$/,
         exclude: /unit-tests/,
-        loaders: [
+        use: [
           {
             loader: 'awesome-typescript-loader',
             options: { configFileName: path.join(__dirname, '/../tsconfig.json') }
