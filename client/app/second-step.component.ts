@@ -1,7 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, ViewContainerRef } from "@angular/core";
+import { EncryptedData } from "./services/crypto.service";
 
 @Component({
-  selector: "second-step",
   templateUrl: "./templates/second-step.component.html",
   styleUrls: [
     "./styles/base.scss",
@@ -9,4 +9,5 @@ import { Component } from "@angular/core";
   ],
 })
 export class SecondStepComponent {
+  public encryptedData: EncryptedData;
 }

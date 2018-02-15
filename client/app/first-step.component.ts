@@ -1,4 +1,7 @@
-import { Component } from "@angular/core";
+import {Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ViewChild,
+  ViewContainerRef } from "@angular/core";
+import { SecondStepComponent } from "./second-step.component";
+import { SecondStepDirective } from "./second-step.directive";
 import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 import * as $ from "jquery";
@@ -16,8 +19,12 @@ import * as $ from "jquery";
 })
 export class FirstStepComponent {
   public encryptedDataArr: object[] = [];
+  @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
-  constructor(private crypto: CryptoService) { }
+  constructor(
+    private crypto: CryptoService,
+    private componentFactoryResolver: ComponentFactoryResolver,
+  ) { }
 
   public perpInputProcessing(perpInput: string): void {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
@@ -31,7 +38,14 @@ export class FirstStepComponent {
     $("#calc-derived-s").text(encryptedData.y);
 
     // display step
-    $("#second-step").show();
+    const componentFactory: ComponentFactory<SecondStepComponent> =
+      this.componentFactoryResolver.resolveComponentFactory(SecondStepComponent);
+    const viewContainerRef: ViewContainerRef = this.secondStepHost.viewContainerRef;
+    viewContainerRef.clear();
+
+    const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.encryptedData = encryptedData;
+
     $("html, body").animate({
         scrollTop: $("#second-step").offset().top,
     }, 400);
