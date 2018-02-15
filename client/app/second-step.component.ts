@@ -14,6 +14,10 @@ export class SecondStepComponent implements AfterViewInit {
   @Input() public encryptedData: EncryptedData;
 
   public ngAfterViewInit(): void {
+    this.scrollTo();
+  }
+
+  public scrollTo(): void {
     $("html, body").animate({
       scrollTop: $("#second-step").offset().top,
     }, 400);
