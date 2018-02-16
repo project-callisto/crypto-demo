@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat|Playfair+Display:900");
-
 @function gray($intensity, $alpha: 1) {
   @return rgba($intensity, $intensity, $intensity, $alpha);
 }
