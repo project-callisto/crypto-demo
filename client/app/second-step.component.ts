@@ -1,4 +1,4 @@
-import { Component, Input, ViewContainerRef } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { EncryptedData } from "./services/crypto.service";
 
 @Component({
