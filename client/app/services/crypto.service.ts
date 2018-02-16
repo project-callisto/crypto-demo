@@ -44,10 +44,11 @@ function deriveFromRid(rid) {
   return {slope, kId};
 }
 
-function encryptSecretValue(rid) {
+function encryptSecretValue(y) {
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
-  const y = sodium.crypto_box_easy(rid, nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
-  return y;
+  const cY = sodium.crypto_box_easy(JSON.stringify(y), nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
+
+  return cY;
 }
 
 function generateDataValues(rid, userId) {
@@ -153,12 +154,13 @@ function getIntercept(c1, slope) {
 }
 
 export interface EncryptedData {
-    readonly rid: number;
-    readonly hashedPerpId: string;
+    // readonly rid: number;
+    readonly hashedRid: string;
     readonly encryptedRecord: string;
     readonly encryptedRecordKey: string;
     readonly userPubKey: string;
-    readonly y: string;
+    readonly cY: string;
+    readonly cX: number; // FOR NOW. will need to hash this later 
 }
 
 export interface PlainTextData {
@@ -175,26 +177,20 @@ export class CryptoService {
   public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
-    const y = encryptSecretValue(plainText.rid);
+    const cY = encryptSecretValue(plainText.y);
   
-    console.log(encryptedRecord, y)
     return {
-      rid: 10,
-      hashedPerpId: "hello",
-      encryptedRecord: 'hello',
-      encryptedRecordKey: 'key',
-      userPubKey: 'pubkey',
-      y: 'derp'
-        // y,
-        // encryptedRecordKey: encryptedRecord.key,
-        // encryptedRecord: encryptedRecord.record,
-        // hashedPerpId: sodium.crypto_hash(plainText.rid.toString()),
-        // userPubKey: userKeys.publicKey
+      hashedRid: sodium.crypto_hash(plainText.rid.toString()), 
+      encryptedRecord: encryptedRecord.record,
+      encryptedRecordKey: encryptedRecord.key,
+      userPubKey: userKeys.publicKey,
+      cY: cY,
+      cX: plainText.x
     };
   }  
 
   // TODO: insert proper type instead of object
-  public createDataSubmission(perpId: string): Promise<PlainTextData> {
+  public createDataSubmission(perpId: string): Promise<{}> {
     let rid = 0;
     
     var dataPromise = new Promise(function(resolve, reject) {
@@ -213,7 +209,11 @@ export class CryptoService {
   }
 
   public decryptData(submissions) {
-    console.log('todo');
+    $.get("http://localhost:8080/getEncryptedData", (data, status) => {
+      if (status !== 'success') {
+        
+      }
+    });
     // for (let i = 0; i < submissions.length; i++) {
     //   $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
     //     if (Object.keys(data[0]).length >= 2) {

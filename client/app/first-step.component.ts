@@ -29,26 +29,29 @@ export class FirstStepComponent {
     private componentFactoryResolver: ComponentFactoryResolver,
   ) { }
 
-  // public perpInputEvent(perpInput: string): void {
-  //   if (perpInput) {
-  //     this.getEncryptedData(perpInput);
-  //   }
-  // }
+  public perpInputEvent(perpInput: string): void {
+    if (perpInput) {
+      this.handlePerpInput(perpInput);
+      // this.getEncryptedData(perpInput);
+    }
+  }
+
+  private handlePerpInput(perpInput) {
+    let cryptoService = this.crypto;
+    let dataPromise = this.crypto.createDataSubmission(perpInput);
+
+    dataPromise.then(function(plainText) {
+      const encryptedData = cryptoService.encryptData(plainText);
+      console.log('plainText', plainText, 'encrypted', encryptedData)
+      // const secondStep: SecondStepComponent = this.generateSecondStep();
+      // secondStep.encryptedData = encryptedData;
+   });
+  }
 
   public perpSubmitEvent(event: Event, perpInput: string): void {
     event.preventDefault();
     if (perpInput) {
-      // const encryptedData: EncryptedData = this.getEncryptedData(perpInput);
-
-      let cryptoService = this.crypto;
-      let dataPromise = this.crypto.createDataSubmission(perpInput);
-
-      dataPromise.then(function(plainText) {
-        const encryptedData = cryptoService.encryptData(plainText);
-        const secondStep: SecondStepComponent = this.generateSecondStep();
-        secondStep.encryptedData = encryptedData;
-
-     });
+      this.handlePerpInput(perpInput);
     }
   }
 
@@ -66,9 +69,9 @@ export class FirstStepComponent {
     
 
 
-    // const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
-    // this.RID = encryptedData.rid.toString();
-    // return encryptedData;
+  //   const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
+  //   this.RID = encryptedData.rid.toString();
+  //   return encryptedData;
   // }
 
   private generateSecondStep(): SecondStepComponent {

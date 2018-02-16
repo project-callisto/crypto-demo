@@ -60,28 +60,30 @@ app.post('/postPerpId', function(req,res) {
 
 
 // DATABASE
-var data = [];
+var encryptedSubmissions = [];
 
 // CALLISTO SERVER
+
+// Receiving a EncryptedData object
 app.post('/postData', function(req, res) {
 
-  var submission = {
-    x: req.body.x,
-    y: req.body.y,
-    hashedPerpId: req.body.hashedPerpId,
+  var encryptedSubmission = {
+    hashedRid: req.body.hashedRid,
     encryptedRecordKey: req.body.encryptedRecordKey,
     encryptedRecord: req.body.encryptedRecord,
-    userPubKey: req.body.userPubKey
+    userPubKey: req.body.userPubKey,
+    cX: req.body.cX,
+    cY: req.body.cY,
   }
-  console.log('received new submission: ', submission);
 
-  data.push(submission);
+  console.log('received new encryptedSubmission: ', encryptedSubmission);
 
-  if (data.length >= 2) {
-      res.send(data);
-      // NOTE: counting 2 submissions as a session
-      data = [];
-  } else {
-      res.sendStatus(200);
-  }
+  encryptedSubmissions.push(encryptedSubmission);
+  res.sendStatus(200);
+});
+
+
+app.get('/getEncryptedData', function (req, res) {
+  // TODO: check that rid's match 
+  res.send(encryptedSubmissions);
 });
