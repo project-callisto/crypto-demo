@@ -1,11 +1,11 @@
 import { Component, ViewChild } from "@angular/core";
-import { FirstStepComponent } from "./first-step.component";
-import { SecondStepComponent } from "./second-step.component";
-import { ThirdStepComponent } from "./third-step.component";
-import { FourthStepComponent } from "./fourth-step.component";
 import { FifthStepComponent } from "./fifth-step.component";
-import { SixthStepComponent } from "./sixth-step.component";
+import { FirstStepComponent } from "./first-step.component";
+import { FourthStepComponent } from "./fourth-step.component";
+import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, EncryptedData } from "./services/crypto.service";
+import { SixthStepComponent } from "./sixth-step.component";
+import { ThirdStepComponent } from "./third-step.component";
 
 import * as $ from "jquery";
 
