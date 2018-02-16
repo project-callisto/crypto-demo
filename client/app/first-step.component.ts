@@ -22,6 +22,7 @@ import * as $ from "jquery";
 
 export class FirstStepComponent {
   private RID: string = "[[ RID ]]";
+  private submissionCount: number = 0;
   @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
   constructor(
@@ -37,16 +38,36 @@ export class FirstStepComponent {
   }
 
   private handlePerpInput(perpInput) {
-    let cryptoService = this.crypto;
+    const cryptoService = this.crypto;
     let dataPromise = this.crypto.createDataSubmission(perpInput);
+    const firstStep = this; 
 
     dataPromise.then(function(plainText) {
       const encryptedData = cryptoService.encryptData(plainText);
-      console.log('plainText', plainText, 'encrypted', encryptedData)
+      // console.log('plainText', plainText, 'encrypted', encryptedData)
+
+
+      $.post('/postData', encryptedData, (data, status) => {
+        if (status !== 'success') {
+          console.log('Error posting encrypted data to server');
+          return;
+        } else {
+          // console.log('this',firstStep);
+          firstStep.submissionCount += 1;
+          
+          // console.log(firstStep.submissionCount)
+          if (firstStep.submissionCount >= 2) {
+            cryptoService.decryptData();
+            firstStep.submissionCount = 0;
+          } 
+        }
+      })
+
+      // TODO: hook this up
       // const secondStep: SecondStepComponent = this.generateSecondStep();
       // secondStep.encryptedData = encryptedData;
-   });
-  }
+    });
+}
 
   public perpSubmitEvent(event: Event, perpInput: string): void {
     event.preventDefault();
@@ -65,14 +86,6 @@ export class FirstStepComponent {
     }
   }
 
-  // private getEncryptedData(perpInput: string): EncryptedData {
-    
-
-
-  //   const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
-  //   this.RID = encryptedData.rid.toString();
-  //   return encryptedData;
-  // }
 
   private generateSecondStep(): SecondStepComponent {
     const componentFactory: ComponentFactory<SecondStepComponent> =

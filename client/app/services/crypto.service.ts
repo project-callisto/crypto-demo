@@ -106,16 +106,22 @@ function decryptRecords(data, rid) {
 // decrypt Y values
 function decryptSecrets(data) {
   for (var i = 0; i < data.length; i++) {
-    var split = data[i].y.split("$");
+    var split = data[i].cY.split("$");
     var cY = split[0];
-    var nonce = split[1]; 
+    var nonce = split[1];
 
-    data[i].y = sodium.crypto_box_open_easy(cY, nonce, claKeys.publicKey, data[i].userPubKey);
+    var cYBytes = sodium.from_string(cY);
+    var userPubKeyBytes = sodium.from_string(data[i].userPubKey);
+    var nonceBytes = sodium.from_string(nonce);
+    console.log(nonceBytes)
+
+    var y = sodium.crypto_box_open_easy(cYBytes, nonceBytes, claKeys.publicKey, userPubKeyBytes);
+    console.log('y', y);
   }
 }
 
 
-function unmaskData(data) {
+function decryptSubmissions(data) {
   let coordA;
   let coordB;
 
@@ -129,16 +135,22 @@ function unmaskData(data) {
 
   decryptSecrets([coordA, coordB]);
 
-  const slope = getSlope(coordA, coordB);
-  const rid = getIntercept(coordA, slope);
-  const strRid = rid.toString(HEX);
-  // TODO: fix rid
+  // const slope = getSlope(coordA, coordB);
+  // const rid = getIntercept(coordA, slope);
+  // const strRid = rid.toString(HEX);
+  // // TODO: fix rid
+
+  // return {
+  //   decryptedRecords: decryptRecords(data, strRid),
+  //   slope,
+  //   strRid,
+  // };
 
   return {
-    decryptedRecords: decryptRecords(data, strRid),
-    slope,
-    strRid,
-  };
+    decryptedRecords: 'asdfasdfasdf',
+    slope: 10,
+    strRid: 'lollolollolololol'
+  }
 }
 
 function getSlope(c1, c2) {
@@ -180,10 +192,10 @@ export class CryptoService {
     const cY = encryptSecretValue(plainText.y);
   
     return {
-      hashedRid: sodium.crypto_hash(plainText.rid.toString()), 
+      hashedRid: sodium.crypto_hash(plainText.rid.toString()).toString(), 
       encryptedRecord: encryptedRecord.record,
       encryptedRecordKey: encryptedRecord.key,
-      userPubKey: userKeys.publicKey,
+      userPubKey: userKeys.publicKey.toString(),
       cY: cY,
       cX: plainText.x
     };
@@ -208,20 +220,13 @@ export class CryptoService {
     return dataPromise;
   }
 
-  public decryptData(submissions) {
+  public decryptData() {
     $.get("http://localhost:8080/getEncryptedData", (data, status) => {
       if (status !== 'success') {
-        
+        console.log("Error retrieving data");
+        return;
       }
+      const decrypted = decryptSubmissions(data);
     });
-    // for (let i = 0; i < submissions.length; i++) {
-    //   $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
-    //     if (Object.keys(data[0]).length >= 2) {
-
-    //       const unmasked = unmaskData(data);
-    //       console.log("unmasked", unmasked);
-    //     }
-    //   });
-    // }
   }
 }

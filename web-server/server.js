@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '/../dist')));
 
 // Catch all other routes and return the index file
 // IMPORTANT: this route needs to come last
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/../dist/index.html'));
 });
 
@@ -84,6 +84,10 @@ app.post('/postData', function(req, res) {
 
 
 app.get('/getEncryptedData', function (req, res) {
+  console.log('received data request. returning: ', encryptedSubmissions)
   // TODO: check that rid's match 
   res.send(encryptedSubmissions);
+
+  // clearing submissions for demo
+  encryptedSubmissions = [];
 });
