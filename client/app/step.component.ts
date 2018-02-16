@@ -3,6 +3,8 @@ import { FirstStepComponent } from "./first-step.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, EncryptedData } from "./services/crypto.service";
 
+import * as $ from "jquery";
+
 @Component({
   selector: "step-root",
   template: `
@@ -30,5 +32,12 @@ export class StepComponent {
     this.firstStep.RID = encryptedData.rid;
     this.secondStep.encryptedData = encryptedData;
     this.secondStep.shown = true;
+    this.scrollTo("second-step");
+  }
+
+  private scrollTo(element: string): void {
+    $("html, body").animate({
+      scrollTop: $(element).offset().top,
+    }, 400);
   }
 }

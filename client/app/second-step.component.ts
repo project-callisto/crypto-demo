@@ -1,8 +1,6 @@
 import { Component, Input, ViewContainerRef } from "@angular/core";
 import { EncryptedData } from "./services/crypto.service";
 
-import * as $ from "jquery";
-
 @Component({
   selector: "second-step",
   templateUrl: "./templates/second-step.component.html",
@@ -13,12 +11,5 @@ import * as $ from "jquery";
 })
 export class SecondStepComponent {
   @Input() public encryptedData: EncryptedData;
-  public shown: boolean = false;
-
-  public scrollTo(): void {
-    $("html, body").animate({
-      scrollTop: $("#second-step").offset().top,
-    }, 400);
-  }
-
+  @Input() public shown: boolean = false;
 }
