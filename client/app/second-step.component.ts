@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
+import { EncryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "second-step",
@@ -9,4 +10,6 @@ import { Component } from "@angular/core";
   ],
 })
 export class SecondStepComponent {
+  @Input() public encryptedData: EncryptedData;
+  @Input() public shown: boolean = false;
 }

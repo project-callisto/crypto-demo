@@ -4,7 +4,7 @@
 // // jasmine defines methods like toEqual, expect, toContain
 
 describe('Valkyrie Demo', function() {
-  const FirstSection = element(by.css('#first-step'));
+  const FirstSection = element(by.css('first-step'));
   const PerpNameInput = element(by.css('.perp-name-form [type="text"]'));
   const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
   const RIDDisplay = element(by.css('.rid-display'));

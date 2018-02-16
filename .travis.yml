@@ -16,6 +16,7 @@ before_script:
 script:
 - bin/json-lint.sh
 - npm run test
+- npm run e2e-test
 notifications:
   email: false
   slack:
