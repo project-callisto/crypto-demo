@@ -3,10 +3,18 @@
 import * as $ from "jquery";
 import * as sodium from 'libsodium-wrappers';
 
+const HEX = 16;
+const PRIME = ((2 ** 128) - 157);
+const CT = 0;
+const NONCE = 1;
 
-
+// Initialize sodium
 let sodium_promise = sodium.ready;
 
+
+/* 
+ *  KEY-PAIR GENERATION
+ */
 var claKeys, userKeys;
 
 sodium_promise.then(function() {
@@ -14,15 +22,39 @@ sodium_promise.then(function() {
   userKeys = sodium.crypto_box_keypair();
 });
 
-const HEX = 16;
-const PRIME = ((2 ** 128) - 157);
-const CT = 0;
-const NONCE = 1;
 
-function generateRandNum() {
-  return Math.floor(Math.random() * 10);
+/* 
+ *  DATA OBJECTS
+ */
+export interface EncryptedData {
+  // readonly rid: number;
+  readonly hashedRid: string;
+  readonly encryptedRecord: string;
+  readonly encryptedRecordKey: string;
+  readonly userPubKey: string;
+  readonly cY: string;
+  readonly nonces: string;
+  readonly cX: number; // FOR NOW. will need to hash this later 
 }
 
+export interface PlainTextData {
+readonly rid: number,
+readonly slope: number,
+readonly kId: string, 
+readonly record: Object,
+readonly x: number,
+readonly y: number
+}
+
+
+/*
+ *  HELPER FUNCTIONS
+ */
+
+
+/* 
+ * ENCRYPTION
+ */
 function encryptRecord(kId, record) {
 
   const kRecord = sodium.crypto_secretbox_keygen();
@@ -38,6 +70,10 @@ function encryptRecord(kId, record) {
 
 }
 
+function generateRandNum() {
+  return Math.floor(Math.random() * 10);
+}
+
 function deriveFromRid(rid) {
 
   const ridLen = rid.length;
@@ -49,9 +85,11 @@ function deriveFromRid(rid) {
 
 function encryptSecretValue(y) {
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
+  // NOTE: Built in to_string function is not working
+  // console.log('nonce', sodium.to_string(nonce))
   const cY = sodium.crypto_box_easy(JSON.stringify(y), nonce, claKeys.publicKey, userKeys.privateKey);
 
-  return [JSON.stringify(cY), JSON.stringify(nonce)];
+  return [cY.toString(), nonce];
 }
 
 function generateDataValues(rid, userId) {
@@ -78,6 +116,9 @@ function generateDataValues(rid, userId) {
   return plainTextData;
 }
 
+/*
+ *  DECRYPTION
+ */
 function symmetricDecrypt(key, cipherText) {
   const split = cipherText.split('$');
   const cT = split[0];
@@ -87,7 +128,6 @@ function symmetricDecrypt(key, cipherText) {
 }
 
 
-// UNMASKING
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
@@ -109,14 +149,17 @@ function decryptRecords(data, rid) {
 // decrypt Y values
 function decryptSecrets(data) {
   for (var i = 0; i < data.length; i++) {
-    console.log(data[i].nonces)
+
     var cYBytes = sodium.from_string(data[i].cY);
     var userPubKeyBytes = sodium.from_string(data[i].userPubKey);
-    var nonceBytes = sodium.from_string(data[i].nonces.cY);
+    // var nonceBytes = sodium.from_string(data[i].nonces.cY);
 
-    console.log(nonceBytes)
+    // var nonceBytes = Object.values(data[i].nonces.cY);
+  
+    var nonce = new Uint8Array(data[i].nonces.cY);
 
-    var y = sodium.crypto_box_open_easy(cYBytes, nonceBytes, claKeys.publicKey, userPubKeyBytes);
+    console.log('n',nonce)
+    var y = sodium.crypto_box_open_easy(cYBytes, nonce, claKeys.publicKey, userPubKeyBytes);
     console.log('y', y);
   }
 }
@@ -134,24 +177,27 @@ function decryptSubmissions(data) {
     coordB = data[0];
   }
 
+  coordA.nonces = JSON.parse(coordA.nonces);
+  coordB.nonces = JSON.parse(coordB.nonces);
+
   decryptSecrets([coordA, coordB]);
 
-  // const slope = getSlope(coordA, coordB);
-  // const rid = getIntercept(coordA, slope);
-  // const strRid = rid.toString(HEX);
-  // // TODO: fix rid
-
-  // return {
-  //   decryptedRecords: decryptRecords(data, strRid),
-  //   slope,
-  //   strRid,
-  // };
+  const slope = getSlope(coordA, coordB);
+  const rid = getIntercept(coordA, slope);
+  const strRid = rid.toString(HEX);
+  // TODO: fix rid
 
   return {
-    decryptedRecords: 'asdfasdfasdf',
-    slope: 10,
-    strRid: 'lollolollolololol'
-  }
+    decryptedRecords: decryptRecords(data, strRid),
+    slope,
+    strRid,
+  };
+
+  // return {
+  //   decryptedRecords: 'asdfasdfasdf',
+  //   slope: 10,
+  //   strRid: 'lollolollolololol'
+  // }
 }
 
 function getSlope(c1, c2) {
@@ -166,28 +212,16 @@ function getIntercept(c1, slope) {
   return y - prod;
 }
 
-export interface EncryptedData {
-    // readonly rid: number;
-    readonly hashedRid: string;
-    readonly encryptedRecord: string;
-    readonly encryptedRecordKey: string;
-    readonly userPubKey: string;
-    readonly cY: string;
-    readonly nonces: string;
-    readonly cX: number; // FOR NOW. will need to hash this later 
-}
 
-export interface PlainTextData {
-  readonly rid: number,
-  readonly slope: number,
-  readonly kId: string, 
-  readonly record: Object,
-  readonly x: number,
-  readonly y: number
-}
 
+/*
+ *  CRYPTO SERVICE
+ */
 export class CryptoService {
-  
+
+  /*
+   *  ENCRYPTION
+   */
   public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
@@ -198,7 +232,7 @@ export class CryptoService {
       encryptedRecord: encryptedRecord.record[NONCE],
       encryptedRecordKey: encryptedRecord.key[NONCE]
     }
-
+  
     return {
       hashedRid: sodium.crypto_hash(plainText.rid.toString()).toString(), 
       encryptedRecord: encryptedRecord.record[CT],
@@ -209,7 +243,7 @@ export class CryptoService {
       cX: plainText.x
     };
   }  
-
+  
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<{}> {
     let rid = 0;
@@ -225,10 +259,13 @@ export class CryptoService {
         }
       });  
     });
-
+  
     return dataPromise;
   }
-
+  
+  /* 
+   * DECRYPTION
+   */
   public decryptData() {
     $.get("http://localhost:8080/getEncryptedData", (data, status) => {
       if (status !== 'success') {
@@ -237,5 +274,5 @@ export class CryptoService {
       }
       const decrypted = decryptSubmissions(data);
     });
+    }
   }
-}

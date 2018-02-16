@@ -66,8 +66,6 @@ var encryptedSubmissions = [];
 
 // Receiving a EncryptedData object
 app.post('/postData', function(req, res) {
-
-  console.log('body',req.body['nonces[cY]']);
   
   var encryptedSubmission = {
     hashedRid: req.body.hashedRid,
