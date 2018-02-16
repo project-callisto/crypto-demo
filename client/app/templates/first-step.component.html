@@ -16,12 +16,12 @@
       required
       type="text"
       id="perpInput"
-      (blur)="perpSubmitEvent($event, perpInput.value);"
+      (blur)="perpSubmit($event, perpInput.value);"
     />
     <input
       value="submit"
       type="submit"
-      (click)="perpSubmitEvent($event, perpInput.value);"
+      (click)="perpSubmit($event, perpInput.value);"
     />
   </form>
   <p class="subtext">RETURNS: RID USING OPRF</p>
