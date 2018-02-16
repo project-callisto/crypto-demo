@@ -65,8 +65,6 @@ var data = [];
 // CALLISTO SERVER
 app.post('/postData', function(req, res) {
 
-  console.log(req.body);
-
   var submission = {
     x: req.body.x,
     y: req.body.y,

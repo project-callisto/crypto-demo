@@ -44,47 +44,34 @@ function deriveFromRid(rid) {
   return {slope, kId};
 }
 
-function encryptSecretValue(intRID, prod) {
+function encryptSecretValue(rid) {
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
-  const y = sodium.crypto_box_easy(JSON.stringify(prod + intRID), nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
+  const y = sodium.crypto_box_easy(rid, nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
   return y;
 }
 
-function createDataSubmission(rid, userId) {
+function generateDataValues(rid, userId) {
 
   // TODO: put rid into prg
   // derive slope & kId from rid
   const derived = deriveFromRid(rid);
-  const slope = derived.slope;
-  const kId = derived.kId;
   const record = {
     perpName: "harvey weinstein",
     perpEmail: "harvey@weinstein.com",
   };
 
-  // encrypt record and key
-  const encryptedRecord = encryptRecord(kId, record);
+  const intRid = parseInt(rid, HEX);
+  
+  let plainTextData = {
+    rid: intRid,
+    slope: derived.slope,
+    kId: derived.kId,
+    record: record,
+    x: userId, // fix this. should be hash of some user-based value
+    y: (derived.slope * userId) + intRid
+  }
 
-  // TODO: base x off of session ID
-  // var x = parseInt(hashData(userId), HEX);
-  const x = generateRandNum();
-
-  // derive secret
-  const intRID = parseInt(rid, HEX);
-  console.log('rid',intRID);
-  const prod = (slope * x);
-
-  const y = encryptSecretValue(intRID, prod);
-
-  return {
-      x,
-      y,
-      encryptedRecordKey: encryptedRecord.key,
-      encryptedRecord: encryptedRecord.record,
-      hashedPerpId: sodium.crypto_hash(intRID.toString()),
-      rid: intRID,
-      userPubKey: userKeys.publicKey
-  };
+  return plainTextData;
 }
 
 function symmetricDecrypt(key, cipherText) {
@@ -173,16 +160,40 @@ export interface EncryptedData {
     readonly y: string;
 }
 
-export class CryptoService {
+export interface PlainTextData {
+  readonly rid: number,
+  readonly slope: number,
+  readonly kId: string, 
+  readonly record: Object,
+  readonly x: number,
+  readonly y: number
+}
 
-  public encryptData(perpId: string): object {
+export class CryptoService {
+  
+  public encryptData(plainText: PlainTextData): object {
+    // encrypt record and key
+    const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    const y = encryptSecretValue(plainText.rid);
+  
+    console.log(encryptedRecord, y)
+    return {
+        y,
+        encryptedRecordKey: encryptedRecord.key,
+        encryptedRecord: encryptedRecord.record,
+        hashedPerpId: sodium.crypto_hash(plainText.rid.toString()),
+        userPubKey: userKeys.publicKey
+    };
+  }  
+
+  public createDataSubmission(perpId: string): object {
     let rid = 0;
     
     var dataPromise = new Promise(function(resolve, reject) {
       $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
         if (status === 'success') {
           let rid = data.rid;
-          resolve(createDataSubmission(rid, generateRandNum()));
+          resolve(generateDataValues(rid, generateRandNum()));
         } else {
           reject(Error('Post request failed'));
         }
@@ -190,23 +201,18 @@ export class CryptoService {
     });
 
     return dataPromise;
-    // dataPromise.then(function(result) {
-    //   // console.log('result', result); 
-    //   return result;
-    // }, function(err) {
-    //   return {};
-    // });
   }
 
   public decryptData(submissions) {
-    for (let i = 0; i < submissions.lengt; i++) {
-      $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
-        if (Object.keys(data[0]).length >= 2) {
+    console.log('todo');
+    // for (let i = 0; i < submissions.length; i++) {
+    //   $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
+    //     if (Object.keys(data[0]).length >= 2) {
 
-          const unmasked = unmaskData(data);
-          console.log("unmasked", unmasked);
-        }
-      });
-    }
+    //       const unmasked = unmaskData(data);
+    //       console.log("unmasked", unmasked);
+    //     }
+    //   });
+    // }
   }
 }
