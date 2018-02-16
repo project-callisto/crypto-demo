@@ -13,3 +13,9 @@ h2 {
   font-family: $font-headers;
   font-size: 3rem;
 }
+
+.align-right-on-large {
+  @media (min-width: $breakpoint-sm) {
+    text-align: right;
+  }
+}
