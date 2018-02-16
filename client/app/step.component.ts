@@ -16,15 +16,15 @@ import { CryptoService, EncryptedData } from "./services/crypto.service";
   ],
 })
 export class StepComponent {
+  public encryptedDataArr: EncryptedData[] = [];
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
-  public encryptedDataArr: Array<EncryptedData> = [];
 
   constructor(
     private crypto: CryptoService,
   ) { }
 
-  public onPerpSubmit(perpInput: string) {
+  public onPerpSubmit(perpInput: string): void {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
     this.encryptedDataArr.push(encryptedData);
     this.firstStep.RID = encryptedData.rid;

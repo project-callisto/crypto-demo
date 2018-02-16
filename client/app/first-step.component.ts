@@ -10,8 +10,8 @@ import { SecondStepComponent } from "./second-step.component";
   ],
 })
 export class FirstStepComponent {
-  @Input() public RID: string = '[[ RID ]]';
-  @Output() public onPerpSubmit = new EventEmitter<string>();
+  @Input() public RID: string = "[[ RID ]]";
+  @Output() public onPerpSubmit: EventEmitter<string> = new EventEmitter<string>();
 
   public perpSubmit(event: Event, perpInput: string): void {
     event.preventDefault();
