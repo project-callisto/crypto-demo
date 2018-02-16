@@ -3,6 +3,8 @@
 import * as $ from "jquery";
 import * as sodium from 'libsodium-wrappers';
 
+
+
 let sodium_promise = sodium.ready;
 
 var claKeys, userKeys;
@@ -14,7 +16,8 @@ sodium_promise.then(function() {
 
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157);
-
+const CT = 0;
+const NONCE = 1;
 
 function generateRandNum() {
   return Math.floor(Math.random() * 10);
@@ -31,7 +34,7 @@ function encryptRecord(kId, record) {
   // todo: change key to kId
   const encryptedRecordKey = sodium.crypto_secretbox_easy(JSON.stringify(kRecord), nonceKey, sodium.crypto_secretbox_keygen());
 
-  return {record: cRecord + "$" + nonceRecord, key: encryptedRecordKey + "$" + nonceKey};
+  return {record: [cRecord.toString(), nonceRecord.toString()], key: [encryptedRecordKey.toString(), nonceKey.toString()]};
 
 }
 
@@ -46,9 +49,9 @@ function deriveFromRid(rid) {
 
 function encryptSecretValue(y) {
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
-  const cY = sodium.crypto_box_easy(JSON.stringify(y), nonce, claKeys.publicKey, userKeys.privateKey) + '$' + nonce;
+  const cY = sodium.crypto_box_easy(JSON.stringify(y), nonce, claKeys.publicKey, userKeys.privateKey);
 
-  return cY;
+  return [JSON.stringify(cY), JSON.stringify(nonce)];
 }
 
 function generateDataValues(rid, userId) {
@@ -106,13 +109,11 @@ function decryptRecords(data, rid) {
 // decrypt Y values
 function decryptSecrets(data) {
   for (var i = 0; i < data.length; i++) {
-    var split = data[i].cY.split("$");
-    var cY = split[0];
-    var nonce = split[1];
-
-    var cYBytes = sodium.from_string(cY);
+    console.log(data[i].nonces)
+    var cYBytes = sodium.from_string(data[i].cY);
     var userPubKeyBytes = sodium.from_string(data[i].userPubKey);
-    var nonceBytes = sodium.from_string(nonce);
+    var nonceBytes = sodium.from_string(data[i].nonces.cY);
+
     console.log(nonceBytes)
 
     var y = sodium.crypto_box_open_easy(cYBytes, nonceBytes, claKeys.publicKey, userPubKeyBytes);
@@ -172,6 +173,7 @@ export interface EncryptedData {
     readonly encryptedRecordKey: string;
     readonly userPubKey: string;
     readonly cY: string;
+    readonly nonces: string;
     readonly cX: number; // FOR NOW. will need to hash this later 
 }
 
@@ -189,14 +191,21 @@ export class CryptoService {
   public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
-    const cY = encryptSecretValue(plainText.y);
-  
+    const encryptedY = encryptSecretValue(plainText.y);
+    
+    const nonces = {
+      cY: encryptedY[NONCE],
+      encryptedRecord: encryptedRecord.record[NONCE],
+      encryptedRecordKey: encryptedRecord.key[NONCE]
+    }
+
     return {
       hashedRid: sodium.crypto_hash(plainText.rid.toString()).toString(), 
-      encryptedRecord: encryptedRecord.record,
-      encryptedRecordKey: encryptedRecord.key,
+      encryptedRecord: encryptedRecord.record[CT],
+      encryptedRecordKey: encryptedRecord.key[CT],
       userPubKey: userKeys.publicKey.toString(),
-      cY: cY,
+      cY: encryptedY[CT],
+      nonces: JSON.stringify(nonces),
       cX: plainText.x
     };
   }  

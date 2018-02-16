@@ -44,8 +44,7 @@ export class FirstStepComponent {
 
     dataPromise.then(function(plainText) {
       const encryptedData = cryptoService.encryptData(plainText);
-      // console.log('plainText', plainText, 'encrypted', encryptedData)
-
+      console.log('plainText', plainText, 'encrypted', encryptedData)
 
       $.post('/postData', encryptedData, (data, status) => {
         if (status !== 'success') {
