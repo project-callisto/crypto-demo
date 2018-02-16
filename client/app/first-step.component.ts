@@ -16,9 +16,6 @@ import { CryptoService, EncryptedData } from "./services/crypto.service";
   ],
 })
 export class FirstStepComponent {
-  public encryptedDataArr: object[] = [];
-  private RID: string = "[[ RID ]]";
-  @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
 
   constructor(
     private crypto: CryptoService,

@@ -4,6 +4,7 @@ import { EncryptedData } from "./services/crypto.service";
 import * as $ from "jquery";
 
 @Component({
+  selector: "second-step",
   templateUrl: "./templates/second-step.component.html",
   styleUrls: [
     "./styles/base.scss",
@@ -12,6 +13,7 @@ import * as $ from "jquery";
 })
 export class SecondStepComponent implements AfterViewInit {
   @Input() public encryptedData: EncryptedData;
+  public shown: boolean = false;
 
   public ngAfterViewInit(): void {
     this.scrollTo();
