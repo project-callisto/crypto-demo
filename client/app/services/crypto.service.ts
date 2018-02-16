@@ -156,6 +156,7 @@ export interface EncryptedData {
     readonly rid: number;
     readonly hashedPerpId: string;
     readonly encryptedRecord: string;
+    readonly encryptedRecordKey: string;
     readonly userPubKey: string;
     readonly y: string;
 }
@@ -171,29 +172,37 @@ export interface PlainTextData {
 
 export class CryptoService {
   
-  public encryptData(plainText: PlainTextData): object {
+  public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     const y = encryptSecretValue(plainText.rid);
   
     console.log(encryptedRecord, y)
     return {
-        y,
-        encryptedRecordKey: encryptedRecord.key,
-        encryptedRecord: encryptedRecord.record,
-        hashedPerpId: sodium.crypto_hash(plainText.rid.toString()),
-        userPubKey: userKeys.publicKey
+      rid: 10,
+      hashedPerpId: "hello",
+      encryptedRecord: 'hello',
+      encryptedRecordKey: 'key',
+      userPubKey: 'pubkey',
+      y: 'derp'
+        // y,
+        // encryptedRecordKey: encryptedRecord.key,
+        // encryptedRecord: encryptedRecord.record,
+        // hashedPerpId: sodium.crypto_hash(plainText.rid.toString()),
+        // userPubKey: userKeys.publicKey
     };
   }  
 
-  public createDataSubmission(perpId: string): object {
+  // TODO: insert proper type instead of object
+  public createDataSubmission(perpId: string): Promise<PlainTextData> {
     let rid = 0;
     
     var dataPromise = new Promise(function(resolve, reject) {
       $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
         if (status === 'success') {
-          let rid = data.rid;
-          resolve(generateDataValues(rid, generateRandNum()));
+          // let rid = data.rid;
+          let plainTextData = generateDataValues(data.rid, generateRandNum());
+          resolve(plainTextData);
         } else {
           reject(Error('Post request failed'));
         }
