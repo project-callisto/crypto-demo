@@ -57,22 +57,22 @@ export class StepComponent {
 
   private advanceSecondStep(): void {
     this.thirdStep.shown = true;
-    this.scrollTo("third-step");    
+    this.scrollTo("third-step");
   }
 
   private advanceThirdStep(): void {
     this.fourthStep.shown = true;
-    this.scrollTo("fourth-step");    
+    this.scrollTo("fourth-step");
   }
 
   private advanceFourthStep(): void {
     this.fifthStep.shown = true;
-    this.scrollTo("fifth-step");    
+    this.scrollTo("fifth-step");
   }
 
   private advanceFifthStep(): void {
     this.sixthStep.shown = true;
-    this.scrollTo("sixth-step");    
+    this.scrollTo("sixth-step");
   }
 
   private scrollTo(element: string): void {
