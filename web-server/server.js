@@ -7,6 +7,9 @@ const sjcl = require('sjcl');
 const app = express();
 const DEFAULT_PORT = 8080
 
+// TODO: change this 
+const sK = 'Project Callisto Super Secret Key';
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -35,11 +38,6 @@ var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
 // Point static path to dist
 app.use(express.static(path.join(__dirname, '/../dist')));
 
-// Catch all other routes and return the index file
-// IMPORTANT: this route needs to come last
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/../dist/index.html'));
-});
 
 
 // KEY SERVER
@@ -49,8 +47,8 @@ app.post('/postPerpId', function(req,res) {
   let sodium_promise = sodium.ready;
   
   sodium_promise.then(function() {
-    var sK = sodium.crypto_secretbox_keygen().toString();
-
+    // TODO: choose adequately safe key that is static
+    
     // current substitute for OPRF
     var rid = sodium.crypto_hash(pid+sK).toString();
 
@@ -83,7 +81,7 @@ app.post('/postData', function(req, res) {
   res.sendStatus(200);
 });
 
-
+// TODO: move this to client side
 app.get('/getEncryptedData', function (req, res) {
   console.log('received data request. returning: ', encryptedSubmissions)
   // TODO: check that rid's match 
@@ -91,4 +89,11 @@ app.get('/getEncryptedData', function (req, res) {
 
   // clearing submissions for demo
   encryptedSubmissions = [];
+});
+
+
+// Catch all other routes and return the index file
+// IMPORTANT: this route needs to come last
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/../dist/index.html'));
 });

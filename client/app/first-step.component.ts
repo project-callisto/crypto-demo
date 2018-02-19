@@ -30,6 +30,7 @@ export class FirstStepComponent {
     private componentFactoryResolver: ComponentFactoryResolver,
   ) { }
 
+  // TODO: delete this?
   public perpInputEvent(perpInput: string): void {
     if (perpInput) {
       this.handlePerpInput(perpInput);

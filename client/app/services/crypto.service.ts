@@ -1,14 +1,18 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
-
 import * as $ from "jquery";
 import * as sodium from 'libsodium-wrappers';
 
+
+/*
+ *  GLOBAL CONSTANTS
+ */
 const HEX = 16;
-const PRIME = ((2 ** 128) - 157);
+const PRIME = ((2 ** 128) - 157); // TODO: use big num library
 const CT = 0;
 const NONCE = 1;
 
-// Initialize sodium
+
+/*  SODIUM INTIALIZATION  */
 let sodium_promise = sodium.ready;
 
 
@@ -55,14 +59,19 @@ readonly y: number
 /* 
  * ENCRYPTION
  */
+
+ // TODO: split this to make it more readable
 function encryptRecord(kId, record) {
 
+  // TODO: display record key
+  // make an issue
   const kRecord = sodium.crypto_secretbox_keygen();
   
   const nonceRecord = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
   const nonceKey = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
   const cRecord = sodium.crypto_secretbox_easy(JSON.stringify(record), nonceRecord, kRecord);
+ 
   // todo: change key to kId
   const encryptedRecordKey = sodium.crypto_secretbox_easy(JSON.stringify(kRecord), nonceKey, sodium.crypto_secretbox_keygen());
 
@@ -84,12 +93,11 @@ function deriveFromRid(rid) {
 }
 
 function encryptSecretValue(y) {
-  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
-  // NOTE: Built in to_string function is not working
-  // console.log('nonce', sodium.to_string(nonce))
-  const cY = sodium.crypto_box_easy(JSON.stringify(y), nonce, claKeys.publicKey, userKeys.privateKey);
+  let nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES); 
 
-  return [cY.toString(), nonce];
+  let cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
+
+  return [cY, nonce];
 }
 
 function generateDataValues(rid, userId) {
@@ -97,9 +105,13 @@ function generateDataValues(rid, userId) {
   // TODO: put rid into prg
   // derive slope & kId from rid
   const derived = deriveFromRid(rid);
+
+  // TODO: hook user name and email back to front-end
+  // make issue on github
   const record = {
-    perpName: "harvey weinstein",
-    perpEmail: "harvey@weinstein.com",
+    perpId: "harvey weinstein",
+    userName: 'Alice Bob',
+    userEmail: 'user@email.com'
   };
 
   const intRid = parseInt(rid, HEX);
@@ -112,7 +124,6 @@ function generateDataValues(rid, userId) {
     x: userId, // fix this. should be hash of some user-based value
     y: (derived.slope * userId) + intRid
   }
-
   return plainTextData;
 }
 
@@ -150,17 +161,21 @@ function decryptRecords(data, rid) {
 function decryptSecrets(data) {
   for (var i = 0; i < data.length; i++) {
 
-    var cYBytes = sodium.from_string(data[i].cY);
-    var userPubKeyBytes = sodium.from_string(data[i].userPubKey);
-    // var nonceBytes = sodium.from_string(data[i].nonces.cY);
+    var cY = sodium.from_base64(data[i].cY);
+    var nonce = sodium.from_base64(data[i].nonces.cY);
 
-    // var nonceBytes = Object.values(data[i].nonces.cY);
+    // var userPubKeyBytes = sodium.from_base64(data[i].userPubKey);
+
   
-    var nonce = new Uint8Array(data[i].nonces.cY);
+  
+    var y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
+    // todo: feed this back to user interface
+    // make issue
+    // todo: differentiate from fake values
 
-    console.log('n',nonce)
-    var y = sodium.crypto_box_open_easy(cYBytes, nonce, claKeys.publicKey, userPubKeyBytes);
-    console.log('y', y);
+    
+
+    console.log('y', sodium.to_string(y));
   }
 }
 
@@ -182,22 +197,22 @@ function decryptSubmissions(data) {
 
   decryptSecrets([coordA, coordB]);
 
-  const slope = getSlope(coordA, coordB);
-  const rid = getIntercept(coordA, slope);
-  const strRid = rid.toString(HEX);
+  // const slope = getSlope(coordA, coordB);
+  // const rid = getIntercept(coordA, slope);
+  // const strRid = rid.toString(HEX);
   // TODO: fix rid
 
-  return {
-    decryptedRecords: decryptRecords(data, strRid),
-    slope,
-    strRid,
-  };
-
   // return {
-  //   decryptedRecords: 'asdfasdfasdf',
-  //   slope: 10,
-  //   strRid: 'lollolollolololol'
-  // }
+  //   decryptedRecords: decryptRecords(data, strRid),
+  //   slope,
+  //   strRid,
+  // };
+
+  return {
+    decryptedRecords: 'asdfasdfasdf',
+    slope: 10,
+    strRid: 'lollolollolololol'
+  }
 }
 
 function getSlope(c1, c2) {
@@ -224,34 +239,37 @@ export class CryptoService {
    */
   public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
+    // symmetric
     const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    // asymmetric
     const encryptedY = encryptSecretValue(plainText.y);
     
+    // TODO:
     const nonces = {
-      cY: encryptedY[NONCE],
+      cY: sodium.to_base64(encryptedY[NONCE]),
       encryptedRecord: encryptedRecord.record[NONCE],
       encryptedRecordKey: encryptedRecord.key[NONCE]
     }
   
+    // TODO: hex string or base 64 encoding? 
     return {
-      hashedRid: sodium.crypto_hash(plainText.rid.toString()).toString(), 
+      hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())), 
       encryptedRecord: encryptedRecord.record[CT],
       encryptedRecordKey: encryptedRecord.key[CT],
-      userPubKey: userKeys.publicKey.toString(),
-      cY: encryptedY[CT],
+      userPubKey: sodium.to_base64(userKeys.publicKey),
+      cY: sodium.to_base64(encryptedY[CT]),
       nonces: JSON.stringify(nonces),
-      cX: plainText.x
+      cX: plainText.x // TODO: change this when we decide what userID
     };
   }  
   
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<{}> {
-    let rid = 0;
-    
+
+    // TODO: return post itself
     var dataPromise = new Promise(function(resolve, reject) {
       $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
         if (status === 'success') {
-          // let rid = data.rid;
           let plainTextData = generateDataValues(data.rid, generateRandNum());
           resolve(plainTextData);
         } else {
