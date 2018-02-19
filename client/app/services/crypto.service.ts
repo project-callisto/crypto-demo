@@ -37,7 +37,6 @@ export interface EncryptedData {
   readonly encryptedRecordKey: string;
   readonly userPubKey: string;
   readonly cY: string;
-  readonly nonces: string;
   readonly cX: number;
   readonly kId: string; // FOR NOW. will need to hash this later 
 }
@@ -249,8 +248,6 @@ export class CryptoService {
     // asymmetric
     const cY = encryptSecretValue(plainText.y);
     
-    // TODO:
-    const nonces = {}
   
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())), 
@@ -258,7 +255,6 @@ export class CryptoService {
       encryptedRecordKey: encryptedRecordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY: cY,
-      nonces: JSON.stringify(nonces),
       cX: plainText.x,
       kId: plainText.kId // TODO: change this when we decide what userID
     };

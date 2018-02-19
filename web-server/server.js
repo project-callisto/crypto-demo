@@ -70,7 +70,6 @@ app.post('/postData', function(req, res) {
     encryptedRecordKey: req.body.encryptedRecordKey,
     encryptedRecord: req.body.encryptedRecord,
     userPubKey: req.body.userPubKey,
-    nonces: req.body.nonces,
     cX: req.body.cX,
     cY: req.body.cY,
     kId: req.body.kId
