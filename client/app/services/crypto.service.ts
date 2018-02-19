@@ -152,14 +152,9 @@ function decryptRecords(data, rid) {
     const encryptedRecord = data[i].encryptedRecord;
 
     // key, ciphertext
-<<<<<<< HEAD
     const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
     console.log('Record Key:', sodium.to_string(decryptedRecordKey));
     // const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-=======
-    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), encryptedRecordKey);
-    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
->>>>>>> 165f90437f67d057bb148c6f487d297535224be2
 
     // decryptedRecords.push(decryptedRecord);
   }
