@@ -52,10 +52,9 @@ export class FirstStepComponent {
           console.log('Error posting encrypted data to server');
           return;
         } else {
-          // console.log('this',firstStep);
+     
           firstStep.submissionCount += 1;
           
-          // console.log(firstStep.submissionCount)
           if (firstStep.submissionCount >= 2) {
             cryptoService.decryptData();
             firstStep.submissionCount = 0;

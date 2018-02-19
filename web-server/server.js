@@ -73,6 +73,7 @@ app.post('/postData', function(req, res) {
     nonces: req.body.nonces,
     cX: req.body.cX,
     cY: req.body.cY,
+    kId: req.body.kId
   }
 
   console.log('received new encryptedSubmission: ', encryptedSubmission);

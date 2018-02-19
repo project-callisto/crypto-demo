@@ -38,7 +38,8 @@ export interface EncryptedData {
   readonly userPubKey: string;
   readonly cY: string;
   readonly nonces: string;
-  readonly cX: number; // FOR NOW. will need to hash this later 
+  readonly cX: number;
+  readonly kId: string; // FOR NOW. will need to hash this later 
 }
 
 export interface PlainTextData {
@@ -61,22 +62,13 @@ readonly y: number
  */
 
  // TODO: split this to make it more readable
-function encryptRecord(kId, record) {
+function symmetricEncrypt(key, msg) {
 
-  // TODO: display record key
-  // make an issue
-  const kRecord = sodium.crypto_secretbox_keygen();
-  
-  const nonceRecord = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
-  const nonceKey = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  const cT = sodium.crypto_secretbox_easy(msg, nonce, key);
 
-  const cRecord = sodium.crypto_secretbox_easy(JSON.stringify(record), nonceRecord, kRecord);
- 
-  // todo: change key to kId
-  const encryptedRecordKey = sodium.crypto_secretbox_easy(JSON.stringify(kRecord), nonceKey, sodium.crypto_secretbox_keygen());
-
-  return {record: [cRecord.toString(), nonceRecord.toString()], key: [encryptedRecordKey.toString(), nonceKey.toString()]};
-
+  const encrypted = sodium.to_base64(cT) + '$' + sodium.to_base64(nonce);
+  return encrypted;
 }
 
 function generateRandNum() {
@@ -119,7 +111,9 @@ function generateDataValues(rid, userId) {
   let plainTextData = {
     rid: intRid,
     slope: derived.slope,
-    kId: derived.kId,
+    // todo:
+    // kId: derived.kId,
+    kId: sodium.to_base64(sodium.crypto_secretbox_keygen()),
     record: record,
     x: userId, // fix this. should be hash of some user-based value
     y: (derived.slope * userId) + intRid
@@ -134,8 +128,13 @@ function symmetricDecrypt(key, cipherText) {
   const split = cipherText.split('$');
   const cT = split[0];
   const nonce = split[1];
+  console.log('ct', cT, nonce);
 
-  return sodium.crypto_secretbox_open_easy(cT, nonce, key);
+  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
+
+  console.log('decrypted', decrypted)
+
+  return decrypted;
 }
 
 
@@ -148,7 +147,7 @@ function decryptRecords(data, rid) {
     const encryptedRecordKey = data[i].encryptedRecordKey;
     const encryptedRecord = data[i].encryptedRecord;
 
-    const decryptedRecordKey = symmetricDecrypt(derived.kId, encryptedRecordKey);    
+    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), encryptedRecordKey);    
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
 
     decryptedRecords.push(decryptedRecord);
@@ -164,18 +163,11 @@ function decryptSecrets(data) {
     var cY = sodium.from_base64(data[i].cY);
     var nonce = sodium.from_base64(data[i].nonces.cY);
 
-    // var userPubKeyBytes = sodium.from_base64(data[i].userPubKey);
-
+    var userPK = sodium.from_base64(data[i].userPubKey);
   
-  
-    var y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
-    // todo: feed this back to user interface
-    // make issue
-    // todo: differentiate from fake values
+    var y = sodium.crypto_box_open_easy(cY, nonce, userPK, claKeys.privateKey);
 
-    
-
-    console.log('y', sodium.to_string(y));
+    data[i].y = y;
   }
 }
 
@@ -197,10 +189,13 @@ function decryptSubmissions(data) {
 
   decryptSecrets([coordA, coordB]);
 
-  // const slope = getSlope(coordA, coordB);
+  const slope = getSlope(coordA, coordB);
+  console.log('slope', slope)
+
   // const rid = getIntercept(coordA, slope);
   // const strRid = rid.toString(HEX);
   // TODO: fix rid
+  decryptRecords(data, 'meow');
 
   // return {
   //   decryptedRecords: decryptRecords(data, strRid),
@@ -240,26 +235,28 @@ export class CryptoService {
   public encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     // symmetric
-    const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    const kRecord = sodium.crypto_secretbox_keygen();
+    const encryptedRecord = symmetricEncrypt(kRecord, JSON.stringify(plainText.record));
+    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(kRecord))
+    // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
     const encryptedY = encryptSecretValue(plainText.y);
     
     // TODO:
     const nonces = {
       cY: sodium.to_base64(encryptedY[NONCE]),
-      encryptedRecord: encryptedRecord.record[NONCE],
-      encryptedRecordKey: encryptedRecord.key[NONCE]
     }
   
     // TODO: hex string or base 64 encoding? 
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())), 
-      encryptedRecord: encryptedRecord.record[CT],
-      encryptedRecordKey: encryptedRecord.key[CT],
+      encryptedRecord: encryptedRecord,
+      encryptedRecordKey: encryptedRecordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY: sodium.to_base64(encryptedY[CT]),
       nonces: JSON.stringify(nonces),
-      cX: plainText.x // TODO: change this when we decide what userID
+      cX: plainText.x,
+      kId: plainText.kId // TODO: change this when we decide what userID
     };
   }  
   
