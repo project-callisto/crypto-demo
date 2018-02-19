@@ -34,7 +34,8 @@ import * as $ from "jquery";
   ],
 })
 export class StepComponent {
-  public encryptedDataArr: EncryptedData[] = [];
+  // public encryptedDataArr: EncryptedData[] = [];
+  private perpInput: string;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
   @ViewChild(ThirdStepComponent) private thirdStep: ThirdStepComponent;
@@ -50,7 +51,8 @@ export class StepComponent {
     this.crypto.createDataSubmission(perpInput).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        this.encryptedDataArr.push(encryptedData);
+        this.perpInput = perpInput;
+        // this.encryptedDataArr.push(encryptedData);
         this.firstStep.RID = encryptedData.hashedRid;
         this.secondStep.encryptedData = encryptedData;
         this.secondStep.shown = true;
@@ -60,11 +62,26 @@ export class StepComponent {
   }
 
   private advanceSecondStep(): void {
-    this.thirdStep.shown = true;
-    this.scrollTo("third-step");
+ 
+    this.crypto.createDataSubmission(this.perpInput).then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+
+        // this.encryptedDataArr.push(encryptedData);
+        // this.secondStep.RID = encryptedData.hashedRid;
+        // this.secondStep.encryptedData = encryptedData;
+        // this.secondStep.shown = true;
+        this.thirdStep.shown = true;
+        this.scrollTo("third-step");
+      },
+    );
+    
+
   }
 
   private advanceThirdStep(): void {
+    this.crypto.decryptData();
+    
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }

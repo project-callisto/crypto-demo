@@ -175,7 +175,6 @@ function decryptSecrets(data) {
 
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    console.log("secret", y);
     data[i].y = y;
   }
 }
@@ -287,6 +286,7 @@ export class CryptoService {
         return;
       }
       const decrypted = decryptSubmissions(data);
+      console.log('dec',decrypted);
     });
     }
   }
