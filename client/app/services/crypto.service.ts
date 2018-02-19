@@ -31,7 +31,6 @@ sodium_promise.then(function() {
  *  DATA OBJECTS
  */
 export interface EncryptedData {
-  // readonly rid: number;
   readonly hashedRid: string;
   readonly encryptedRecord: string;
   readonly encryptedRecordKey: string;
