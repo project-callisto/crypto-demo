@@ -3,7 +3,7 @@ import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { SecondStepComponent } from "./second-step.component";
-import { CryptoService, EncryptedData } from "./services/crypto.service";
+import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
@@ -43,16 +43,20 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
 
   constructor(
-    private crypto: CryptoService,
+    public crypto: CryptoService,
   ) { }
 
   private advanceFirstStep(perpInput: string): void {
-    const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
-    this.encryptedDataArr.push(encryptedData);
-    this.firstStep.RID = encryptedData.rid;
-    this.secondStep.encryptedData = encryptedData;
-    this.secondStep.shown = true;
-    this.scrollTo("second-step");
+    this.crypto.createDataSubmission(perpInput).then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        this.encryptedDataArr.push(encryptedData);
+        this.firstStep.RID = encryptedData.hashedRid;
+        this.secondStep.encryptedData = encryptedData;
+        this.secondStep.shown = true;
+        this.scrollTo("second-step");
+      },
+    );
   }
 
   private advanceSecondStep(): void {

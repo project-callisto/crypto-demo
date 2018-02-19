@@ -1,5 +1,9 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+
 import { SecondStepComponent } from "./second-step.component";
+import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
+
+import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
@@ -8,6 +12,9 @@ import { SecondStepComponent } from "./second-step.component";
     "./styles/base.scss",
     "./styles/step.scss",
   ],
+  providers: [
+    CryptoService,
+  ],
 })
 export class FirstStepComponent {
   @Input() public RID: string = "[[ RID ]]";
@@ -15,6 +22,9 @@ export class FirstStepComponent {
 
   public perpSubmit(event: Event, perpInput: string): void {
     event.preventDefault();
-    this.advanceStep.emit(perpInput);
+    if (perpInput) {
+      this.advanceStep.emit(perpInput);
+    }
   }
+
 }

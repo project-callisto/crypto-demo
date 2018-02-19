@@ -7,9 +7,15 @@ const sjcl = require('sjcl');
 const app = express();
 const DEFAULT_PORT = 8080
 
+// TODO: change this 
+const sK = 'Project Callisto Super Secret Key';
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
+
+const sodium = require('libsodium-wrappers');
 
 
 // automatically run webpack, unless running on production
@@ -32,50 +38,62 @@ var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
 // Point static path to dist
 app.use(express.static(path.join(__dirname, '/../dist')));
 
-// Catch all other routes and return the index file
-// IMPORTANT: this route needs to come last
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/../dist/index.html'));
-});
 
 
 // KEY SERVER
 app.post('/postPerpId', function(req,res) {
   var pid = req.body.pid;
 
-  var key = sjcl.codec.utf8String.toBits("Pr0j3cT c@lL!$T0");
-  // TODO: switch HMAC out for OPRF
-  var prfOut = (new sjcl.misc.hmac(key, sjcl.hash.sha256)).mac(pid);
-  var rid = sjcl.codec.hex.fromBits(prfOut)
-  console.log('sending random id: ', rid);
-  res.send({'rid': rid})
+  let sodium_promise = sodium.ready;
+  
+  sodium_promise.then(function() {
+    // TODO: choose adequately safe key that is static
+    
+    // current substitute for OPRF
+    var rid = sodium.crypto_hash(pid+sK).toString();
+
+    res.send({rid});
+  });
 });
 
 
 // DATABASE
-var data = [];
+var encryptedSubmissions = [];
 
 // CALLISTO SERVER
+
+// Receiving a EncryptedData object
 app.post('/postData', function(req, res) {
-
-  console.log(req.body);
-
-  var submission = {
-    x: req.body.x,
-    y: req.body.y,
-    hashedPerpId: req.body.hashedPerpId,
+  
+  var encryptedSubmission = {
+    hashedRid: req.body.hashedRid,
     encryptedRecordKey: req.body.encryptedRecordKey,
-    encryptedRecord: req.body.encryptedRecord
+    encryptedRecord: req.body.encryptedRecord,
+    userPubKey: req.body.userPubKey,
+    cX: req.body.cX,
+    cY: req.body.cY,
+    kId: req.body.kId
   }
-  console.log('received new submission: ', submission);
 
-  data.push(submission);
+  console.log('received new encryptedSubmission: ', encryptedSubmission);
 
-  if (data.length >= 2) {
-      res.send(data);
-      // NOTE: counting 2 submissions as a session
-      data = [];
-  } else {
-      res.sendStatus(200);
-  }
+  encryptedSubmissions.push(encryptedSubmission);
+  res.sendStatus(200);
+});
+
+// TODO: move this to client side
+app.get('/getEncryptedData', function (req, res) {
+  console.log('received data request. returning: ', encryptedSubmissions)
+  // TODO: check that rid's match 
+  res.send(encryptedSubmissions);
+
+  // clearing submissions for demo
+  encryptedSubmissions = [];
+});
+
+
+// Catch all other routes and return the index file
+// IMPORTANT: this route needs to come last
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/../dist/index.html'));
 });

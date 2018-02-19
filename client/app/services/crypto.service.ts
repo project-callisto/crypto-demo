@@ -1,99 +1,188 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
-
+import { Injectable } from "@angular/core";
 import * as $ from "jquery";
-import * as sjcl from "sjcl";
+import * as sodium from "libsodium-wrappers";
 
+/*
+ *  GLOBAL CONSTANTS
+ */
 const HEX = 16;
-const PRIME = ((2 ** 128) - 157);
+const PRIME = ((2 ** 128) - 157); // TODO: use big num library
+const CT = 0;
+const NONCE = 1;
 
+
+/*  SODIUM INTIALIZATION  */
+const sodium_promise = sodium.ready;
+
+
+/*
+ *  KEY-PAIR GENERATION
+ */
+let claKeys, userKeys;
+
+sodium_promise.then(function() {
+  claKeys = sodium.crypto_box_keypair();
+  userKeys = sodium.crypto_box_keypair();
+});
+
+
+/*
+ *  DATA OBJECTS
+ */
+export interface EncryptedData {
+  readonly hashedRid: string;
+  readonly encryptedRecord: string;
+  readonly encryptedRecordKey: string;
+  readonly userPubKey: string;
+  readonly cY: string;
+  readonly cX: number;
+  readonly kId: string; // FOR NOW. will need to hash this later
+}
+
+export interface PlainTextData {
+readonly rid: number;
+readonly slope: number;
+readonly kId: string;
+readonly record: Object;
+readonly recordKey: string;
+readonly x: number;
+readonly y: number;
+}
+
+
+/*
+ *  HELPER FUNCTIONS
+ */
+
+
+/*
+ * ENCRYPTION
+ */
+
+ // TODO: split this to make it more readable
+function symmetricEncrypt(key, msg) {
+
+  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  const cT = sodium.crypto_secretbox_easy(msg, nonce, key);
+
+  const encrypted = sodium.to_base64(cT) + "$" + sodium.to_base64(nonce);
+  return encrypted;
+}
 
 function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-function encryptRecord(kId, record) {
-  const kRecord = sjcl.random.randomWords(8);
-  const cRecord = sjcl.encrypt(JSON.stringify(kRecord), JSON.stringify(record), {mode: "gcm"});
-  const encryptedRecordKey = sjcl.encrypt(kId, JSON.stringify(kRecord), {mode: "gcm"});
-
-  return {record: cRecord, key: encryptedRecordKey};
-}
-
-function hashData(data) {
-  const bitArray = sjcl.hash.sha256.hash(data);
-  return sjcl.codec.hex.fromBits(bitArray);
-}
-
-
 function deriveFromRid(rid) {
 
   const ridLen = rid.length;
-
   const slope = parseInt(rid.substr(0, ridLen / 2), HEX);
-
   const kId = rid.substr(ridLen / 2, ridLen);
 
   return {slope, kId};
 }
 
+function encryptSecretValue(y) {
+  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  const cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
 
-function createDataSubmission(rid, userId) {
+  const encrypted = sodium.to_base64(cY) + "$" + sodium.to_base64(nonce);
+
+  return encrypted;
+}
+
+function generateDataValues(rid, userId) {
+
   // TODO: put rid into prg
   // derive slope & kId from rid
   const derived = deriveFromRid(rid);
-  const slope = derived.slope;
-  const kId = derived.kId;
+
+  // TODO: hook user name and email back to front-end
+  // make issue on github
   const record = {
-    perpName: "harvey weinstein",
-    perpEmail: "harvey@weinstein.com",
+    perpId: "harvey weinstein",
+    userName: "Alice Bob",
+    userEmail: "user@email.com",
   };
 
-  // encrypt record and key
-  const encryptedRecord = encryptRecord(kId, record);
+  const intRid = parseInt(rid, HEX);
 
-  // TODO: base x off of session ID
-  // var x = parseInt(hashData(userId), HEX);
-  const x = generateRandNum();
-
-  // derive secret
-  const intRID = parseInt(rid, HEX);
-  const prod = (slope * x);
-  const y = ((slope * x) + intRID);
-
-  return {
-      x,
-      y,
-      encryptedRecordKey: encryptedRecord.key,
-      encryptedRecord: encryptedRecord.record,
-      hashedPerpId: hashData(rid),
-      rid: intRID.toString(),
+  const plainTextData = {
+    rid: intRid,
+    slope: derived.slope,
+    recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()),
+    // todo:
+    // kId: derived.kId,
+    kId: sodium.to_base64(sodium.crypto_secretbox_keygen()),
+    record,
+    x: userId, // fix this. should be hash of some user-based value
+    y: (derived.slope * userId) + intRid,
   };
+  return plainTextData;
+}
+
+/*
+ *  DECRYPTION
+ */
+
+// Key is Uint8Array,
+// CipherText: string in base64 encoding
+function symmetricDecrypt(key, cipherText) {
+
+  const split = cipherText.split("$");
+
+  // Uint8Arrays
+  const cT = sodium.from_base64(split[0]);
+  const nonce = sodium.from_base64(split[1]);
+
+  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
+
+  console.log("decrypted", sodium.to_string(decrypted));
+
+  return decrypted;
 }
 
 
-// UNMASKING
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
-  const derived = deriveFromRid(rid);
+  // TODO:
+  // const derived = deriveFromRid(rid);
 
   for (let i = 0; i < data.length; i++) {
     const encryptedRecordKey = data[i].encryptedRecordKey;
     const encryptedRecord = data[i].encryptedRecord;
 
-    // TODO:
-    const decryptedRecordKey = sjcl.decrypt(derived.kId, encryptedRecordKey);
-    const decryptedRecord = sjcl.decrypt(decryptedRecordKey, encryptedRecord);
+    // key, ciphertext
+    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), encryptedRecordKey);
+    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
 
     decryptedRecords.push(decryptedRecord);
   }
-
   return decryptedRecords;
-
 }
 
 
-function unmaskData(data) {
+// decrypt Y values
+function decryptSecrets(data) {
+  for (let i = 0; i < data.length; i++) {
+    const split = data[i].cY.split("$");
+
+    const cY = sodium.from_base64(split[0]);
+    const nonce = sodium.from_base64(split[1]);
+
+    const userPK = sodium.from_base64(data[i].userPubKey);
+
+    const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
+
+    console.log("secret", y);
+    data[i].y = y;
+  }
+}
+
+
+function decryptSubmissions(data) {
   let coordA;
   let coordB;
 
@@ -105,19 +194,25 @@ function unmaskData(data) {
     coordB = data[0];
   }
 
-    // TODO: decrypt secrets using CLA's private key
-  // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
-  // data[0].y = sjcl.decrypt(pair.sec, data[0].y);
+  decryptSecrets([coordA, coordB]);
 
-  const slope = getSlope(coordA, coordB);
-  const rid = getIntercept(coordA, slope);
-  const strRid = rid.toString(HEX);
+  // const slope = getSlope(coordA, coordB);
+
+  // const rid = getIntercept(coordA, slope);
+  // const strRid = rid.toString(HEX);
   // TODO: fix rid
+  decryptRecords(data, "meow");
+
+  // return {
+  //   decryptedRecords: decryptRecords(data, strRid),
+  //   slope,
+  //   strRid,
+  // };
 
   return {
-    decryptedRecords: decryptRecords(data, strRid),
-    slope,
-    strRid,
+    decryptedRecords: "asdfasdfasdf",
+    slope: 10,
+    strRid: "lollolollolololol",
   };
 }
 
@@ -133,29 +228,66 @@ function getIntercept(c1, slope) {
   return y - prod;
 }
 
-export interface EncryptedData {
-  readonly rid: string;
-  readonly hashedPerpId: string;
-  readonly encryptedRecord: string;
-  readonly encryptedRecordKey: string;
-  readonly y: number;
-}
 
+
+/*
+ *  CRYPTO SERVICE
+ */
+@Injectable()
 export class CryptoService {
 
-  public encryptData(perpId: string): EncryptedData {
-    return createDataSubmission(perpId, generateRandNum());
+  /*
+   *  ENCRYPTION
+   */
+  public encryptData(plainText: PlainTextData): EncryptedData {
+    // encrypt record and key
+    // symmetric
+    const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
+    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
+    // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    // asymmetric
+    const cY = encryptSecretValue(plainText.y);
+
+
+    return {
+      hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
+      encryptedRecord,
+      encryptedRecordKey,
+      userPubKey: sodium.to_base64(userKeys.publicKey),
+      cY,
+      cX: plainText.x,
+      kId: plainText.kId, // TODO: change this when we decide what userID
+    };
   }
 
-  public decryptData(submissions) {
-    for (let i = 0; i < submissions.lengt; i++) {
-      $.post("http://localhost:8080/postData", submissions[i], (data, status) => {
-        if (Object.keys(data[0]).length >= 2) {
-          const unmasked = unmaskData(data);
-          console.log("unmasked", unmasked);
+  // TODO: insert proper type instead of object
+  public createDataSubmission(perpId: string): Promise<{}> {
+
+    // TODO: return post itself
+    const dataPromise = new Promise(function(resolve, reject) {
+      $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
+        if (status === "success") {
+          const plainTextData = generateDataValues(data.rid, generateRandNum());
+          resolve(plainTextData);
+        } else {
+          reject(Error("Post request failed"));
         }
       });
-    }
+    });
+
+    return dataPromise;
   }
 
-}
+  /*
+   * DECRYPTION
+   */
+  public decryptData() {
+    $.get("http://localhost:8080/getEncryptedData", (data, status) => {
+      if (status !== "success") {
+        console.log("Error retrieving data");
+        return;
+      }
+      const decrypted = decryptSubmissions(data);
+    });
+    }
+  }
