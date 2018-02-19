@@ -1,42 +1,24 @@
-<section id='first-step'>
-  <h2 class="main-header text-centered">create perpInput</h2>
+<section *ngIf="shown" id='fourth-step'>
+  <h2 class="main-header text-centered">display graph with line from encryptedDataArr</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
     </li>
-    <li>
+    <li class="activated-step">
       <a href="#second-step"><span class="step-explainer">STEP</span> 2</a>
     </li>
-    <li>
+    <li class="activated-step">
       <a href="#third-step"><span class="step-explainer">STEP</span> 3</a>
     </li>
-    <li>
+    <li class="activated-step">
       <a href="#fourth-step"><span class="step-explainer">STEP</span> 4</a>
     </li>
     <li>
       <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
     </li>
   </ul>
-  <form
-    class="input-row perp-name-form"
-    action="#"
-  >
-    <span class="subtext">ENTER PERP NAME</span>
-    <input
-      #perpInput
-      required
-      type="text"
-      id="perpInput"
-      (blur)="perpSubmit($event, perpInput.value);"
-    />
-    <input
-      class="btn"
-      value="submit"
-      type="submit"
-      (click)="perpSubmit($event, perpInput.value);"
-    />
-  </form>
-  <p class="subtext">RETURNS: RID USING OPRF</p>
-  <code class='rid-display calc-display-value' id="calc-rid">{{ RID }}</code>
   <p class="explainer">(Lorem Ipsum) as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+  <div class="align-right-on-large">
+    <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
+  </div>
 </section>

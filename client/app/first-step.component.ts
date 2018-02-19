@@ -1,17 +1,11 @@
-import {Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ViewChild,
-  ViewContainerRef } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { SecondStepComponent } from "./second-step.component";
-import { SecondStepDirective } from "./second-step.directive";
-import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
 @Component({
   selector: "first-step",
   templateUrl: "./templates/first-step.component.html",
-  providers: [
-    CryptoService,
-  ],
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
@@ -21,22 +15,12 @@ import * as $ from "jquery";
 
 
 export class FirstStepComponent {
-  private RID: string = "[[ RID ]]";
-  private submissionCount: number = 0;
-  @ViewChild(SecondStepDirective) private secondStepHost: SecondStepDirective;
+  @Input() public RID: string = "[[ RID ]]";
+  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private crypto: CryptoService,
-    private componentFactoryResolver: ComponentFactoryResolver,
   ) { }
-
-  // TODO: delete this?
-  public perpInputEvent(perpInput: string): void {
-    if (perpInput) {
-      this.handlePerpInput(perpInput);
-      // this.getEncryptedData(perpInput);
-    }
-  }
 
   private handlePerpInput(perpInput) {
     const cryptoService = this.crypto;
@@ -68,10 +52,10 @@ export class FirstStepComponent {
     });
 }
 
-  public perpSubmitEvent(event: Event, perpInput: string): void {
+  public perpSubmit(event: Event, perpInput: string): void {
     event.preventDefault();
     if (perpInput) {
-      this.handlePerpInput(perpInput);
+      this.advanceStep.emit(perpInput);
     }
   }
 
@@ -83,16 +67,6 @@ export class FirstStepComponent {
         }
       });
     }
-  }
-
-
-  private generateSecondStep(): SecondStepComponent {
-    const componentFactory: ComponentFactory<SecondStepComponent> =
-      this.componentFactoryResolver.resolveComponentFactory(SecondStepComponent);
-    const viewContainerRef: ViewContainerRef = this.secondStepHost.viewContainerRef;
-    viewContainerRef.clear();
-    const componentRef: ComponentRef<SecondStepComponent> = viewContainerRef.createComponent(componentFactory);
-    return componentRef.instance;
   }
 }
 

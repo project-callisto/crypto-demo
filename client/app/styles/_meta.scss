@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat|Playfair+Display:900");
-
 @function gray($intensity, $alpha: 1) {
   @return rgba($intensity, $intensity, $intensity, $alpha);
 }
@@ -18,6 +16,9 @@ $color-header-background: gray(62);
 $color-code-background: gray(238);
 $color-code-border: gray(204);
 $color-text-faded: gray(119);
+$color-step-hover-background: gray(200);
+$color-step-hover-border: gray(220);
+$color-button-hover-background: gray(50);
 
 $breakpoint-sm: 768px;
 $breakpoint-md: 992px;
