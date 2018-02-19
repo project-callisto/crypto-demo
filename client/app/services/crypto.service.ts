@@ -139,8 +139,6 @@ function symmetricDecrypt(key, cipherText) {
 
   const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
 
-  console.log('decrypted', sodium.to_string(decrypted))
-
   return decrypted;
 }
 
@@ -152,16 +150,17 @@ function decryptRecords(data, rid) {
   // const derived = deriveFromRid(rid);
 
   for (let i = 0; i < data.length; i++) {
-    const encryptedRecordKey = data[i].encryptedRecordKey;
     const encryptedRecord = data[i].encryptedRecord;
 
     // key, ciphertext
-    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), encryptedRecordKey);    
-    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
+    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
+    console.log('Record Key:', sodium.to_string(decryptedRecordKey));
+    // const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
 
-    decryptedRecords.push(decryptedRecord);
+    // decryptedRecords.push(decryptedRecord);
   }
-  return decryptedRecords;
+  return [];
+  // return decryptedRecords;
 }
 
 
