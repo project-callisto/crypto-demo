@@ -55,7 +55,7 @@ export class StepComponent {
         this.secondStep.encryptedData = encryptedData;
         this.secondStep.shown = true;
         this.scrollTo("second-step");
-      }
+      },
     );
   }
 
