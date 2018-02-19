@@ -13,12 +13,20 @@ import * as $ from "jquery";
   selector: "step-root",
   template: `
     <first-step
-      (onPerpSubmit)="onPerpSubmit($event)"
+      (advanceStep)="advanceFirstStep($event)"
     ></first-step>
-    <second-step></second-step>
-    <third-step></third-step>
-    <fourth-step></fourth-step>
-    <fifth-step></fifth-step>
+    <second-step
+      (advanceStep)="advanceSecondStep($event)"
+    ></second-step>
+    <third-step
+      (advanceStep)="advanceThirdStep($event)"
+    ></third-step>
+    <fourth-step
+      (advanceStep)="advanceFourthStep($event)"
+    ></fourth-step>
+    <fifth-step
+      (advanceStep)="advanceFifthStep($event)"
+    ></fifth-step>
     <sixth-step></sixth-step>
   `,
   providers: [
@@ -38,13 +46,33 @@ export class StepComponent {
     private crypto: CryptoService,
   ) { }
 
-  public onPerpSubmit(perpInput: string): void {
+  private advanceFirstStep(perpInput: string): void {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
     this.encryptedDataArr.push(encryptedData);
     this.firstStep.RID = encryptedData.rid;
     this.secondStep.encryptedData = encryptedData;
     this.secondStep.shown = true;
     this.scrollTo("second-step");
+  }
+
+  private advanceSecondStep(): void {
+    this.thirdStep.shown = true;
+    this.scrollTo("third-step");
+  }
+
+  private advanceThirdStep(): void {
+    this.fourthStep.shown = true;
+    this.scrollTo("fourth-step");
+  }
+
+  private advanceFourthStep(): void {
+    this.fifthStep.shown = true;
+    this.scrollTo("fifth-step");
+  }
+
+  private advanceFifthStep(): void {
+    this.sixthStep.shown = true;
+    this.scrollTo("sixth-step");
   }
 
   private scrollTo(element: string): void {
