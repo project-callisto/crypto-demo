@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
   selector: "fifth-step",
@@ -10,4 +10,5 @@ import { Component, Input } from "@angular/core";
 })
 export class FifthStepComponent {
   @Input() public shown: boolean = false;
+  @Output() public advanceFifthStep: EventEmitter<string> = new EventEmitter<string>();
 }
