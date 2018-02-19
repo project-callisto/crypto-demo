@@ -19,3 +19,18 @@ h2 {
     text-align: right;
   }
 }
+
+.btn {
+  color: $palette-white;
+  background-color: $palette-dark-blue;
+  letter-spacing: 1px;
+  padding: 15px 10px;
+  border: none;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: $palette-white;
+    background-color: $color-button-hover-background;
+  }
+}

@@ -1,10 +1,21 @@
-<section>
+<section id='first-step'>
   <h2 class="main-header text-centered">create perpInput</h2>
   <ul class="step-display">
-    <li class="activated-step"><span class="step-explainer">STEP</span> 1</li>
-    <li><span class="step-explainer">STEP</span> 2</li>
-    <li><span class="step-explainer">STEP</span> 3</li>
-    <li><span class="step-explainer">STEP</span> 4</li>
+    <li class="activated-step">
+      <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
+    </li>
+    <li>
+      <a href="#second-step"><span class="step-explainer">STEP</span> 2</a>
+    </li>
+    <li>
+      <a href="#third-step"><span class="step-explainer">STEP</span> 3</a>
+    </li>
+    <li>
+      <a href="#fourth-step"><span class="step-explainer">STEP</span> 4</a>
+    </li>
+    <li>
+      <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
+    </li>
   </ul>
   <form
     class="input-row perp-name-form"
@@ -19,6 +30,7 @@
       (blur)="perpSubmit($event, perpInput.value);"
     />
     <input
+      class="btn"
       value="submit"
       type="submit"
       (click)="perpSubmit($event, perpInput.value);"
