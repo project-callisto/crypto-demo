@@ -47,11 +47,25 @@ export class StepComponent {
     public crypto: CryptoService,
   ) { }
 
+  private postData(encryptedData: EncryptedData): void {
+    $.post('/postData', encryptedData, (data, status) => {
+      if (status !== 'success') {
+        console.log('Error posting encrypted data to server');
+        return;
+      } 
+    })
+  }
+
+
   private advanceFirstStep(perpInput: string): void {
+    this.perpInput = perpInput;
+
     this.crypto.createDataSubmission(perpInput).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        this.perpInput = perpInput;
+
+        this.postData(encryptedData);
+
         // this.encryptedDataArr.push(encryptedData);
         this.firstStep.RID = encryptedData.hashedRid;
         this.secondStep.encryptedData = encryptedData;
@@ -67,6 +81,7 @@ export class StepComponent {
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
 
+        this.postData(encryptedData);
         // this.encryptedDataArr.push(encryptedData);
         // this.secondStep.RID = encryptedData.hashedRid;
         // this.secondStep.encryptedData = encryptedData;
