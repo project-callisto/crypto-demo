@@ -21,7 +21,7 @@ export class FirstStepComponent {
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
-    private crypto: CryptoService,
+    public crypto: CryptoService,
   ) { }
 
   private handlePerpInput(perpInput) {
@@ -47,10 +47,6 @@ export class FirstStepComponent {
           }
         }
       });
-
-      // TODO: hook this up
-      // const secondStep: SecondStepComponent = this.generateSecondStep();
-      // secondStep.encryptedData = encryptedData;
     });
 }
 
@@ -70,35 +66,5 @@ export class FirstStepComponent {
       });
     }
   }
+
 }
-
-//     let dataPromise = this.crypto.createDataSubmission(perpInput);
-
-//     var cryptoService = this.crypto;
-
-//     // have to resolve this 'then' error
-//     dataPromise.then(function(plainText) {
-
-//       var encryptedData = cryptoService.encryptData(plainText);
-
-//       $("#calc-rid").text(plainText.rid);
-//       // TODO:
-//       $("#calc-prg").text(encryptedData.hashedPerpId);
-//       $("#calc-derived-s").text(plainText.y);
-//       $("#calc-k-record").text(encryptedData.encryptedRecord);
-
-//       // display step
-//       $("#second-step").show();
-//       $("html, body").animate({
-//           scrollTop: $("#second-step").offset().top,
-//       }, 400);
-
-//       // TODO: submit post request to submit data
-
-//       // TODO: create separate route to get data
-
-//     }, function(err) {
-//       // TODO: display error messages
-//       console.log('Error');
-//     });
-//   }
