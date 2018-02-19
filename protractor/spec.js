@@ -14,9 +14,25 @@ describe('Valkyrie Demo', function () {
   const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
   const RIDDisplay = element(by.css('.rid-display'));
 
-  const genericPerpInput = function () {
+  genericPerpInput = function () {
     PerpNameInput.sendKeys('facebook.com/callistoorg');
     PerpNameSubmit.click();
+  }
+
+  AdvanceStepTwo = function () {
+    SecondStep.element(by.css('.advance-button')).click();
+  }
+
+  AdvanceStepThree = function () {
+    ThirdStep.element(by.css('.advance-button')).click();
+  }
+
+  AdvanceStepFour = function () {
+    FourthStep.element(by.css('.advance-button')).click();
+  }
+
+  AdvanceStepFive = function () {
+    FifthStep.element(by.css('.advance-button')).click();
   }
 
   beforeEach(function () {
@@ -56,6 +72,40 @@ describe('Valkyrie Demo', function () {
     expect(SecondStep.isPresent()).toBeFalsy();
     genericPerpInput();
     expect(SecondStep.isPresent()).toBeTruthy();
+  });
+
+  it('advances to step 3', function () {
+    expect(ThirdStep.isPresent()).toBeFalsy();
+    genericPerpInput();
+    AdvanceStepTwo();
+    expect(ThirdStep.isPresent()).toBeTruthy();
+  });
+
+  it('advances to step 4', function () {
+    expect(FourthStep.isPresent()).toBeFalsy();
+    genericPerpInput();
+    AdvanceStepTwo();
+    AdvanceStepThree();
+    expect(FourthStep.isPresent()).toBeTruthy();
+  });
+
+  it('advances to step 5', function () {
+    expect(FifthStep.isPresent()).toBeFalsy();
+    genericPerpInput();
+    AdvanceStepTwo();
+    AdvanceStepThree();
+    AdvanceStepFour();
+    expect(FifthStep.isPresent()).toBeTruthy();
+  });
+
+  it('advances to step 6', function () {
+    expect(SixthStep.isPresent()).toBeFalsy();
+    genericPerpInput();
+    AdvanceStepTwo();
+    AdvanceStepThree();
+    AdvanceStepFour();
+    AdvanceStepFive();
+    expect(SixthStep.isPresent()).toBeTruthy();
   });
 
 });
