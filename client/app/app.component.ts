@@ -4,7 +4,7 @@ import { Component } from "@angular/core";
   selector: "app-root",
   template: `
     <header-root></header-root>
-    <first-step></first-step>
+    <step-root></step-root>
   `,
 })
 export class AppComponent {

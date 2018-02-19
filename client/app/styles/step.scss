@@ -38,6 +38,16 @@ h2 {
   margin: 20px 0;
 }
 
+.advance-button {
+  width: 200px;
+  padding: 15px 40px;
+  margin: 20px auto;
+
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+  }
+}
+
 section {
   margin: 60px 15%;
   padding: 40px;
@@ -72,25 +82,40 @@ section {
   margin: 20px 0;
   padding: 0;
 
-  li {
+  a {
     text-transform: uppercase;
-    color: $palette-dark-blue;
+    text-decoration: none;
+    white-space: nowrap;
     padding: 10px;
-    margin: 15px 0;
+    color: $palette-dark-blue;
+    background-color: $palette-white;
     font-size: 0.85rem;
     letter-spacing: 1px;
     border: 1px solid $palette-dark-blue;
-    background-color: $palette-white;
-    white-space: nowrap;
+  }
+
+  .activated-step a {
+    color: $palette-white;
+    background-color: $palette-dark-blue;
+  }
+
+  .activated-step a:hover,
+  .activated-step a:active,
+  .activated-step a:focus,
+  a:hover,
+  a:active,
+  a:focus {
+    color: $palette-dark-blue;
+    background-color: $color-step-hover-background;
+    border-color: $color-step-hover-border;
+  }
+
+  li {
+    margin: 15px 0;
   }
 
   li:not(:last-child) {
     margin-right: 20px;
-  }
-
-  .activated-step {
-    color: $palette-white;
-    background-color: $palette-dark-blue;
   }
 }
 
@@ -119,7 +144,6 @@ section {
     padding: 10px 20px;
     color: $color-text-faded;
     height: 25px;
-    font-size: 0.85rem;
 
     @media (max-width: $breakpoint-sm) {
       box-sizing: border-box;
@@ -129,10 +153,6 @@ section {
 
   > [type="submit"] {
     flex: 1;
-    color: $palette-white;
-    background-color: $palette-dark-blue;
     font-size: 0.85rem;
-    letter-spacing: 1px;
-    padding: 15px 10px;
   }
 }
