@@ -10,5 +10,5 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 })
 export class ThirdStepComponent {
   @Input() public shown: boolean = false;
-  @Output() public advanceThirdStep: EventEmitter<string> = new EventEmitter<string>();
+  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }

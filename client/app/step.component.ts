@@ -13,19 +13,19 @@ import * as $ from "jquery";
   selector: "step-root",
   template: `
     <first-step
-      (onPerpSubmit)="onPerpSubmit($event)"
+      (advanceStep)="advanceFirstStep($event)"
     ></first-step>
     <second-step
-      (advanceSecondStep)="advanceSecondStep($event)"
+      (advanceStep)="advanceSecondStep($event)"
     ></second-step>
     <third-step
-      (advanceThirdStep)="advanceThirdStep($event)"
+      (advanceStep)="advanceThirdStep($event)"
     ></third-step>
     <fourth-step
-      (advanceFourthStep)="advanceFourthStep($event)"
+      (advanceStep)="advanceFourthStep($event)"
     ></fourth-step>
     <fifth-step
-      (advanceFifthStep)="advanceFifthStep($event)"
+      (advanceStep)="advanceFifthStep($event)"
     ></fifth-step>
     <sixth-step></sixth-step>
   `,
@@ -46,7 +46,7 @@ export class StepComponent {
     private crypto: CryptoService,
   ) { }
 
-  private onPerpSubmit(perpInput: string): void {
+  private advanceFirstStep(perpInput: string): void {
     const encryptedData: EncryptedData = this.crypto.encryptData(perpInput);
     this.encryptedDataArr.push(encryptedData);
     this.firstStep.RID = encryptedData.rid;

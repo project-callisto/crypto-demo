@@ -12,5 +12,5 @@ import { EncryptedData } from "./services/crypto.service";
 export class SecondStepComponent {
   @Input() public encryptedData: EncryptedData;
   @Input() public shown: boolean = false;
-  @Output() public advanceSecondStep: EventEmitter<string> = new EventEmitter<string>();
+  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }
