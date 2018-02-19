@@ -7,6 +7,7 @@ import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { HeaderComponent } from "./header.component";
 import { SecondStepComponent } from "./second-step.component";
+import { CryptoService } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
 import { ThirdStepComponent } from "./third-step.component";
@@ -25,6 +26,9 @@ import { ThirdStepComponent } from "./third-step.component";
   ],
   imports: [
     BrowserModule,
+  ],
+  providers: [
+    CryptoService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+
 import { SecondStepComponent } from "./second-step.component";
+import { CryptoService, EncryptedData } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
@@ -10,10 +12,10 @@ import * as $ from "jquery";
     "./styles/base.scss",
     "./styles/step.scss",
   ],
+  providers: [
+    CryptoService,
+  ],
 })
-
-
-
 export class FirstStepComponent {
   @Input() public RID: string = "[[ RID ]]";
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
@@ -24,27 +26,27 @@ export class FirstStepComponent {
 
   private handlePerpInput(perpInput) {
     const cryptoService = this.crypto;
-    let dataPromise = this.crypto.createDataSubmission(perpInput);
-    const firstStep = this; 
+    const dataPromise = this.crypto.createDataSubmission(perpInput);
+    const firstStep = this;
 
     dataPromise.then(function(plainText) {
       const encryptedData = cryptoService.encryptData(plainText);
-      console.log('plainText', plainText, 'encrypted', encryptedData)
+      console.log("plainText", plainText, "encrypted", encryptedData);
 
-      $.post('/postData', encryptedData, (data, status) => {
-        if (status !== 'success') {
-          console.log('Error posting encrypted data to server');
+      $.post("/postData", encryptedData, (data, status) => {
+        if (status !== "success") {
+          console.log("Error posting encrypted data to server");
           return;
         } else {
-     
+
           firstStep.submissionCount += 1;
-          
+
           if (firstStep.submissionCount >= 2) {
             cryptoService.decryptData();
             firstStep.submissionCount = 0;
-          } 
+          }
         }
-      })
+      });
 
       // TODO: hook this up
       // const secondStep: SecondStepComponent = this.generateSecondStep();
@@ -61,9 +63,9 @@ export class FirstStepComponent {
 
   private postEncryptedData(encryptedData: EncryptedData) {
     function postData(cT) {
-      $.post('http://localhost:8080/postData', cT, (data, status) => {
-        if (status !== 'success') {
-          console.log('error posting encrypted data')
+      $.post("http://localhost:8080/postData", cT, (data, status) => {
+        if (status !== "success") {
+          console.log("error posting encrypted data");
         }
       });
     }
@@ -84,13 +86,13 @@ export class FirstStepComponent {
 //       $("#calc-prg").text(encryptedData.hashedPerpId);
 //       $("#calc-derived-s").text(plainText.y);
 //       $("#calc-k-record").text(encryptedData.encryptedRecord);
-      
+
 //       // display step
 //       $("#second-step").show();
 //       $("html, body").animate({
 //           scrollTop: $("#second-step").offset().top,
 //       }, 400);
-      
+
 //       // TODO: submit post request to submit data
 
 //       // TODO: create separate route to get data
