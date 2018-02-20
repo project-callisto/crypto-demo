@@ -14,9 +14,14 @@ describe('Valkyrie Demo', function () {
   const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
   const RIDDisplay = element(by.css('.rid-display'));
 
-  genericPerpInput = function () {
-    PerpNameInput.sendKeys('facebook.com/callistoorg');
+  genericPerpInput = function (perp = 'facebook.com/callistoorg') {
+    PerpNameInput.sendKeys(perp);
     PerpNameSubmit.click();
+    setTimeout(() => {
+      expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
+      expect(RIDDisplay.getText()).toBeTruthy();
+      expect(RIDDisplay.getText()).not.toContain('NaN');
+    }, 10000);
   }
 
   AdvanceStepTwo = function () {
@@ -53,20 +58,15 @@ describe('Valkyrie Demo', function () {
 
   it('renders a RID after perp name input', function () {
     genericPerpInput();
-    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
   });
 
   it('renders a RID for perp names starting with a', function () {
-    PerpNameInput.sendKeys('apple');
-    PerpNameSubmit.click();
-    expect(RIDDisplay.getText()).not.toContain('NaN');
+    genericPerpInput('apple');
   });
 
-  // it('renders a RID for perp names starting with z', function() {
-  //   PerpNameInput.sendKeys('zebra');
-  //   PerpNameSubmit.click();
-  //   expect(RIDDisplay.getText()).not.toContain('NaN');
-  // });
+  it('renders a RID for perp names starting with z', function () {
+    genericPerpInput('zebra');
+  });
 
   it('advances to step 2', function () {
     expect(SecondStep.isPresent()).toBeFalsy();
