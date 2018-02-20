@@ -133,10 +133,11 @@ function symmetricDecrypt(key, cipherText) {
   const split = cipherText.split("$");
 
   // Uint8Arrays
-  const cT = sodium.from_base64(split[0]);
-  const nonce = sodium.from_base64(split[1]);
+  const cT = split[0];
+  const nonce = split[1];
+  console.log('ct', cT, 'key', sodium.to_base64(key));
 
-  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
+  const decrypted = sodium.crypto_secretbox_open_easy(sodium.from_base64(cT), sodium.from_base64(nonce), key);
 
   return decrypted;
 }
@@ -152,14 +153,14 @@ function decryptRecords(data, rid) {
     const encryptedRecord = data[i].encryptedRecord;
 
     // key, ciphertext
-    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
-    console.log('Record Key:', sodium.to_string(decryptedRecordKey));
-    // const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-
-    // decryptedRecords.push(decryptedRecord);
+    const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
+    // const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
+    // console.log('record key', sodium.to_string(decryptedRecordKey));
+    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
+    // console.log('decryptedRecord', decryptedRecord);
+    decryptedRecords.push(sodium.to_string(decryptedRecord));
   }
-  return [];
-  // return decryptedRecords;
+  return decryptedRecords;
 }
 
 
@@ -192,26 +193,26 @@ function decryptSubmissions(data) {
     coordB = data[0];
   }
 
+  // 
   decryptSecrets([coordA, coordB]);
 
-  // const slope = getSlope(coordA, coordB);
-
-  // const rid = getIntercept(coordA, slope);
-  // const strRid = rid.toString(HEX);
+  const slope = getSlope(coordA, coordB);
+  const rid = getIntercept(coordA, slope);
+  const strRid = rid.toString(HEX);
   // TODO: fix rid
-  decryptRecords(data, "meow");
-
-  // return {
-  //   decryptedRecords: decryptRecords(data, strRid),
-  //   slope,
-  //   strRid,
-  // };
+  const record = decryptRecords(data, strRid);
 
   return {
-    decryptedRecords: "asdfasdfasdf",
-    slope: 10,
-    strRid: "lollolollolololol",
+    decryptedRecords: record,
+    slope,
+    strRid,
   };
+
+  // return {
+  //   decryptedRecords: "asdfasdfasdf",
+  //   slope: 10,
+  //   strRid: "lollolollolololol",
+  // };
 }
 
 function getSlope(c1, c2) {
@@ -241,16 +242,18 @@ export class CryptoService {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
+    console.log('PT record key', sodium.to_base64(plainText.recordKey));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
     // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
     const cY = encryptSecretValue(plainText.y);
 
 
+    console.log(plainText.recordKey);
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
       encryptedRecord,
-      encryptedRecordKey,
+      encryptedRecordKey: plainText.recordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY,
       cX: plainText.x,
