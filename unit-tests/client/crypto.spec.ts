@@ -12,21 +12,25 @@ describe("Crypto service", function () {
   });
 
   it("takes string input on the submission api", function () {
-    crypto.createDataSubmission("a").then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        expect(encryptedData).toBeTruthy();
-      },
-    );
+    setTimeout(() => {
+      crypto.createDataSubmission("a").then(
+        (plainText: PlainTextData) => {
+          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+          expect(encryptedData).toBeTruthy();
+        },
+      );
+    }, 10000);
   });
 
   it("has an RID", function () {
-    crypto.createDataSubmission("a").then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        expect(encryptedData.hashedRid).toBeTruthy();
-      },
-    );
+    setTimeout(() => {
+      crypto.createDataSubmission("a").then(
+        (plainText: PlainTextData) => {
+          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+          expect(encryptedData.hashedRid).toBeTruthy();
+        },
+      );
+    }, 10000);
   });
 
   it("returns RID for perpIDs starting with A-Z", function () {
@@ -34,12 +38,14 @@ describe("Crypto service", function () {
     const maxPerpID: number = 90;
 
     while (perpID <= maxPerpID) {
-      crypto.createDataSubmission(String.fromCharCode(perpID)).then(
-        (plainText: PlainTextData) => {
-          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-          expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
-        },
-      );
+      setTimeout(() => {
+        crypto.createDataSubmission(String.fromCharCode(perpID)).then(
+          (plainText: PlainTextData) => {
+            const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+            expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+          },
+        );
+      }, 10000);
       perpID++;
     }
 
