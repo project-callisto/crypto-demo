@@ -1,24 +1,32 @@
-import { CryptoService, EncryptedData } from "../../client/app/services/crypto.service";
+import { CryptoService, EncryptedData, PlainTextData } from "../../client/app/services/crypto.service";
 
-describe("Crypto services tests", function () {
+describe("Crypto service", function () {
   const crypto = new CryptoService();
 
-  it("has an encryptData method", function () {
-    expect(crypto.encryptData).toBeDefined();
+  it("has a public submission api", function () {
+    expect(crypto.createDataSubmission).toBeDefined();
   });
 
-  it("has an decryptData method", function () {
+  it("has a public decryption api", function () {
     expect(crypto.decryptData).toBeDefined();
   });
 
-  it("can encrypt data", function () {
-    const data: EncryptedData = crypto.encryptData("a");
-    expect(data.encryptedRecordKey).toBeTruthy();
+  it("takes string input on the submission api", function () {
+    crypto.createDataSubmission("a").then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        expect(encryptedData).toBeTruthy();
+      },
+    );
   });
 
   it("has an RID", function () {
-    const data: EncryptedData = crypto.encryptData("a");
-    expect(data.rid).toBeTruthy();
+    crypto.createDataSubmission("a").then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        expect(encryptedData.hashedRid).toBeTruthy();
+      },
+    );
   });
 
   it("returns RID for perpIDs starting with A-Z", function () {
@@ -26,9 +34,15 @@ describe("Crypto services tests", function () {
     const maxPerpID: number = 90;
 
     while (perpID <= maxPerpID) {
-      const data: EncryptedData = crypto.encryptData(String.fromCharCode(perpID));
-      expect(data.rid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+      crypto.createDataSubmission(String.fromCharCode(perpID)).then(
+        (plainText: PlainTextData) => {
+          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+          expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+        },
+      );
       perpID++;
     }
+
   });
+
 });
