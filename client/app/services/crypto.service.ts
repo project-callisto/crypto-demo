@@ -135,7 +135,6 @@ function symmetricDecrypt(key, cipherText) {
   // Uint8Arrays
   const cT = split[0];
   const nonce = split[1];
-  console.log('ct', cT, 'key', sodium.to_base64(key));
 
   const decrypted = sodium.crypto_secretbox_open_easy(sodium.from_base64(cT), sodium.from_base64(nonce), key);
 
@@ -242,14 +241,11 @@ export class CryptoService {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
-    console.log('PT record key', sodium.to_base64(plainText.recordKey));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
     // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
     const cY = encryptSecretValue(plainText.y);
 
-
-    console.log(plainText.recordKey);
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
       encryptedRecord,
@@ -289,7 +285,6 @@ export class CryptoService {
         return;
       }
       const decrypted = decryptSubmissions(data);
-      console.log('dec',decrypted);
     });
     }
   }
