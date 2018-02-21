@@ -28,3 +28,17 @@ npm install --quiet --production && \
 NODE_ENV=production npm run heroku-postbuild && \
 NODE_ENV=production heroku local
 ```
+
+## running local e2e tests
+
+[ process 1 ]
+
+```
+npm run start:e2e
+```
+
+[ process 2 ]
+
+```
+npm run test:e2e
+```
