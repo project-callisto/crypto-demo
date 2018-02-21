@@ -11,15 +11,13 @@ describe("Crypto service", function () {
     expect(crypto.decryptData).toBeDefined();
   });
 
-  it("takes string input on the submission api", function () {
-    setTimeout(() => {
-      crypto.createDataSubmission("a").then(
-        (plainText: PlainTextData) => {
-          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-          expect(encryptedData).toBeTruthy();
-        },
-      );
-    }, 10000);
+  it("takes string input on the submission api", async function () {
+    await crypto.createDataSubmission("a").then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        expect(encryptedData).toBeTruthy();
+      },
+    );
   });
 
   it("has an RID", function () {
