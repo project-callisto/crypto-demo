@@ -265,7 +265,7 @@ export class CryptoService {
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
+      $.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum());
           resolve(plainTextData);
@@ -282,7 +282,7 @@ export class CryptoService {
    * DECRYPTION
    */
   public decryptData() {
-    $.get("http://localhost:8080/getEncryptedData", (data, status) => {
+    $.get("/getEncryptedData", (data, status) => {
       if (status !== "success") {
         console.log("Error retrieving data");
         return;
