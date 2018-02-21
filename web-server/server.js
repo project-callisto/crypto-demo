@@ -35,11 +35,6 @@ var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
   console.log('Listening on port %d', server.address().port)
 });
 
-// Point static path to dist
-app.use(express.static(path.join(__dirname, '/../dist')));
-
-
-
 // KEY SERVER
 app.post('/postPerpId', function(req,res) {
   var pid = req.body.pid;
@@ -91,6 +86,8 @@ app.get('/getEncryptedData', function (req, res) {
   encryptedSubmissions = [];
 });
 
+// Point static path to dist
+app.use(express.static(path.join(__dirname, '/../dist')));
 
 // Catch all other routes and return the index file
 // IMPORTANT: this route needs to come last
