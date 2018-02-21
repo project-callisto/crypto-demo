@@ -9,9 +9,10 @@
     },
     "scripts": {
         "clean": "tslint -p . --fix --force",
-        "test": "jasmine-ts --config=unit-tests/support/jasmine.json",
-        "e2e-test": "ng e2e --port 4201",
+        "test:unit": "jasmine-ts --config=unit-tests/support/jasmine.json",
+        "test:e2e": "protractor protractor/protractor.conf.js",
         "start": "node web-server/server.js",
+        "start:e2e": "PORT=4202 node web-server/server.js",
         "heroku-postbuild": "webpack --config web-server/webpack.config.js --bail"
     },
     "repository": {
@@ -55,14 +56,14 @@
         "zone.js": "^0.8.20"
     },
     "devDependencies": {
+        "@angular/cli": "^1.6.8",
+        "@angular/compiler-cli": "^5.2.4",
         "@types/jasmine": "^2.8.6",
         "jasmine": "^3.0.0",
         "jasmine-core": "^2.99.1",
         "jasmine-spec-reporter": "^4.2.1",
         "jasmine-ts": "^0.2.1",
         "jsdom": "^11.6.2",
-        "@angular/cli": "^1.6.8",
-        "@angular/compiler-cli": "^5.2.4",
         "protractor": "^5.3.0",
         "tslint": "^5.9.1",
         "webdriver-manager": "^12.0.6",
