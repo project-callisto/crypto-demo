@@ -31,14 +31,7 @@ NODE_ENV=production heroku local
 
 ## running local e2e tests
 
-[ process 1 ]
-
 ```
-npm run start:e2e
-```
-
-[ process 2 ]
-
-```
+npm run start:e2e &
 npm run test:e2e
 ```
