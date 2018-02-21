@@ -12,6 +12,8 @@ install:
 - npm install
 - npx webdriver-manager update
 before_script:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 - npm run start:e2e &
 script:
 - bin/json-lint.sh
