@@ -27,7 +27,7 @@ describe('Valkyrie Demo', () => {
   async function doPerpInput(perp = 'facebook.com/callistoorg') {
     PerpNameInput.sendKeys(perp);
     PerpNameSubmit.click();
-    await sleep(1000);
+    await sleep(1000); // this is bad, but satisfies our needs
     RIDExpectations();
   }
 
