@@ -3,7 +3,7 @@
 // jasmine docs https://jasmine.github.io/api/3.0/matchers.html
 // // jasmine defines methods like toEqual, expect, toContain
 
-describe('Valkyrie Demo', function () {
+describe('Valkyrie Demo', () => {
   const FirstStep = $('first-step section');
   const SecondStep = $('second-step section');
   const ThirdStep = $('third-step section');
@@ -20,16 +20,15 @@ describe('Valkyrie Demo', function () {
     expect(RIDDisplay.getText()).not.toContain('NaN');
   }
 
-  function doPerpInput(perp = 'facebook.com/callistoorg') {
+  function sleep(millis) {
+    return new Promise(resolve => setTimeout(resolve, millis));
+  }
+
+  async function doPerpInput(perp = 'facebook.com/callistoorg') {
     PerpNameInput.sendKeys(perp);
     PerpNameSubmit.click();
-    console.log('initalizing promise');
-    return new Promise(() => {
-      setTimeout(() => {
-        RIDExpectations();
-        console.log('resolved promise');
-      }, 1000);
-    });
+    await sleep(1000);
+    RIDExpectations();
   }
 
   function AdvanceStepTwo() {
@@ -48,50 +47,51 @@ describe('Valkyrie Demo', function () {
     FifthStep.$('.advance-button').click();
   }
 
-  beforeEach(function () {
+  beforeEach(() => {
     browser.get('/');
   });
 
-  it('should have a title', function () {
+  it('should have a title', () => {
     expect(browser.getTitle()).toEqual('Valkyrie Demo');
   });
 
-  it('should start with a perp name displayed', function () {
+  it('should start with a perp name displayed', () => {
     expect(FirstStep.getText()).toContain('PERP NAME');
   });
 
-  it('starts with no RID rendered', function () {
+  it('starts with no RID rendered', () => {
     expect(RIDDisplay.getText()).toContain('[[ RID ]]');
   });
 
-  it('renders a RID after perp name input', async function () {
-    await doPerpInput();
-    console.log('awaited doPerpInput');
+  it('renders a RID after perp name input', () => {
+    doPerpInput();
     RIDExpectations();
   });
 
-  it('renders a RID for perp names starting with a', function () {
+  it('renders a RID for perp names starting with a', () => {
     doPerpInput('apple');
+    RIDExpectations();
   });
 
-  it('renders a RID for perp names starting with z', function () {
+  it('renders a RID for perp names starting with z', () => {
     doPerpInput('zebra');
+    RIDExpectations();
   });
 
-  it('advances to step 2', function () {
+  it('advances to step 2', () => {
     expect(SecondStep.isPresent()).toBeFalsy();
     doPerpInput();
     expect(SecondStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 3', function () {
+  it('advances to step 3', () => {
     expect(ThirdStep.isPresent()).toBeFalsy();
     doPerpInput();
     AdvanceStepTwo();
     expect(ThirdStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 4', function () {
+  it('advances to step 4', () => {
     expect(FourthStep.isPresent()).toBeFalsy();
     doPerpInput();
     AdvanceStepTwo();
@@ -99,7 +99,7 @@ describe('Valkyrie Demo', function () {
     expect(FourthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 5', function () {
+  it('advances to step 5', () => {
     expect(FifthStep.isPresent()).toBeFalsy();
     doPerpInput();
     AdvanceStepTwo();
@@ -108,7 +108,7 @@ describe('Valkyrie Demo', function () {
     expect(FifthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 6', function () {
+  it('advances to step 6', () => {
     expect(SixthStep.isPresent()).toBeFalsy();
     doPerpInput();
     AdvanceStepTwo();
