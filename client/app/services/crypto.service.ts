@@ -263,10 +263,10 @@ export class CryptoService {
   }
 
   // TODO: insert proper type instead of object
-  public createDataSubmission(perpId: string): Promise<{}> {
+  public createDataSubmission(perpId: string): Promise<PlainTextData> {
     const cryptoService = this;
     // TODO: return post itself
-    const dataPromise = new Promise(function(resolve, reject) {
+    const dataPromise = new Promise<PlainTextData>(function(resolve, reject) {
       cryptoService.jquery.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum());

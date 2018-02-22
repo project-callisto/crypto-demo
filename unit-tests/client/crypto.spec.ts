@@ -17,12 +17,8 @@ describe("Crypto service", function () {
   });
 
   it("takes string input on the submission api", async function () {
-    await crypto.createDataSubmission("a").then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        expect(encryptedData).toBeTruthy();
-      },
-    );
+    const plainText: PlainTextData = await crypto.createDataSubmission("a");
+    expect(plainText).toBeFalsy();
   });
 
   it("has an RID", function () {
