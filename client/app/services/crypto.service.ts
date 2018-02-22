@@ -236,6 +236,8 @@ function getIntercept(c1, slope) {
 @Injectable()
 export class CryptoService {
 
+  public get jquery() { return $; }
+
   /*
    *  ENCRYPTION
    */
@@ -262,10 +264,10 @@ export class CryptoService {
 
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<{}> {
-
+    const cryptoService = this;
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", perpId, (data, status) => {
+      cryptoService.jquery.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum());
           resolve(plainTextData);
@@ -282,7 +284,7 @@ export class CryptoService {
    * DECRYPTION
    */
   public decryptData() {
-    $.get("/getEncryptedData", (data, status) => {
+    this.jquery.get("/getEncryptedData", (data, status) => {
       if (status !== "success") {
         console.log("Error retrieving data");
         return;
