@@ -13,9 +13,22 @@ export class GraphService {
   }
   
 
-  public generateGraph(x: number, chartData) {
+  private generateChartData(xInputs, f, m, b) {
 
+    var chartData = [];
+    for (var i = 0; i < xInputs.length; i++) {
+      var y = f(i, m, b);
+      chartData.push({x: i, y: y});
+    }
+    return chartData;
+  }
+  
+  public generateGraph(x: number, slope: number, rid: number) {
+
+
+    const f = new Function('x', 'm', 'b', 'return (m * x) + b;');
     const xInputs = this.createXInputs(x);
+    const chartData = this.generateChartData(xInputs, f, slope, rid);
 
     const ctx = document.getElementById('secretsChart');
 
