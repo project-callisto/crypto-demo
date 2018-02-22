@@ -34,7 +34,7 @@ export interface EncryptedData {
   readonly encryptedRecordKey: string;
   readonly userPubKey: string;
   readonly cY: string;
-  readonly cX: number;
+  readonly cX: string;
   readonly kId: string; // FOR NOW. will need to hash this later
 }
 
@@ -72,9 +72,10 @@ function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-function deriveFromRid(rid) {
+function deriveFromRid(hexRid) {
+  console.log('rid', hexRid);
 
-  const hexRid = sodium.to_hex(rid);
+  // const hexRid = sodium.to_hex(rid);
   const ridLen = hexRid.length;
 
   const slope = bigInt(hexRid.substr(0, ridLen/2), HEX);
@@ -92,15 +93,16 @@ function encryptSecretValue(y) {
 
   const encrypted = sodium.to_base64(cY) + "$" + sodium.to_base64(nonce);
  
+  // string base 64
   return encrypted;
 }
 
 function generateDataValues(rid, userId) {
 
-  console.log('original rid',rid.toString());
+
   // TODO: put rid into prg
   // derive slope & kId from rid
-  const derived = deriveFromRid(rid);
+  const derived = deriveFromRid(sodium.to_hex(rid));
 
   const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId.toString())), HEX);
   const intRid = bigInt(sodium.to_hex(rid),HEX);
@@ -121,7 +123,7 @@ function generateDataValues(rid, userId) {
     recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()),
     kId: sodium.to_base64(derived.kId),
     record,
-    x: bigInt(sodium.to_hex(sodium.crypto_hash(userId)), HEX), // bigInt fix this. should be hash of some user-based value
+    hashedX: hashedUserId, // bigInt fix this. should be hash of some user-based value
     y: y // bigInt
   };
   return plainTextData;
@@ -151,14 +153,14 @@ function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
   // TODO:
-  // const derived = deriveFromRid(rid);
+  const derived = deriveFromRid(rid.toString(HEX));
 
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
     // key, ciphertext
-    const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
-    // const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
+    // const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
+    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
     // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
     // console.log('decryptedRecord', decryptedRecord);
@@ -186,12 +188,15 @@ function decryptSecretValues(data) {
   }
 }
 
-
 function decryptSubmissions(data) {
   let coordA;
   let coordB;
 
-  if (data[0].x < data[1].x) {
+  data[0].x = bigInt(data[0].cX);
+  data[1].x = bigInt(data[1].cX);
+
+
+  if (data[0].x.leq(data[1].x)) {
     coordA = data[0];
     coordB = data[1];
   } else {
@@ -203,14 +208,11 @@ function decryptSubmissions(data) {
   decryptSecretValues([coordA, coordB]);
 
   const slope = deriveSlope(coordA, coordB);
-  const strRid = getIntercept(coordA, slope).toString();
+  const strRid = getIntercept(coordA, slope).toString(HEX);
 
-  console.log('strRid', strRid);
-  // const strRid = rid.toString();
   // TODO: fix rid
-  // const record = decryptRecords(data, strRid);
+  const record = decryptRecords(data, strRid);
 
-  const record = {};
 
   return {
     decryptedRecords: record,
@@ -226,6 +228,7 @@ function decryptSubmissions(data) {
 }
 
 function deriveSlope(c1, c2) {
+  console.log(c1, c2);
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
 
@@ -259,6 +262,8 @@ export class CryptoService {
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
     // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
+
+    // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
 
     return {
@@ -267,7 +272,7 @@ export class CryptoService {
       encryptedRecordKey: plainText.recordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY,
-      cX: plainText.hashedX,
+      cX: plainText.hashedX.toString(), 
       kId: plainText.kId, // TODO: change this when we decide what userID
     };
   }
