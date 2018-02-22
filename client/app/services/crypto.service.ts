@@ -78,7 +78,9 @@ function deriveFromRid(rid) {
   const ridLen = hexRid.length;
 
   const slope = bigInt(hexRid.substr(0, ridLen/2), HEX);
-  const kId = bigInt(hexRid.substr(ridLen / 2, ridLen), HEX);
+
+  // hashing it to make it conform to key size: 32 bytes
+  const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
   return {slope, kId};
 }
@@ -98,6 +100,11 @@ function generateDataValues(rid, userId) {
   // derive slope & kId from rid
   const derived = deriveFromRid(rid);
 
+  const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId.toString())), HEX);
+  const intRid = bigInt(sodium.to_hex(rid),HEX);
+
+  const y = derived.slope.times(hashedUserId).plus(intRid); 
+
   // TODO: hook user name and email back to front-end
   // make issue on github
   const record = {
@@ -106,18 +113,14 @@ function generateDataValues(rid, userId) {
     userEmail: "user@email.com",
   };
 
-  const intRid = parseInt(rid, HEX);
-
   const plainTextData = {
     rid: intRid,
     slope: derived.slope,
     recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()),
-    // todo:
-    // kId: derived.kId,
-    kId: sodium.to_base64(sodium.crypto_secretbox_keygen()),
+    kId: sodium.to_base64(derived.kId),
     record,
     x: userId, // fix this. should be hash of some user-based value
-    y: (derived.slope * userId) + intRid,
+    y
   };
   return plainTextData;
 }
@@ -241,6 +244,8 @@ export class CryptoService {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
+    console.log('rk',sodium.from_base64(plainText.recordKey));
+    console.log('kid',sodium.from_base64(plainText.kId));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
     // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
