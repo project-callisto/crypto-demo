@@ -2,14 +2,12 @@
 import { Injectable } from "@angular/core";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-
+import * as bigInt from 'big-integer';
 /*
  *  GLOBAL CONSTANTS
  */
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157); // TODO: use big num library
-const CT = 0;
-const NONCE = 1;
 
 
 /*  SODIUM INTIALIZATION  */
@@ -76,9 +74,11 @@ function generateRandNum() {
 
 function deriveFromRid(rid) {
 
-  const ridLen = rid.length;
-  const slope = parseInt(rid.substr(0, ridLen / 2), HEX);
-  const kId = rid.substr(ridLen / 2, ridLen);
+  const hexRid = sodium.to_hex(rid);
+  const ridLen = hexRid.length;
+
+  const slope = bigInt(hexRid.substr(0, ridLen/2), HEX);
+  const kId = bigInt(hexRid.substr(ridLen / 2, ridLen), HEX);
 
   return {slope, kId};
 }
