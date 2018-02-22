@@ -236,6 +236,11 @@ function getIntercept(c1, slope) {
 @Injectable()
 export class CryptoService {
 
+  /*
+   * access with this.jquery to get different versions of the jquery library
+   * on the client (which uses basic jquery) vs the server (which uses jquery with jsdom)
+   * this version of the function is the client side variant
+   */
   public get jquery() { return $; }
 
   /*
