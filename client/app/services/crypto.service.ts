@@ -290,6 +290,7 @@ export class CryptoService {
         return;
       }
       const decrypted = decryptSubmissions(data);
+      console.log('decrypted', decrypted)
     });
     }
   }
