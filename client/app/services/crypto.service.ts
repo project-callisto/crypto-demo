@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
+import encoding from "text-encoding";
 /*
  *  GLOBAL CONSTANTS
  */
@@ -171,7 +172,7 @@ function decryptRecords(data, rid) {
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
     // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
+    const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
@@ -194,7 +195,7 @@ function decryptSecretValues(data) {
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
     // Convert back to bigInt
-    const yStr = new TextDecoder("utf-8").decode(y);
+    const yStr = new encoding.TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
   }
 }
