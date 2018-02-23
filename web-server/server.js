@@ -45,7 +45,7 @@ app.post('/postPerpId', function(req,res) {
     // TODO: choose adequately safe key that is static
     
     // current substitute for OPRF
-    var rid = sodium.crypto_hash(pid+sK).toString();
+    var rid = sodium.to_base64(sodium.crypto_hash(pid+sK));
 
     res.send({rid});
   });
