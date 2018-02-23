@@ -73,9 +73,8 @@ function generateRandNum() {
 }
 
 function deriveFromRid(hexRid) {
-  console.log('rid', hexRid);
 
-  // const hexRid = sodium.to_hex(rid);
+  console.log('hexRid', hexRid);
   const ridLen = hexRid.length;
 
   const slope = bigInt(hexRid.substr(0, ridLen/2), HEX);
@@ -83,10 +82,13 @@ function deriveFromRid(hexRid) {
   // hashing it to make it conform to key size: 32 bytes
   const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
+  console.log('kId',kId);
   return {slope, kId};
 }
 
+// Y is a bigInt number
 function encryptSecretValue(y) {
+
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
   const cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
@@ -99,14 +101,18 @@ function encryptSecretValue(y) {
 
 function generateDataValues(rid, userId) {
 
+  var hexRid = sodium.to_hex(sodium.from_base64(rid));
+
+  // var prgRid = sodium.crypto_hash_sha256(hexRid);
 
   // TODO: put rid into prg
   // derive slope & kId from rid
-  const derived = deriveFromRid(sodium.to_hex(rid));
-
+  // hex string
+  const derived = deriveFromRid(hexRid);
   const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId.toString())), HEX);
-  const intRid = bigInt(sodium.to_hex(rid),HEX);
+  const intRid = bigInt(hexRid,HEX);
 
+  // bigInt
   const y = derived.slope.times(hashedUserId).plus(intRid); 
 
   // TODO: hook user name and email back to front-end
@@ -152,8 +158,9 @@ function symmetricDecrypt(key, cipherText) {
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
-  // TODO:
   const derived = deriveFromRid(rid.toString(HEX));
+
+  console.log('derived', derived.kId.toString());
 
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
@@ -182,9 +189,12 @@ function decryptSecretValues(data) {
 
     const userPK = sodium.from_base64(data[i].userPubKey);
 
+    // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    data[i].y = bigInt(sodium.to_hex(y), HEX);
+    // Convert back to bigInt
+    const yStr = new TextDecoder("utf-8").decode(y);
+    data[i].y = bigInt(yStr);
   }
 }
 
@@ -204,18 +214,21 @@ function decryptSubmissions(data) {
     coordB = data[0];
   }
 
+
   // 
   decryptSecretValues([coordA, coordB]);
+  // populates data with y decrypted
 
+  // slope is correct
   const slope = deriveSlope(coordA, coordB);
-  const strRid = getIntercept(coordA, slope).toString(HEX);
-
+  const strRid = getIntercept(coordA, slope);
+  
   // TODO: fix rid
-  const record = decryptRecords(data, strRid);
+  const record = decryptRecords(data, strRid.toString(HEX));
 
 
   return {
-    decryptedRecords: record,
+    decryptedRecords: {},
     slope,
     strRid,
   };
@@ -228,7 +241,6 @@ function decryptSubmissions(data) {
 }
 
 function deriveSlope(c1, c2) {
-  console.log(c1, c2);
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
 
