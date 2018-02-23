@@ -48,12 +48,12 @@ export class StepComponent {
   ) { }
 
   private postData(encryptedData: EncryptedData): void {
-    $.post('/postData', encryptedData, (data, status) => {
-      if (status !== 'success') {
-        console.log('Error posting encrypted data to server');
+    $.post("/postData", encryptedData, (data, status) => {
+      if (status !== "success") {
+        console.log("Error posting encrypted data to server");
         return;
-      } 
-    })
+      }
+    });
   }
 
 
@@ -76,7 +76,7 @@ export class StepComponent {
   }
 
   private advanceSecondStep(): void {
- 
+
     this.crypto.createDataSubmission(this.perpInput).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
@@ -89,13 +89,13 @@ export class StepComponent {
         this.scrollTo("third-step");
       },
     );
-    
+
 
   }
 
   private advanceThirdStep(): void {
     this.crypto.decryptData();
-    
+
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
