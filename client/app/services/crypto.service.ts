@@ -39,13 +39,13 @@ export interface EncryptedData {
 }
 
 export interface PlainTextData {
-readonly rid: number;
-readonly slope: number;
-readonly kId: string;
-readonly record: Object;
-readonly recordKey: string;
-readonly hashedX: number;
-readonly y: number;
+  readonly rid: number;
+  readonly slope: number;
+  readonly kId: string;
+  readonly record: Object;
+  readonly recordKey: string;
+  readonly hashedX: number;
+  readonly y: number;
 }
 
 
@@ -59,9 +59,11 @@ readonly y: number;
  */
 
  // TODO: split this to make it more readable
+ // Returns base64 
 function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
   const cT = sodium.crypto_secretbox_easy(msg, nonce, key);
 
   const encrypted = sodium.to_base64(cT) + "$" + sodium.to_base64(nonce);
@@ -121,10 +123,12 @@ function generateDataValues(rid, userId) {
     userEmail: "user@email.com",
   };
 
+  const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
+
   const plainTextData = {
     rid: intRid,
     slope: derived.slope,
-    recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()),
+    recordKey: Krecord,
     kId: sodium.to_base64(derived.kId),
     record,
     hashedX: hashedUserId, // bigInt fix this. should be hash of some user-based value
@@ -140,15 +144,15 @@ function generateDataValues(rid, userId) {
 // Key is Uint8Array,
 // CipherText: string in base64 encoding
 function symmetricDecrypt(key, cipherText) {
-
-  console.log('cipherTet', cipherText)
   const split = cipherText.split("$");
 
   // Uint8Arrays
-  const cT = split[0];
-  const nonce = split[1];
+  const cT = sodium.from_base64(split[0]);
+  const nonce = sodium.from_base64(split[1]);
 
-  const decrypted = sodium.crypto_secretbox_open_easy(sodium.from_base64(cT), sodium.from_base64(nonce), key);
+  // cT 
+  key = sodium.from_base64(key);
+  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
 
   return decrypted;
 }
@@ -159,8 +163,6 @@ function decryptRecords(data, rid) {
   const decryptedRecords = [];
   const derived = deriveFromRid(rid.toString(HEX));
 
-  console.log('kId',derived.kId);
-
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
@@ -169,8 +171,8 @@ function decryptRecords(data, rid) {
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);    
     // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    // console.log('decryptedRecord', decryptedRecord);
-    decryptedRecords.push(sodium.to_string(decryptedRecord));
+    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
+    decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
 }
@@ -270,11 +272,8 @@ export class CryptoService {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
-    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
-    // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
     // asymmetric
-
-    console.log('original kId', sodium.from_base64(plainText.kId));
 
     // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
@@ -318,7 +317,8 @@ export class CryptoService {
         return;
       }
       const decrypted = decryptSubmissions(data);
-      console.log('decrypted', decrypted)
+      // const dStr = new TextDecoder("utf-8").decode(decrypted);
+      // console.log('decrypted', decrypted.toString());
     });
     }
   }
