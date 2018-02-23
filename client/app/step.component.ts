@@ -79,13 +79,12 @@ export class StepComponent {
  
     this.crypto.createDataSubmission(this.perpInput).then(
       (plainText: PlainTextData) => {
-        // const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
 
-        // this.postData(encryptedData);
+        this.postData(encryptedData);
         // this.encryptedDataArr.push(encryptedData);
         // this.secondStep.RID = encryptedData.hashedRid;
-        // this.secondStep.encryptedData = encryptedData;
-        // this.secondStep.shown = true;
+        this.secondStep.encryptedData = encryptedData;
         this.thirdStep.shown = true;
         this.scrollTo("third-step");
       },

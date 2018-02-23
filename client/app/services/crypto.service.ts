@@ -74,7 +74,6 @@ function generateRandNum() {
 
 function deriveFromRid(hexRid) {
 
-  console.log('hexRid', hexRid);
   const ridLen = hexRid.length;
 
   const slope = bigInt(hexRid.substr(0, ridLen/2), HEX);
@@ -82,7 +81,6 @@ function deriveFromRid(hexRid) {
   // hashing it to make it conform to key size: 32 bytes
   const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
-  console.log('kId',kId);
   return {slope, kId};
 }
 
@@ -143,6 +141,7 @@ function generateDataValues(rid, userId) {
 // CipherText: string in base64 encoding
 function symmetricDecrypt(key, cipherText) {
 
+  console.log('cipherTet', cipherText)
   const split = cipherText.split("$");
 
   // Uint8Arrays
@@ -160,14 +159,14 @@ function decryptRecords(data, rid) {
   const decryptedRecords = [];
   const derived = deriveFromRid(rid.toString(HEX));
 
-  console.log('derived', derived.kId.toString());
+  console.log('kId',derived.kId);
 
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
     // key, ciphertext
     // const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
-    const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
+    const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);    
     // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
     // console.log('decryptedRecord', decryptedRecord);
@@ -275,13 +274,15 @@ export class CryptoService {
     // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
     // asymmetric
 
+    console.log('original kId', sodium.from_base64(plainText.kId));
+
     // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
 
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
       encryptedRecord,
-      encryptedRecordKey: plainText.recordKey,
+      encryptedRecordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY,
       cX: plainText.hashedX.toString(), 
