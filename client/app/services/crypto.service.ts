@@ -101,7 +101,7 @@ function encryptSecretValue(y) {
 
 function generateDataValues(rid, userId) {
 
-  let hexRid = sodium.to_hex(sodium.from_base64(rid));
+  const hexRid = sodium.to_hex(sodium.from_base64(rid));
 
   // var prgRid = sodium.crypto_hash_sha256(hexRid);
 
