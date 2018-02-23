@@ -26,5 +26,4 @@ export class FirstStepComponent {
       this.advanceStep.emit(perpInput);
     }
   }
-
 }
