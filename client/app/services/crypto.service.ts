@@ -291,7 +291,7 @@ export class CryptoService {
 
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<PlainTextData> {
-    const cryptoService = this;
+    const cryptoService:CryptoService = this;
     // TODO: return post itself
     const dataPromise = new Promise<PlainTextData>(function(resolve, reject) {
       $.post("/postPerpId", perpId, (data, status) => {
