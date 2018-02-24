@@ -1,5 +1,4 @@
 {
-
   "compileOnSave": true,
   "compilerOptions": {
     "module": "commonjs",
@@ -19,7 +18,6 @@
     ]
   },
   "exclude": [
-    "unit-tests",
     "node_modules"
   ]
 }
