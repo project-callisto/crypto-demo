@@ -9,7 +9,7 @@
     },
     "scripts": {
         "clean": "tslint -p . --fix --force",
-        "test:unit": "jasmine-ts --config=unit-tests/support/jasmine.json",
+        "test:unit": "jasmine-ts --config=unit-tests/jasmine.json",
         "test:e2e": "protractor protractor/protractor.conf.js",
         "start": "node web-server/server.js",
         "start:e2e": "PORT=4202 node web-server/server.js",
@@ -65,6 +65,9 @@
         "jasmine-spec-reporter": "^4.2.1",
         "jasmine-ts": "^0.2.1",
         "jsdom": "^11.6.2",
+        "karma": "^2.0.0",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-jasmine": "^1.1.1",
         "protractor": "^5.3.0",
         "tslint": "^5.9.1",
         "webdriver-manager": "^12.0.6",
