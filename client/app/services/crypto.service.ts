@@ -59,8 +59,8 @@ export interface PlainTextData {
  * ENCRYPTION
  */
 
- // TODO: split this to make it more readable
- // Returns base64
+// TODO: split this to make it more readable
+// Returns base64
 function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
@@ -84,7 +84,7 @@ function deriveFromRid(hexRid) {
   // hashing it to make it conform to key size: 32 bytes
   const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
-  return {slope, kId};
+  return { slope, kId };
 }
 
 // Y is a bigInt number
@@ -289,22 +289,10 @@ export class CryptoService {
     };
   }
 
-  // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<PlainTextData> {
-    const cryptoService:CryptoService = this;
-    // TODO: return post itself
-    const dataPromise = new Promise<PlainTextData>(function(resolve, reject) {
-      $.post("/postPerpId", perpId, (data, status) => {
-        if (status === "success") {
-          const plainTextData = generateDataValues(data.rid, generateRandNum());
-          resolve(plainTextData);
-        } else {
-          reject(Error("Post request failed"));
-        }
-      });
+    return $.post("/postPerpId", perpId, (data) => {
+      return generateDataValues(data.rid, generateRandNum());
     });
-
-    return dataPromise;
   }
 
   /*
@@ -320,5 +308,5 @@ export class CryptoService {
       // const dStr = new TextDecoder("utf-8").decode(decrypted);
       // console.log('decrypted', decrypted.toString());
     });
-    }
   }
+}
