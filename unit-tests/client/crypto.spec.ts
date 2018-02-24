@@ -1,12 +1,7 @@
 import { CryptoService, EncryptedData, PlainTextData } from "../../client/app/services/crypto.service";
-import { $ } from "../helpers";
-
-class ServerSideCryptoService extends CryptoService {
-  public get jquery() { return $; }  
-}
 
 describe("Crypto service", function () {
-  const crypto = new ServerSideCryptoService();
+  const crypto = new CryptoService();
 
   it("has a public submission api", function () {
     expect(crypto.createDataSubmission).toBeDefined();

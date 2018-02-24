@@ -265,14 +265,6 @@ function getIntercept(c1, slope) {
  */
 @Injectable()
 export class CryptoService {
-
-  /*
-   * access with this.jquery to get different versions of the jquery library
-   * on the client (which uses basic jquery) vs the server (which uses jquery with jsdom)
-   * this version of the function is the client side variant
-   */
-  public get jquery() { return $; }
-
   /*
    *  ENCRYPTION
    */
@@ -302,7 +294,7 @@ export class CryptoService {
     const cryptoService = this;
     // TODO: return post itself
     const dataPromise = new Promise<PlainTextData>(function(resolve, reject) {
-      cryptoService.jquery.post("/postPerpId", perpId, (data, status) => {
+      $.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum());
           resolve(plainTextData);
@@ -319,7 +311,7 @@ export class CryptoService {
    * DECRYPTION
    */
   public decryptData() {
-    this.jquery.get("/getEncryptedData", (data, status) => {
+    $.get("/getEncryptedData", (data, status) => {
       if (status !== "success") {
         console.log("Error retrieving data");
         return;
