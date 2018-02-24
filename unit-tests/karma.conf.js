@@ -3,19 +3,19 @@
 
 module.exports = function (config) {
   config.set({
-    basePath: '',
+    basePath: './../',
     frameworks: [
       "jasmine",
       "karma-typescript"
     ],
     files: [
-      'client/*[sS]pec.ts'
+      'unit-tests/client/*[sS]pec.ts'
     ],
     preprocessors: {
       "**/*.ts": "karma-typescript",
     },
     karmaTypescriptConfig: {
-      tsconfig: "./../tsconfig.json",
+      tsconfig: "tsconfig.json",
       compilerOptions: {
         allowJs: true,
       }
