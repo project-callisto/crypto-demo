@@ -9,7 +9,7 @@
     },
     "scripts": {
         "clean": "tslint -p . --fix --force",
-        "test:unit": "jasmine-ts --config=unit-tests/jasmine.json",
+        "test:unit": "karma start unit-tests/karma.conf.js",
         "test:e2e": "protractor protractor/protractor.conf.js",
         "start": "node web-server/server.js",
         "start:e2e": "PORT=4202 node web-server/server.js",

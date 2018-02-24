@@ -11,10 +11,10 @@ describe("Crypto service", (): void => {
     expect(crypto.decryptData).toBeDefined();
   });
 
-  it("takes string input on the submission api", async (): Promise<{}> => {
-    const plainText: PlainTextData = await crypto.createDataSubmission("a");
-    expect(plainText).toBeFalsy();
-  });
+  // it("takes string input on the submission api", async (): any => {
+  //   const plainText: PlainTextData = await crypto.createDataSubmission("a");
+  //   expect(plainText).toBeFalsy();
+  // });
 
   it("has an RID", (): void => {
     setTimeout(() => {
