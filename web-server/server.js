@@ -52,40 +52,6 @@ app.post('/postPerpId', function(req,res) {
 });
 
 
-// DATABASE
-var encryptedSubmissions = [];
-
-// CALLISTO SERVER
-
-// Receiving a EncryptedData object
-app.post('/postData', function(req, res) {
-  
-  var encryptedSubmission = {
-    hashedRid: req.body.hashedRid,
-    encryptedRecordKey: req.body.encryptedRecordKey,
-    encryptedRecord: req.body.encryptedRecord,
-    userPubKey: req.body.userPubKey,
-    cX: req.body.cX,
-    cY: req.body.cY,
-    kId: req.body.kId
-  }
-
-  console.log('received new encryptedSubmission: ', encryptedSubmission);
-
-  encryptedSubmissions.push(encryptedSubmission);
-  res.sendStatus(200);
-});
-
-// TODO: move this to client side
-app.get('/getEncryptedData', function (req, res) {
-  console.log('received data request. returning: ', encryptedSubmissions)
-  // TODO: check that rid's match 
-  res.send(encryptedSubmissions);
-
-  // clearing submissions for demo
-  encryptedSubmissions = [];
-});
-
 // Point static path to dist
 app.use(express.static(path.join(__dirname, '/../dist')));
 
