@@ -9,6 +9,7 @@ module.exports = function (config) {
       "karma-typescript"
     ],
     files: [
+      'client/**/*.ts',
       'unit-tests/client/*[sS]pec.ts'
     ],
     preprocessors: {
