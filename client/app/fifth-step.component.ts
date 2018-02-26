@@ -9,6 +9,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
   ],
 })
 export class FifthStepComponent {
+  @Input() public RID: string;
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }

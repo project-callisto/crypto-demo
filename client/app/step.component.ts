@@ -5,6 +5,7 @@ import { FourthStepComponent } from "./fourth-step.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
+import { SummaryStepComponent } from "./summary-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 import * as $ from "jquery";
@@ -27,7 +28,9 @@ import * as $ from "jquery";
     <fifth-step
       (advanceStep)="advanceFifthStep($event)"
     ></fifth-step>
-    <sixth-step></sixth-step>
+    <sixth-step>
+    (advanceStep)="advanceSixthStep($event)"
+    </sixth-step>
   `,
   providers: [
     CryptoService,
@@ -44,6 +47,7 @@ export class StepComponent {
   @ViewChild(FourthStepComponent) private fourthStep: FourthStepComponent;
   @ViewChild(FifthStepComponent) private fifthStep: FifthStepComponent;
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
+  @ViewChild(SummaryStepComponent) private summaryStep: SummaryStepComponent;
 
   constructor(
     public crypto: CryptoService,
@@ -102,25 +106,29 @@ export class StepComponent {
 // EncGCM(Krecord, record) 
 // EncGCM(KID, Krecord)  
   private advanceFourthStep(): void {
+
+    this.crypto.createDataSubmission(this.perpInput).then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        this.crypto.postData(encryptedData);
+        const decryptedData = this.crypto.decryptData(); 
+        this.fifthStep.RID = decryptedData.strRid;
+      },
+    );
+
     this.fifthStep.shown = true;
     this.scrollTo("fifth-step");
   }
 
   // simulate data, display chart, display decrypted RID
   private advanceFifthStep(): void {
+    this.sixthStep.shown = true;
+    this.scrollTo("sixth-step");  
+  }
 
-  this.crypto.createDataSubmission(this.perpInput).then(
-    (plainText: PlainTextData) => {
-      const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-
-      this.crypto.postData(encryptedData);
-
-      const decryptedData = this.crypto.decryptData();
-
-      this.sixthStep.shown = true;
-      this.scrollTo("sixth-step");  
-    },
-  );
+  private advanceSixthStep(): void {
+    this.summaryStep.shown = true;
+    this.scrollTo('seventh-step');
   }
 
   private scrollTo(element: string): void {

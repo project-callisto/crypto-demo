@@ -1,5 +1,4 @@
-import { Component, Input } from "@angular/core";
-
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 @Component({
   selector: "sixth-step",
   templateUrl: "./templates/sixth-step.component.html",
@@ -9,5 +8,7 @@ import { Component, Input } from "@angular/core";
   ],
 })
 export class SixthStepComponent {
+  @Input() public decryptedData: {};
   @Input() public shown: boolean = false;
+  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }
