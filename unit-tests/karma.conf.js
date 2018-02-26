@@ -3,15 +3,14 @@
 
 module.exports = function (config) {
   config.set({
-    basePath: './../',
+    basePath: "./../",
     frameworks: [
       "jasmine",
-      "karma-typescript"
+      "karma-typescript",
     ],
     files: [
-      'web-server/server.js',
-      'client/app/services/crypto-service.ts',
-      'unit-tests/client/*[sS]pec.ts'
+      "client/app/services/crypto.service.ts",
+      "unit-tests/client/*[sS]pec.ts",
     ],
     preprocessors: {
       "**/*.ts": "karma-typescript",
@@ -20,16 +19,26 @@ module.exports = function (config) {
       tsconfig: "unit-tests/tsconfig.json",
       compilerOptions: {
         allowJs: true,
+      },
+      bundlerOptions: {
+        entrypoints: /\.[sS]pec\.ts$/,
+        sourceMap: true,
+        validateSyntax: true,
+      },
+      coverageOptions: {
+        instrumentation: false,
       }
     },
     reporters: [
-      'spec',
-      "karma-typescript"
+      "spec",
+      "karma-typescript",
     ],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: ['Chrome'],
+    browsers: [
+      "Chrome",
+    ],
     concurrency: Infinity
   })
 }
