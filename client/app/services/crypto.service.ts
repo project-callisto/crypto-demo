@@ -3,7 +3,6 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-import encoding from "text-encoding";
 /*
  *  GLOBAL CONSTANTS
  */
@@ -172,7 +171,7 @@ function decryptRecords(data, rid) {
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
     // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
@@ -181,6 +180,7 @@ function decryptRecords(data, rid) {
 
 // decrypt Y values
 function decryptSecretValues(data) {
+
   for (let i = 0; i < data.length; i++) {
     const split = data[i].cY.split("$");
 
@@ -194,53 +194,14 @@ function decryptSecretValues(data) {
     // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
+    console.log('y', y)
     // Convert back to bigInt
-    const yStr = new encoding.TextDecoder("utf-8").decode(y);
+    const yStr = new TextDecoder("utf-8").decode(y);
+ 
     data[i].y = bigInt(yStr);
   }
 }
 
-function decryptSubmissions(data) {
-  let coordA;
-  let coordB;
-
-  data[0].x = bigInt(data[0].cX);
-  data[1].x = bigInt(data[1].cX);
-
-
-  if (data[0].x.leq(data[1].x)) {
-    coordA = data[0];
-    coordB = data[1];
-  } else {
-    coordA = data[1];
-    coordB = data[0];
-  }
-
-
-  //
-  decryptSecretValues([coordA, coordB]);
-  // populates data with y decrypted
-
-  // slope is correct
-  const slope = deriveSlope(coordA, coordB);
-  const strRid = getIntercept(coordA, slope);
-
-  // TODO: fix rid
-  const record = decryptRecords(data, strRid.toString(HEX));
-
-
-  return {
-    decryptedRecords: {},
-    slope,
-    strRid,
-  };
-
-  // return {
-  //   decryptedRecords: "asdfasdfasdf",
-  //   slope: 10,
-  //   strRid: "lollolollolololol",
-  // };
-}
 
 function deriveSlope(c1, c2) {
   const top = c2.y.minus(c1.y);
@@ -265,6 +226,12 @@ function getIntercept(c1, slope) {
  */
 @Injectable()
 export class CryptoService {
+  
+  private dataSubmissions = [];
+  public postData(encryptedData: EncryptedData) {
+    this.dataSubmissions.push(encryptedData);
+  }
+
 
   /*
    *  ENCRYPTION
@@ -308,18 +275,36 @@ export class CryptoService {
     return dataPromise;
   }
 
+
   /*
    * DECRYPTION
    */
   public decryptData() {
-    $.get("/getEncryptedData", (data, status) => {
-      if (status !== "success") {
-        console.log("Error retrieving data");
-        return;
-      }
-      const decrypted = decryptSubmissions(data);
-      // const dStr = new TextDecoder("utf-8").decode(decrypted);
-      // console.log('decrypted', decrypted.toString());
-    });
+    let data = this.dataSubmissions;
+    let coordA;
+    let coordB;
+
+    data[0].x = bigInt(data[0].cX);
+    data[1].x = bigInt(data[1].cX);
+
+
+    if (data[0].x.leq(data[1].x)) {
+      coordA = data[0];
+      coordB = data[1];
+    } else {
+      coordA = data[1];
+      coordB = data[0];
     }
+
+    decryptSecretValues([coordA, coordB]);
+
+    const slope = deriveSlope(coordA, coordB);
+    const strRid = getIntercept(coordA, slope);
+
+    return {
+      decryptedRecords: decryptRecords(data, strRid.toString(HEX)),
+      slope,
+      strRid,
+    };
   }
+}
