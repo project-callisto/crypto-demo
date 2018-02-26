@@ -23,7 +23,7 @@ module.exports = function (config) {
     },
     // reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: [
-      'progress',
+      'spec',
       "karma-typescript"
     ],
     port: 9876,
