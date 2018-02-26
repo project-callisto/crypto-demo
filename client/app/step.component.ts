@@ -62,6 +62,7 @@ export class StepComponent {
 
       this.plainTextData = plainText;
       this.secondStep.plainTextData = plainText;
+      this.thirdStep.plainTextData = plainText;
       this.encryptedData = encryptedData;
 
       console.log('plainText', plainText, 'encryptedData', encryptedData);
@@ -88,7 +89,7 @@ export class StepComponent {
   // display PRG(RID), m, kID, x
   // display unique y = mx + RID
   private advanceThirdStep(): void {
- 
+  
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }

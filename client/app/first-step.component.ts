@@ -17,7 +17,7 @@ import * as $ from "jquery";
   ],
 })
 export class FirstStepComponent {
-  @Input() public RID: string = "[[ RID ]]";
+  @Input() public recordKey: string;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 
   public perpSubmit(event: Event, perpInput: string): void {
