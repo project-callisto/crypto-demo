@@ -9,14 +9,15 @@ module.exports = function (config) {
       "karma-typescript"
     ],
     files: [
-      'client/app/services/*.ts',
+      'web-server/server.js',
+      'client/app/services/crypto-service.ts',
       'unit-tests/client/*[sS]pec.ts'
     ],
     preprocessors: {
       "**/*.ts": "karma-typescript",
     },
     karmaTypescriptConfig: {
-      tsconfig: "tsconfig.json",
+      tsconfig: "unit-tests/tsconfig.json",
       compilerOptions: {
         allowJs: true,
       }

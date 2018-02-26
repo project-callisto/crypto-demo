@@ -12,7 +12,7 @@ const sK = 'Project Callisto Super Secret Key';
 
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 
 const sodium = require('libsodium-wrappers');
@@ -31,23 +31,23 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
-var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
-  console.log('Listening on port %d', server.address().port)
+app.listen(process.env.PORT || DEFAULT_PORT, function () {
+  console.log('Listening on port %d', this.address().port)
 });
 
 // KEY SERVER
-app.post('/postPerpId', function(req,res) {
+app.post('/postPerpId', function (req, res) {
   var pid = req.body.pid;
 
   let sodium_promise = sodium.ready;
-  
-  sodium_promise.then(function() {
-    // TODO: choose adequately safe key that is static
-    
-    // current substitute for OPRF
-    var rid = sodium.to_base64(sodium.crypto_hash(pid+sK));
 
-    res.send({rid});
+  sodium_promise.then(function () {
+    // TODO: choose adequately safe key that is static
+
+    // current substitute for OPRF
+    var rid = sodium.to_base64(sodium.crypto_hash(pid + sK));
+
+    res.send({ rid });
   });
 });
 
@@ -57,6 +57,6 @@ app.use(express.static(path.join(__dirname, '/../dist')));
 
 // Catch all other routes and return the index file
 // IMPORTANT: this route needs to come last
-app.get('*', (req, res) => {
+const server = app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/../dist/index.html'));
 });

@@ -3,21 +3,17 @@ import { CryptoService, EncryptedData, PlainTextData } from "./../../client/app/
 describe("Crypto service", (): void => {
   const crypto: CryptoService = new CryptoService();
 
-  it("has a public submission api", (): void => {
-    expect(crypto.createDataSubmission).toBeDefined();
-  });
-
-  it("has a public decryption api", (): void => {
-    expect(crypto.decryptData).toBeDefined();
-  });
-
-  it("takes string input on the submission api", () => {
+  it("[ SPEC ] has a public submission api, that takes in strings", () => {
     return crypto.createDataSubmission("a").then((data) => {
       expect(data).toBeTruthy();
     });
   });
 
-  it("has an RID", (): void => {
+  it("[ SPEC ] has a public decryption api", (): void => {
+    expect(crypto.decryptData).toBeDefined();
+  });
+
+  it("[ SPEC ] has an RID", (): void => {
     setTimeout(() => {
       crypto.createDataSubmission("a").then(
         (plainText: PlainTextData) => {
@@ -28,7 +24,7 @@ describe("Crypto service", (): void => {
     }, 10000);
   });
 
-  it("returns RID for perpIDs starting with A-Z", (): void => {
+  it("[ REGRESSION ] returns RID for perpIDs starting with A-Z", (): void => {
     let perpID: number = 65;
     const maxPerpID: number = 90;
 
