@@ -63,6 +63,7 @@ export class StepComponent {
       this.plainTextData = plainText;
       this.secondStep.plainTextData = plainText;
       this.thirdStep.plainTextData = plainText;
+      this.fourthStep.encryptedData = encryptedData;
       this.encryptedData = encryptedData;
 
       console.log('plainText', plainText, 'encryptedData', encryptedData);
