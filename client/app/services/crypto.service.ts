@@ -197,7 +197,6 @@ function decryptSecretValues(data) {
     console.log('y', y)
     // Convert back to bigInt
     const yStr = new TextDecoder("utf-8").decode(y);
- 
     data[i].y = bigInt(yStr);
   }
 }
