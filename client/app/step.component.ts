@@ -36,6 +36,8 @@ import * as $ from "jquery";
 export class StepComponent {
   // public encryptedDataArr: EncryptedData[] = [];
   private perpInput: string;
+  private encryptedData: EncryptedData;
+  private plainTextData: PlainTextData;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
   @ViewChild(ThirdStepComponent) private thirdStep: ThirdStepComponent;
@@ -47,34 +49,33 @@ export class StepComponent {
     public crypto: CryptoService,
   ) { }
 
-  // private postData(encryptedData: EncryptedData): void {
-  //   $.post("/postData", encryptedData, (data, status) => {
-  //     if (status !== "success") {
-  //       console.log("Error posting encrypted data to server");
-  //       return;
-  //     }
-  //   });
-  // }
-
  // input: perpname, username
  // display: kRecord
-  private advanceFirstStep(perpInput: string): void {
-    this.perpInput = perpInput;
+ private advanceFirstStep(perpInput: string): void {
+  this.perpInput = perpInput;
 
-    this.crypto.createDataSubmission(perpInput).then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+  this.crypto.createDataSubmission(perpInput).then(
+    (plainText: PlainTextData) => {
+      const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
 
-        this.crypto.postData(encryptedData);
+      this.crypto.postData(encryptedData);
 
-        // this.encryptedDataArr.push(encryptedData);
-        this.firstStep.RID = encryptedData.hashedRid;
-        this.secondStep.encryptedData = encryptedData;
-        this.secondStep.shown = true;
-        this.scrollTo("second-step");
-      },
-    );
-  }
+      this.plainTextData = plainText;
+      this.secondStep.plainTextData = plainText;
+      this.encryptedData = encryptedData;
+
+      console.log('plainText', plainText, 'encryptedData', encryptedData);
+      this.secondStep.shown = true;
+      this.scrollTo("second-step");
+
+      // TODO: add these
+      // this.firstStep.recordKey = plainText.recordKey
+
+      // TODO: remove these
+      this.firstStep.recordKey = plainText.recordKey;
+    },
+  );
+}
 
   // display RID
   private advanceSecondStep(): void {
