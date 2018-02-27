@@ -1,4 +1,34 @@
-<section *ngIf="shown">
-  <h2 class="main-header text-centered">Summary</h2>
-  <p class="explainer">(Lorem Ipsum) as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+<section *ngIf="shown" id='sixth-step'>
+  <h2 class="main-header text-centered">Unmasking Data</h2>
+  <ul class="step-display">
+    <li class="activated-step">
+      <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
+    </li>
+    <li class="activated-step">
+      <a href="#second-step"><span class="step-explainer">STEP</span> 2</a>
+    </li>
+    <li class="activated-step">
+      <a href="#third-step"><span class="step-explainer">STEP</span> 3</a>
+    </li>
+    <li class="activated-step">
+      <a href="#fourth-step"><span class="step-explainer">STEP</span> 4</a>
+    </li>
+    <li class="activated-step">
+      <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
+    </li>
+    <li class="activated-step">
+      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
+    </li>
+  </ul>
+
+  <p class="explainer">By using the RID, the Callisto Options Counselor can input it back into the PRG to recover K<sub>ID</sub>. K<sub>ID</sub> is then used to decrypt K<sub>record</sub>. K<sub>record</sub> is then used to decrypt the record (your name and the perpetrator’s name).</p>
+  <div class='calc-display'>
+    <p>
+      <code>Unmasked Records</code>:
+      <code class="calc-display-value">{{ record }}</code>
+    </p>
+  </div>
+  <div class="align-right-on-large">
+    <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
+  </div>
 </section>

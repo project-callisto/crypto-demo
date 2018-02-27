@@ -99,7 +99,7 @@ function encryptSecretValue(y) {
   return encrypted;
 }
 
-function generateDataValues(rid, userId): PlainTextData {
+function generateDataValues(rid, userId, record): PlainTextData {
 
   const hexRid = sodium.to_hex(sodium.from_base64(rid));
 
@@ -117,11 +117,7 @@ function generateDataValues(rid, userId): PlainTextData {
 
   // TODO: hook user name and email back to front-end
   // make issue on github
-  const record = {
-    perpId: "harvey weinstein",
-    userName: "Alice Bob",
-    userEmail: "user@email.com",
-  };
+
 
   const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
@@ -165,10 +161,7 @@ function decryptRecords(data, rid) {
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
-    // key, ciphertext
-    // const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
-    // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
     const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
@@ -193,7 +186,6 @@ function decryptSecretValues(data) {
     // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    console.log("y", y);
     // Convert back to bigInt
     const yStr = new TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
@@ -252,7 +244,11 @@ export class CryptoService {
   }
 
   public encryptRID(RID: string): EncryptedData {
-    const plainTextData: PlainTextData = generateDataValues(RID, generateRandNum());
+    const record = {
+      perpId: perpId,
+      userName: "Alice Bob",
+    };
+    const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
     const encryptedData: EncryptedData = this.encryptData(plainTextData);
     this.dataSubmissions.push(encryptedData);
     return encryptedData;
