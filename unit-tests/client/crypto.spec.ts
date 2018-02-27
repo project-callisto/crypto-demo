@@ -4,24 +4,17 @@ describe("Crypto service", (): void => {
   const crypto: CryptoService = new CryptoService();
 
   it("[ SPEC ] has a public submission api, that takes in strings", () => {
-    return crypto.createDataSubmission("a").then((data) => {
-      expect(data).toBeTruthy();
-    });
+    const data: EncryptedData = crypto.encryptRID("a")
+    expect(data).toBeDefined();
   });
 
   it("[ SPEC ] has a public decryption api", (): void => {
     expect(crypto.decryptData).toBeDefined();
   });
 
-  it("[ SPEC ] has an RID", (): void => {
-    setTimeout(() => {
-      crypto.createDataSubmission("a").then(
-        (plainText: PlainTextData) => {
-          const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-          expect(encryptedData.hashedRid).toBeTruthy();
-        },
-      );
-    }, 10000);
+  it("[ REGRESSION ] returns an object with an RID from the public submission api", (): void => {
+    const data: EncryptedData = crypto.encryptRID("a")
+    expect(data.hashedRid).toBeTruthy();
   });
 
   it("[ REGRESSION ] returns RID for perpIDs starting with A-Z", (): void => {
@@ -29,14 +22,8 @@ describe("Crypto service", (): void => {
     const maxPerpID: number = 90;
 
     while (perpID <= maxPerpID) {
-      setTimeout(() => {
-        crypto.createDataSubmission(String.fromCharCode(perpID)).then(
-          (plainText: PlainTextData) => {
-            const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-            expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
-          },
-        );
-      }, 10000);
+      const data: EncryptedData = crypto.encryptRID(String.fromCharCode(perpID))
+      expect(data.hashedRid).toBeTruthy();
       perpID++;
     }
 

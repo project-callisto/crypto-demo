@@ -48,7 +48,6 @@ export class StepComponent {
 
   private advanceFirstStep(perpInput: string): void {
     this.perpInput = perpInput;
-
     this.crypto.createDataSubmission(perpInput).then(
       (encryptedData: EncryptedData) => {
         this.firstStep.RID = encryptedData.hashedRid;
@@ -61,18 +60,18 @@ export class StepComponent {
 
   private advanceSecondStep(): void {
 
-    this.crypto.createDataSubmission(this.perpInput).then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+    // this.crypto.createDataSubmission(this.perpInput).then(
+    //   (plainText: PlainTextData) => {
+    //     const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
 
-        this.crypto.postData(encryptedData);
-        // this.encryptedDataArr.push(encryptedData);
-        // this.secondStep.RID = encryptedData.hashedRid;
-        this.secondStep.encryptedData = encryptedData;
-        this.thirdStep.shown = true;
-        this.scrollTo("third-step");
-      },
-    );
+    //     this.crypto.postData(encryptedData);
+    //     // this.encryptedDataArr.push(encryptedData);
+    //     // this.secondStep.RID = encryptedData.hashedRid;
+    //     this.secondStep.encryptedData = encryptedData;
+    //     this.thirdStep.shown = true;
+    //     this.scrollTo("third-step");
+    //   },
+    // );
 
 
   }

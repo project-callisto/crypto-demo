@@ -51,7 +51,6 @@ app.post('/postPerpId', function (req, res) {
   });
 });
 
-
 // Point static path to dist
 app.use(express.static(path.join(__dirname, '/../dist')));
 

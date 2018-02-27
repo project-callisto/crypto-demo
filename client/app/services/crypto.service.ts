@@ -19,7 +19,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function() {
+sodium_promise.then(function () {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -251,13 +251,17 @@ export class CryptoService {
     };
   }
 
-  public createDataSubmission(perpId: string): Promise<EncryptedData> {
-    return $.post("/postPerpId", perpId,
+  public encryptRID(RID: string): EncryptedData {
+    const plainTextData: PlainTextData = generateDataValues(RID, generateRandNum());
+    const encryptedData: EncryptedData = this.encryptData(plainTextData);
+    this.dataSubmissions.push(encryptedData);
+    return encryptedData;
+  }
+
+  public createDataSubmission(perpID: string): Promise<EncryptedData> {
+    return $.post("/postPerpId", perpID,
       (data): EncryptedData => {
-        const plainTextData: PlainTextData = generateDataValues(data.rid, generateRandNum());
-        const encryptedData: EncryptedData = this.encryptData(plainTextData);
-        this.dataSubmissions.push(encryptedData);
-        return encryptedData;
+        return this.encryptRID(data.rid);
       },
     );
   }
