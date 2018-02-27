@@ -31,7 +31,7 @@ export class FirstStepComponent {
   public perpSubmit(event: Event, perpInput: string, userInput: string): void {
     event.preventDefault();
     if (perpInput && userInput) {
-      const data = {perpInput: perpInput, userName: userInput};
+      const data = {perpInput, userName: userInput};
       this.advanceStep.emit(data);
     }
   }

@@ -3,7 +3,7 @@ import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { SecondStepComponent } from "./second-step.component";
-import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
+import { CryptoData, CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { SummaryStepComponent } from "./summary-step.component";
 import { ThirdStepComponent } from "./third-step.component";
@@ -57,11 +57,11 @@ export class StepComponent {
     this.perpInput = perpInput;
     this.userInput = userInput;
     this.crypto.createDataSubmission(perpInput).then(
-      (encryptedData: EncryptedData) => {
-        this.firstStep.recordKey = plainText.recordKey;
-        this.secondStep.plainTextData = plainText;
-        this.thirdStep.plainTextData = plainText;
-        this.fourthStep.encryptedData = encryptedData;
+      (cryptoData: CryptoData) => {
+        this.firstStep.recordKey = cryptoData.plainTextData.recordKey;
+        this.secondStep.plainTextData = cryptoData.plainTextData;
+        this.thirdStep.plainTextData = cryptoData.plainTextData;
+        this.fourthStep.encryptedData = cryptoData.encryptedData;
         this.secondStep.shown = true;
         this.scrollTo("second-step");
       },
@@ -78,12 +78,12 @@ export class StepComponent {
     this.scrollTo("fourth-step");
   }
 
-  //   Display: 
+  //   Display:
   // H(RID)
   // EncPUB(KOC, x)
   // EncPUB(KOC, y)
-  // EncGCM(Krecord, record) 
-  // EncGCM(KID, Krecord)  
+  // EncGCM(Krecord, record)
+  // EncGCM(KID, Krecord)
   private advanceFourthStep(): void {
 
     this.crypto.createDataSubmission(this.perpInput).then(
@@ -108,7 +108,7 @@ export class StepComponent {
 
   private advanceSixthStep(): void {
     this.summaryStep.shown = true;
-    this.scrollTo('seventh-step');
+    this.scrollTo("seventh-step");
   }
 
   private scrollTo(element: string): void {

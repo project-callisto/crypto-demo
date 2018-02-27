@@ -19,7 +19,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function () {
+sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -48,6 +48,10 @@ export interface PlainTextData {
   readonly y: bigInt.BigInteger;
 }
 
+export interface CryptoData {
+  readonly plainTextData: PlainTextData;
+  readonly encryptedData: EncryptedData;
+}
 
 /*
  *  HELPER FUNCTIONS
@@ -243,20 +247,20 @@ export class CryptoService {
     };
   }
 
-  public encryptRID(RID: string): EncryptedData {
+  public encryptRID(RID: string): CryptoData {
     const record = {
-      perpId: perpId,
+      perpId,
       userName: "Alice Bob",
     };
-    const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
+    const plainTextData = generateDataValues(RID, generateRandNum(), record);
     const encryptedData: EncryptedData = this.encryptData(plainTextData);
     this.dataSubmissions.push(encryptedData);
-    return encryptedData;
+    return { plainTextData, encryptedData };
   }
 
-  public createDataSubmission(perpID: string): Promise<EncryptedData> {
+  public createDataSubmission(perpID: string): Promise<CryptoData> {
     return $.post("/postPerpId", perpID,
-      (data): EncryptedData => {
+      (data): CryptoData => {
         return this.encryptRID(data.rid);
       },
     );
