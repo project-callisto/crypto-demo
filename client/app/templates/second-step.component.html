@@ -1,5 +1,5 @@
 <section *ngIf="shown" id='second-step'>
-  <h2 class="main-header text-centered">generate encryptedData from perpInput</h2>
+  <h2 class="main-header text-centered">Perpetrator ID Randomization</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -16,23 +16,17 @@
     <li>
       <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
     </li>
+    <li>
+      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
+    </li>
   </ul>
   <div class='calc-display'>
-    <h3>Client Side Perp Name Encryption</h3>
     <p>
-      COMPUTED <code>PRG</code>:
-      <code class="calc-display-value">{{ encryptedData.hashedPerpId }}</code>
-    </p>
-    <p>
-      GENERATED <code>K</code><sub>RECORD</sub>:
-      <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code>
-    </p>
-    <p>
-      DERIVED <code>S (AX + RID)</code>:
-      <code class="calc-display-value">{{ encryptedData.y }}</code>
+      Computed <code>RID</code>:
+      <code class="calc-display-value">{{ plainTextData.rid }}</code>
     </p>
   </div>
-  <p class="explainer">(Lorem Ipsum) as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+  <p class="explainer">A perpetrator ID doesn’t have enough randomness to protect itself against a brute force attack, so the first step in our design is to boost the perpetrator ID with entropy using an oblivious pseudorandom function (oPRF). The oPRF uses two inputs: a secret key from the key server and the user-inputted perpetrator ID to generate a randomized ID called RID. However, neither party wants to reveal its input to each other. Under the DDH assumption, our protocol guarantees that the user doesn’t learn the server key, and the server never learns the perpetrator ID.  To protect the secret key even further, we federate it between two different cloud providers.</p>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>

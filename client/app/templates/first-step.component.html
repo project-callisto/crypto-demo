@@ -1,5 +1,5 @@
 <section id='first-step'>
-  <h2 class="main-header text-centered">create perpInput</h2>
+  <h2 class="main-header text-centered">User Inputs</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -16,27 +16,56 @@
     <li>
       <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
     </li>
+    <li>
+      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
+    </li>
   </ul>
+
+<div class="explainer">Our encryption method uses four key techniques:
+  <ul>
+    <li><b>Client-side encryption</b> to encrypt user data within the browser</li>
+    <li><b>Oblivious PRF</b> over an elliptic curve to prevent against brute force attacks and ensure that the key servers cannot learn the perpetrator ID and that users cannot learn Callisto’s secret key </li>
+    <li><b>Secure multi-cloud key federation</b> to prevent Callisto’s secret key  from being exposed to any one cloud provider</li>
+    <li><b>Linear Secret Sharing</b> in order to ensure that there must be at least two victims of the same perpetrator before a user’s data can be decrypted  by the Callisto Option Counselor</li>
+  </ul>
+  To begin the demo, input a perpetrator name  and your name; we will refer to the combination of these inputs as “record”. This information is encrypted in the browser using the Libsodium cryptography library.  We also generate a random key K<sub>record</sub> to symmetrically encrypt this information. (In the real product, users will be inputting an array of multiple unique perpetrator identifiers and their own verified contact information. They will also be able to edit their record with an auto-generated passphrase.) </div>
+
   <form
     class="input-row perp-name-form"
     action="#"
   >
+
     <span class="subtext">ENTER PERP NAME</span>
-    <input
+    <!-- <input
       #perpInput
       required
       type="text"
       id="perpInput"
       (blur)="perpSubmit($event, perpInput.value);"
+    /> -->
+    <input
+      #perpInput
+      required
+      type="text"
+      id="perpInput"
     />
+    <input
+    #userInput
+    required
+    type="text"
+    id="userInput"
+  />
+
+  <span class="subtext">ENTER USER NAME</span>
+
     <input
       class="btn"
       value="submit"
       type="submit"
-      (click)="perpSubmit($event, perpInput.value);"
+      (click)="perpSubmit($event, perpInput.value, userInput.value);"
     />
+
   </form>
-  <p class="subtext">RETURNS: RID USING OPRF</p>
-  <code class='rid-display calc-display-value calc-display' id="calc-rid">{{ RID }}</code>
-  <p class="explainer">(Lorem Ipsum) as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+  <p class="subtext">Record Key</p>
+  <code class='rid-display calc-display-value calc-display' id="calc-rid">{{ recordKey }}</code>
 </section>

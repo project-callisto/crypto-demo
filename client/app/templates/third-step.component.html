@@ -1,5 +1,5 @@
 <section *ngIf="shown" id='third-step'>
-  <h2 class="main-header text-centered">display graph with points from encryptedDataArr</h2>
+  <h2 class="main-header text-centered">Generating Values for Linear Secret Sharing</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -16,8 +16,39 @@
     <li>
       <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
     </li>
+    <li>
+      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
+    </li>
   </ul>
-  <p class="explainer">(Lorem Ipsum) as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+  <div class='calc-display'>
+    <p class="explainer">
+        The randomized perpetrator ID from our oPRF (RID) is divided into shares giving each victim its own unique share. At least two of the share are needed to reconstruct the RID, which is used in part to encrypt the identities of the victim and accused perpetrator. Based on the Shamir Secret Sharing scheme with a threshold of 2, we create a random linear function for each perpetrator y = mx + RID. 
+        In the user’s browser, we use a pseudorandom generator to create two values, m and K<sub>ID</sub>        
+    </p>
+    <p>
+      <code>PRG(RID)</code>:
+      <code class="calc-display-value">{{ plainTextData.rid }}</code>
+    </p>
+
+    <p class='explainer'>
+        From this value, we use the first 128 bits as the slope (m) and the remaining 128 bits as a key used later to encrypt user information. We also hash the user ID to generate x
+    </p>
+    <p>
+      <code>Slope</code>:
+      <code class="calc-display-value">{{ plainTextData.slope }}</code>
+    </p>
+
+    <p>
+      <code>K<sub>ID</sub></code>:
+      <code class="calc-display-value">{{ plainTextData.kId }}</code>
+    </p>
+
+    <p>
+      <code>H(UserName)</code>:
+      <code class="calc-display-value">{{ plainTextData.hashedX }}</code>
+    </p>
+
+  </div>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>  

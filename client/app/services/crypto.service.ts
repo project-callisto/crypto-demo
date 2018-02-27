@@ -99,7 +99,7 @@ function encryptSecretValue(y) {
   return encrypted;
 }
 
-function generateDataValues(rid, userId) {
+function generateDataValues(rid, userId, record) {
 
   const hexRid = sodium.to_hex(sodium.from_base64(rid));
 
@@ -117,11 +117,7 @@ function generateDataValues(rid, userId) {
 
   // TODO: hook user name and email back to front-end
   // make issue on github
-  const record = {
-    perpId: "harvey weinstein",
-    userName: "Alice Bob",
-    userEmail: "user@email.com",
-  };
+
 
   const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
@@ -166,10 +162,7 @@ function decryptRecords(data, rid) {
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
-    // key, ciphertext
-    // const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
-    // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
     const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
@@ -194,7 +187,6 @@ function decryptSecretValues(data) {
     // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    console.log('y', y)
     // Convert back to bigInt
     const yStr = new TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
@@ -259,11 +251,16 @@ export class CryptoService {
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<{}> {
 
+    const record = {
+      perpId: perpId,
+      userName: "Alice Bob",
+    };
+
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
       $.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
-          const plainTextData = generateDataValues(data.rid, generateRandNum());
+          const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
         } else {
           reject(Error("Post request failed"));

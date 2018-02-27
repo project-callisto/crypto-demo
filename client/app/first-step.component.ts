@@ -5,6 +5,11 @@ import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.s
 
 import * as $ from "jquery";
 
+export interface UserInput {
+  readonly perpInput: string;
+  readonly userName: string;
+}
+
 @Component({
   selector: "first-step",
   templateUrl: "./templates/first-step.component.html",
@@ -16,14 +21,18 @@ import * as $ from "jquery";
     CryptoService,
   ],
 })
-export class FirstStepComponent {
-  @Input() public RID: string = "[[ RID ]]";
-  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 
-  public perpSubmit(event: Event, perpInput: string): void {
+
+
+export class FirstStepComponent {
+  @Input() public recordKey: string;
+  @Output() public advanceStep: EventEmitter<UserInput> = new EventEmitter<UserInput>();
+
+  public perpSubmit(event: Event, perpInput: string, userInput: string): void {
     event.preventDefault();
-    if (perpInput) {
-      this.advanceStep.emit(perpInput);
+    if (perpInput && userInput) {
+      const data = {perpInput: perpInput, userName: userInput};
+      this.advanceStep.emit(data);
     }
   }
 }
