@@ -35,11 +35,6 @@ var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
   console.log('Listening on port %d', server.address().port)
 });
 
-// Point static path to dist
-app.use(express.static(path.join(__dirname, '/../dist')));
-
-
-
 // KEY SERVER
 app.post('/postPerpId', function(req,res) {
   var pid = req.body.pid;
@@ -50,47 +45,15 @@ app.post('/postPerpId', function(req,res) {
     // TODO: choose adequately safe key that is static
     
     // current substitute for OPRF
-    var rid = sodium.crypto_hash(pid+sK).toString();
+    var rid = sodium.to_base64(sodium.crypto_hash(pid+sK));
 
     res.send({rid});
   });
 });
 
 
-// DATABASE
-var encryptedSubmissions = [];
-
-// CALLISTO SERVER
-
-// Receiving a EncryptedData object
-app.post('/postData', function(req, res) {
-  
-  var encryptedSubmission = {
-    hashedRid: req.body.hashedRid,
-    encryptedRecordKey: req.body.encryptedRecordKey,
-    encryptedRecord: req.body.encryptedRecord,
-    userPubKey: req.body.userPubKey,
-    cX: req.body.cX,
-    cY: req.body.cY,
-    kId: req.body.kId
-  }
-
-  console.log('received new encryptedSubmission: ', encryptedSubmission);
-
-  encryptedSubmissions.push(encryptedSubmission);
-  res.sendStatus(200);
-});
-
-// TODO: move this to client side
-app.get('/getEncryptedData', function (req, res) {
-  console.log('received data request. returning: ', encryptedSubmissions)
-  // TODO: check that rid's match 
-  res.send(encryptedSubmissions);
-
-  // clearing submissions for demo
-  encryptedSubmissions = [];
-});
-
+// Point static path to dist
+app.use(express.static(path.join(__dirname, '/../dist')));
 
 // Catch all other routes and return the index file
 // IMPORTANT: this route needs to come last

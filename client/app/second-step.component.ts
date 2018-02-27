@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { EncryptedData } from "./services/crypto.service";
+import { PlainTextData } from "./services/crypto.service";
 
 @Component({
   selector: "second-step",
@@ -10,7 +10,7 @@ import { EncryptedData } from "./services/crypto.service";
   ],
 })
 export class SecondStepComponent {
-  @Input() public encryptedData: EncryptedData;
+  @Input() public plainTextData: PlainTextData;
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }

@@ -3,104 +3,114 @@
 // jasmine docs https://jasmine.github.io/api/3.0/matchers.html
 // // jasmine defines methods like toEqual, expect, toContain
 
-describe('Valkyrie Demo', function () {
-  const FirstStep = element(by.css('first-step section'));
-  const SecondStep = element(by.css('second-step section'));
-  const ThirdStep = element(by.css('third-step section'));
-  const FourthStep = element(by.css('fourth-step section'));
-  const FifthStep = element(by.css('fifth-step section'));
-  const SixthStep = element(by.css('sixth-step section'));
-  const PerpNameInput = element(by.css('.perp-name-form [type="text"]'));
-  const PerpNameSubmit = element(by.css('.perp-name-form [type="submit"]'));
-  const RIDDisplay = element(by.css('.rid-display'));
+describe('Valkyrie Demo', () => {
+  const FirstStep = $('first-step section');
+  const SecondStep = $('second-step section');
+  const ThirdStep = $('third-step section');
+  const FourthStep = $('fourth-step section');
+  const FifthStep = $('fifth-step section');
+  const SixthStep = $('sixth-step section');
+  const PerpNameInput = $('.perp-name-form [type="text"]');
+  const PerpNameSubmit = $('.perp-name-form [type="submit"]');
+  const RIDDisplay = $('.rid-display');
 
-  genericPerpInput = function () {
-    PerpNameInput.sendKeys('facebook.com/callistoorg');
+  function RIDExpectations() {
+    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
+    expect(RIDDisplay.getText()).toBeTruthy();
+    expect(RIDDisplay.getText()).not.toContain('NaN');
+  }
+
+  function sleep(millis) {
+    return new Promise(resolve => setTimeout(resolve, millis));
+  }
+
+  async function doPerpInput(perp = 'facebook.com/callistoorg') {
+    PerpNameInput.sendKeys(perp);
     PerpNameSubmit.click();
+    await sleep(1000); // this is bad, but satisfies our needs
+    RIDExpectations();
   }
 
-  AdvanceStepTwo = function () {
-    SecondStep.element(by.css('.advance-button')).click();
+  function AdvanceStepTwo() {
+    SecondStep.$('.advance-button').click();
   }
 
-  AdvanceStepThree = function () {
-    ThirdStep.element(by.css('.advance-button')).click();
+  function AdvanceStepThree() {
+    ThirdStep.$('.advance-button').click();
   }
 
-  AdvanceStepFour = function () {
-    FourthStep.element(by.css('.advance-button')).click();
+  function AdvanceStepFour() {
+    FourthStep.$('.advance-button').click();
   }
 
-  AdvanceStepFive = function () {
-    FifthStep.element(by.css('.advance-button')).click();
+  function AdvanceStepFive() {
+    FifthStep.$('.advance-button').click();
   }
 
-  beforeEach(function () {
+  beforeEach(() => {
     browser.get('/');
   });
 
-  it('should have a title', function () {
+  it('should have a title', () => {
     expect(browser.getTitle()).toEqual('Valkyrie Demo');
   });
 
-  it('should start with a perp name displayed', function () {
+  it('should start with a perp name displayed', () => {
     expect(FirstStep.getText()).toContain('PERP NAME');
   });
 
-  it('starts with no RID rendered', function () {
+  it('starts with no RID rendered', () => {
     expect(RIDDisplay.getText()).toContain('[[ RID ]]');
   });
 
-  it('renders a RID after perp name input', function () {
-    genericPerpInput();
-    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
+  it('renders a RID after perp name input', () => {
+    doPerpInput();
+    RIDExpectations();
   });
 
-  it('renders a RID for perp names starting with a', function () {
-    PerpNameInput.sendKeys('apple');
-    PerpNameSubmit.click();
-    expect(RIDDisplay.getText()).not.toContain('NaN');
+  it('renders a RID for perp names starting with a', () => {
+    doPerpInput('apple');
+    RIDExpectations();
   });
 
-  // it('renders a RID for perp names starting with z', function() {
-  //   PerpNameInput.sendKeys('zebra');
-  //   PerpNameSubmit.click();
-  //   expect(RIDDisplay.getText()).not.toContain('NaN');
-  // });
+  it('renders a RID for perp names starting with z', () => {
+    doPerpInput('zebra');
+    RIDExpectations();
+  });
 
-  it('advances to step 2', function () {
+  it('advances to step 2', () => {
     expect(SecondStep.isPresent()).toBeFalsy();
-    genericPerpInput();
+    doPerpInput();
     expect(SecondStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 3', function () {
+  it('advances to step 3', () => {
     expect(ThirdStep.isPresent()).toBeFalsy();
-    genericPerpInput();
+    doPerpInput();
     AdvanceStepTwo();
     expect(ThirdStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 4', function () {
+  it('advances to step 4', () => {
     expect(FourthStep.isPresent()).toBeFalsy();
-    genericPerpInput();
+    doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     expect(FourthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 5', function () {
+  it('advances to step 5', () => {
     expect(FifthStep.isPresent()).toBeFalsy();
-    genericPerpInput();
+    doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     AdvanceStepFour();
     expect(FifthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 6', function () {
+  it('advances to step 6', () => {
     expect(SixthStep.isPresent()).toBeFalsy();
-    genericPerpInput();
+    doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     AdvanceStepFour();

@@ -1,15 +1,13 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 import { Injectable } from "@angular/core";
+import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-
 /*
  *  GLOBAL CONSTANTS
  */
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157); // TODO: use big num library
-const CT = 0;
-const NONCE = 1;
 
 
 /*  SODIUM INTIALIZATION  */
@@ -36,18 +34,18 @@ export interface EncryptedData {
   readonly encryptedRecordKey: string;
   readonly userPubKey: string;
   readonly cY: string;
-  readonly cX: number;
+  readonly cX: string;
   readonly kId: string; // FOR NOW. will need to hash this later
 }
 
 export interface PlainTextData {
-readonly rid: number;
-readonly slope: number;
-readonly kId: string;
-readonly record: Object;
-readonly recordKey: string;
-readonly x: number;
-readonly y: number;
+  readonly rid: number;
+  readonly slope: number;
+  readonly kId: string;
+  readonly record: Object;
+  readonly recordKey: string;
+  readonly hashedX: number;
+  readonly y: number;
 }
 
 
@@ -61,9 +59,11 @@ readonly y: number;
  */
 
  // TODO: split this to make it more readable
+ // Returns base64
 function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
   const cT = sodium.crypto_secretbox_easy(msg, nonce, key);
 
   const encrypted = sodium.to_base64(cT) + "$" + sodium.to_base64(nonce);
@@ -74,50 +74,61 @@ function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-function deriveFromRid(rid) {
+function deriveFromRid(hexRid) {
 
-  const ridLen = rid.length;
-  const slope = parseInt(rid.substr(0, ridLen / 2), HEX);
-  const kId = rid.substr(ridLen / 2, ridLen);
+  const ridLen = hexRid.length;
+
+  const slope = bigInt(hexRid.substr(0, ridLen / 2), HEX);
+
+  // hashing it to make it conform to key size: 32 bytes
+  const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
   return {slope, kId};
 }
 
+// Y is a bigInt number
 function encryptSecretValue(y) {
+
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
   const cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
 
   const encrypted = sodium.to_base64(cY) + "$" + sodium.to_base64(nonce);
 
+  // string base 64
   return encrypted;
 }
 
-function generateDataValues(rid, userId) {
+function generateDataValues(rid, userId, record) {
+
+  const hexRid = sodium.to_hex(sodium.from_base64(rid));
+
+  // var prgRid = sodium.crypto_hash_sha256(hexRid);
 
   // TODO: put rid into prg
   // derive slope & kId from rid
-  const derived = deriveFromRid(rid);
+  // hex string
+  const derived = deriveFromRid(hexRid);
+  const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId.toString())), HEX);
+  const intRid = bigInt(hexRid, HEX);
+
+  // bigInt
+  const y = derived.slope.times(hashedUserId).plus(intRid);
 
   // TODO: hook user name and email back to front-end
   // make issue on github
-  const record = {
-    perpId: "harvey weinstein",
-    userName: "Alice Bob",
-    userEmail: "user@email.com",
-  };
 
-  const intRid = parseInt(rid, HEX);
+
+  const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
   const plainTextData = {
     rid: intRid,
     slope: derived.slope,
-    recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()),
-    // todo:
-    // kId: derived.kId,
-    kId: sodium.to_base64(sodium.crypto_secretbox_keygen()),
+    recordKey: Krecord,
+    kId: sodium.to_base64(derived.kId),
     record,
-    x: userId, // fix this. should be hash of some user-based value
-    y: (derived.slope * userId) + intRid,
+    hashedX: hashedUserId, // bigInt fix this. should be hash of some user-based value
+    y, // bigInt
   };
   return plainTextData;
 }
@@ -129,14 +140,15 @@ function generateDataValues(rid, userId) {
 // Key is Uint8Array,
 // CipherText: string in base64 encoding
 function symmetricDecrypt(key, cipherText) {
-
   const split = cipherText.split("$");
 
   // Uint8Arrays
-  const cT = split[0];
-  const nonce = split[1];
+  const cT = sodium.from_base64(split[0]);
+  const nonce = sodium.from_base64(split[1]);
 
-  const decrypted = sodium.crypto_secretbox_open_easy(sodium.from_base64(cT), sodium.from_base64(nonce), key);
+  // cT
+  key = sodium.from_base64(key);
+  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
 
   return decrypted;
 }
@@ -145,85 +157,57 @@ function symmetricDecrypt(key, cipherText) {
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
-  // TODO:
-  // const derived = deriveFromRid(rid);
+  const derived = deriveFromRid(rid.toString(HEX));
 
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
-    // key, ciphertext
-    const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
-    // const decryptedRecordKey = symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);    
-    // console.log('record key', sodium.to_string(decryptedRecordKey));
+    const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    // console.log('decryptedRecord', decryptedRecord);
-    decryptedRecords.push(sodium.to_string(decryptedRecord));
+    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
+    decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
 }
 
 
 // decrypt Y values
-function decryptSecrets(data) {
+function decryptSecretValues(data) {
+
   for (let i = 0; i < data.length; i++) {
     const split = data[i].cY.split("$");
 
+    // All values are now Uint8Array
     const cY = sodium.from_base64(split[0]);
+
     const nonce = sodium.from_base64(split[1]);
 
     const userPK = sodium.from_base64(data[i].userPubKey);
 
+    // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    data[i].y = y;
+    // Convert back to bigInt
+    const yStr = new TextDecoder("utf-8").decode(y);
+    data[i].y = bigInt(yStr);
   }
 }
 
 
-function decryptSubmissions(data) {
-  let coordA;
-  let coordB;
+function deriveSlope(c1, c2) {
+  const top = c2.y.minus(c1.y);
+  const bottom = c2.x.minus(c1.x);
 
-  if (data[0].x < data[1].x) {
-    coordA = data[0];
-    coordB = data[1];
-  } else {
-    coordA = data[1];
-    coordB = data[0];
-  }
+  return top.divide(bottom);
 
-  // 
-  decryptSecrets([coordA, coordB]);
-
-  const slope = getSlope(coordA, coordB);
-  const rid = getIntercept(coordA, slope);
-  const strRid = rid.toString(HEX);
-  // TODO: fix rid
-  const record = decryptRecords(data, strRid);
-
-  return {
-    decryptedRecords: record,
-    slope,
-    strRid,
-  };
-
-  // return {
-  //   decryptedRecords: "asdfasdfasdf",
-  //   slope: 10,
-  //   strRid: "lollolollolololol",
-  // };
 }
 
-function getSlope(c1, c2) {
-  return (c2.y - c1.y) / (c2.x - c1.x);
- }
-
+// plug in value for x within line formula to get y-intercept aka rid
 function getIntercept(c1, slope) {
   const x = c1.x;
   const y = c1.y;
-  const prod = slope * x;
 
-  return y - prod;
+  return y.minus(slope.times(x));
 }
 
 
@@ -233,6 +217,12 @@ function getIntercept(c1, slope) {
  */
 @Injectable()
 export class CryptoService {
+  
+  private dataSubmissions = [];
+  public postData(encryptedData: EncryptedData) {
+    this.dataSubmissions.push(encryptedData);
+  }
+
 
   /*
    *  ENCRYPTION
@@ -241,18 +231,19 @@ export class CryptoService {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
-    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), sodium.to_base64(plainText.recordKey));
-    // const encryptedRecord = encryptRecord(plainText.kId, plainText.record);
+    const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
     // asymmetric
+
+    // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
 
     return {
       hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
       encryptedRecord,
-      encryptedRecordKey: plainText.recordKey,
+      encryptedRecordKey,
       userPubKey: sodium.to_base64(userKeys.publicKey),
       cY,
-      cX: plainText.x,
+      cX: plainText.hashedX.toString(),
       kId: plainText.kId, // TODO: change this when we decide what userID
     };
   }
@@ -260,11 +251,16 @@ export class CryptoService {
   // TODO: insert proper type instead of object
   public createDataSubmission(perpId: string): Promise<{}> {
 
+    const record = {
+      perpId: perpId,
+      userName: "Alice Bob",
+    };
+
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("http://localhost:8080/postPerpId", perpId, (data, status) => {
+      $.post("/postPerpId", perpId, (data, status) => {
         if (status === "success") {
-          const plainTextData = generateDataValues(data.rid, generateRandNum());
+          const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
         } else {
           reject(Error("Post request failed"));
@@ -275,16 +271,36 @@ export class CryptoService {
     return dataPromise;
   }
 
+
   /*
    * DECRYPTION
    */
   public decryptData() {
-    $.get("http://localhost:8080/getEncryptedData", (data, status) => {
-      if (status !== "success") {
-        console.log("Error retrieving data");
-        return;
-      }
-      const decrypted = decryptSubmissions(data);
-    });
+    let data = this.dataSubmissions;
+    let coordA;
+    let coordB;
+
+    data[0].x = bigInt(data[0].cX);
+    data[1].x = bigInt(data[1].cX);
+
+
+    if (data[0].x.leq(data[1].x)) {
+      coordA = data[0];
+      coordB = data[1];
+    } else {
+      coordA = data[1];
+      coordB = data[0];
     }
+
+    decryptSecretValues([coordA, coordB]);
+
+    const slope = deriveSlope(coordA, coordB);
+    const strRid = getIntercept(coordA, slope);
+
+    return {
+      decryptedRecords: decryptRecords(data, strRid.toString(HEX)),
+      slope,
+      strRid,
+    };
   }
+}
