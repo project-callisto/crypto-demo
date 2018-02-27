@@ -1,5 +1,5 @@
 <section *ngIf="shown" id='fourth-step'>
-  <h2 class="main-header text-centered">display graph with line from encryptedDataArr</h2>
+  <h2 class="main-header text-centered">Encryption</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -20,7 +20,6 @@
       <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
     </li>
   </ul>
-  <h3>Encryption</h3>
   <p class="explainer">We now send the following encrypted values within the browser and send them to the Callisto Web Application Server:</p>
   <div class='calc-display'>
     <p>
@@ -28,19 +27,19 @@
       <code class="calc-display-value">{{ encryptedData.hashedRid }}</code>
     </p>
     <p>
-      <code>Enc(Koc,x)</code>:
+      <code>Enc(K<sub>OC</sub>,x)</code>:
       <code class="calc-display-value">{{ encryptedData.cX }}</code>
     </p>
     <p>
-      <code>Enc(Koc,y)</code>:
+      <code>Enc(K<sub>OC</sub>,y)</code>:
       <code class="calc-display-value">{{ encryptedData.cY }}</code>
     </p>
     <p>
-      <code>Enc(kRecord, record)</code>:
+      <code>Enc(K<sub>record</sub>, record)</code>:
       <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code>
     </p>
     <p>
-      <code>Enc(kId, kRecord)</code>:
+      <code>Enc(K<sub>ID</sub>, K<sub>record</sub>)</code>:
       <code class="calc-display-value">{{ encryptedData.encryptedRecordKey }}</code>
     </p>
   </div>

@@ -162,10 +162,7 @@ function decryptRecords(data, rid) {
   for (let i = 0; i < data.length; i++) {
     const encryptedRecord = data[i].encryptedRecord;
 
-    // key, ciphertext
-    // const decryptedRecordKey = sodium.from_base64(data[i].encryptedRecordKey);
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
-    // console.log('record key', sodium.to_string(decryptedRecordKey));
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
     const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));

@@ -71,9 +71,6 @@ export class StepComponent {
       this.secondStep.plainTextData = plainText;
       this.thirdStep.plainTextData = plainText;
       this.fourthStep.encryptedData = encryptedData;
-
-
-      console.log('plainText', plainText, 'encryptedData', encryptedData);
       this.secondStep.shown = true;
       this.scrollTo("second-step");
 
