@@ -53,7 +53,7 @@ export class StepComponent {
     public crypto: CryptoService,
   ) { }
 
-  private advanceFirstStep(perpInput: string): void {
+  private advanceFirstStep(perpInput: string, userInput: string): void {
     this.perpInput = perpInput;
     this.userInput = userInput;
     this.crypto.createDataSubmission(perpInput).then(
