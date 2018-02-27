@@ -55,61 +55,42 @@ export class StepComponent {
 
   private advanceFirstStep(perpInput: string): void {
     this.perpInput = perpInput;
+    this.userInput = userInput;
     this.crypto.createDataSubmission(perpInput).then(
       (encryptedData: EncryptedData) => {
-        this.firstStep.RID = encryptedData.hashedRid;
-        this.secondStep.encryptedData = encryptedData;
+        this.firstStep.recordKey = plainText.recordKey;
+        this.secondStep.plainTextData = plainText;
+        this.thirdStep.plainTextData = plainText;
+        this.fourthStep.encryptedData = encryptedData;
         this.secondStep.shown = true;
         this.scrollTo("second-step");
       },
     );
   }
 
-private advanceFirstStep(perpInput: string, userInput: string): void {
-  this.perpInput = perpInput;
-  this.userInput = userInput;
-
-  this.crypto.createDataSubmission(perpInput).then(
-    (plainText: PlainTextData) => {
-      const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-
-      this.crypto.postData(encryptedData);
-
-
-      this.firstStep.recordKey = plainText.recordKey;
-      this.secondStep.plainTextData = plainText;
-      this.thirdStep.plainTextData = plainText;
-      this.fourthStep.encryptedData = encryptedData;
-      this.secondStep.shown = true;
-      this.scrollTo("second-step");
-
-    },
-  );
-}
-
   private advanceSecondStep(): void {
     this.thirdStep.shown = true;
     this.scrollTo("third-step");
   }
 
-  private advanceThirdStep(): void {  
+  private advanceThirdStep(): void {
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
 
-//   Display: 
-// H(RID)
-// EncPUB(KOC, x)
-// EncPUB(KOC, y)
-// EncGCM(Krecord, record) 
-// EncGCM(KID, Krecord)  
+  //   Display: 
+  // H(RID)
+  // EncPUB(KOC, x)
+  // EncPUB(KOC, y)
+  // EncGCM(Krecord, record) 
+  // EncGCM(KID, Krecord)  
   private advanceFourthStep(): void {
 
     this.crypto.createDataSubmission(this.perpInput).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
         this.crypto.postData(encryptedData);
-        const decryptedData = this.crypto.decryptData(); 
+        const decryptedData = this.crypto.decryptData();
         this.fifthStep.RID = decryptedData.strRid;
         this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
       },
@@ -122,7 +103,7 @@ private advanceFirstStep(perpInput: string, userInput: string): void {
   // simulate data, display chart, display decrypted RID
   private advanceFifthStep(): void {
     this.sixthStep.shown = true;
-    this.scrollTo("sixth-step");  
+    this.scrollTo("sixth-step");
   }
 
   private advanceSixthStep(): void {
