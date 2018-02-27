@@ -34,7 +34,6 @@ import * as $ from "jquery";
   ],
 })
 export class StepComponent {
-  // public encryptedDataArr: EncryptedData[] = [];
   private perpInput: string;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
@@ -47,26 +46,11 @@ export class StepComponent {
     public crypto: CryptoService,
   ) { }
 
-  // private postData(encryptedData: EncryptedData): void {
-  //   $.post("/postData", encryptedData, (data, status) => {
-  //     if (status !== "success") {
-  //       console.log("Error posting encrypted data to server");
-  //       return;
-  //     }
-  //   });
-  // }
-
-
   private advanceFirstStep(perpInput: string): void {
     this.perpInput = perpInput;
 
     this.crypto.createDataSubmission(perpInput).then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-
-        this.crypto.postData(encryptedData);
-
-        // this.encryptedDataArr.push(encryptedData);
+      (encryptedData: EncryptedData) => {
         this.firstStep.RID = encryptedData.hashedRid;
         this.secondStep.encryptedData = encryptedData;
         this.secondStep.shown = true;

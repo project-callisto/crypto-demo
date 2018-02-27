@@ -19,7 +19,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function () {
+sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -39,13 +39,13 @@ export interface EncryptedData {
 }
 
 export interface PlainTextData {
-  readonly rid: number;
-  readonly slope: number;
+  readonly rid: bigInt.BigInteger;
+  readonly slope: bigInt.BigInteger;
   readonly kId: string;
   readonly record: Object;
   readonly recordKey: string;
-  readonly hashedX: number;
-  readonly y: number;
+  readonly hashedX: bigInt.BigInteger;
+  readonly y: bigInt.BigInteger;
 }
 
 
@@ -99,7 +99,7 @@ function encryptSecretValue(y) {
   return encrypted;
 }
 
-function generateDataValues(rid, userId) {
+function generateDataValues(rid, userId): PlainTextData {
 
   const hexRid = sodium.to_hex(sodium.from_base64(rid));
 
@@ -125,7 +125,7 @@ function generateDataValues(rid, userId) {
 
   const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
-  const plainTextData = {
+  return {
     rid: intRid,
     slope: derived.slope,
     recordKey: Krecord,
@@ -134,7 +134,6 @@ function generateDataValues(rid, userId) {
     hashedX: hashedUserId, // bigInt fix this. should be hash of some user-based value
     y, // bigInt
   };
-  return plainTextData;
 }
 
 /*
@@ -194,7 +193,7 @@ function decryptSecretValues(data) {
     // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
-    console.log('y', y)
+    console.log("y", y);
     // Convert back to bigInt
     const yStr = new TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
@@ -227,15 +226,11 @@ function getIntercept(c1, slope) {
 export class CryptoService {
 
   private dataSubmissions = [];
-  public postData(encryptedData: EncryptedData) {
-    this.dataSubmissions.push(encryptedData);
-  }
-
 
   /*
    *  ENCRYPTION
    */
-  public encryptData(plainText: PlainTextData): EncryptedData {
+  private encryptData(plainText: PlainTextData): EncryptedData {
     // encrypt record and key
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
@@ -256,18 +251,22 @@ export class CryptoService {
     };
   }
 
-  public createDataSubmission(perpId: string): Promise<PlainTextData> {
-    return $.post("/postPerpId", perpId, (data) => {
-      return generateDataValues(data.rid, generateRandNum());
-    });
+  public createDataSubmission(perpId: string): Promise<EncryptedData> {
+    return $.post("/postPerpId", perpId,
+      (data): EncryptedData => {
+        const plainTextData: PlainTextData = generateDataValues(data.rid, generateRandNum());
+        const encryptedData: EncryptedData = this.encryptData(plainTextData);
+        this.dataSubmissions.push(encryptedData);
+        return encryptedData;
+      },
+    );
   }
-
 
   /*
    * DECRYPTION
    */
   public decryptData() {
-    let data = this.dataSubmissions;
+    const data = this.dataSubmissions;
     let coordA;
     let coordB;
 
