@@ -247,10 +247,15 @@ export class CryptoService {
     };
   }
 
-  public encryptRID(RID: string): CryptoData {
+  /*
+    sync function
+    handles all client side crypto logic
+    is unit tested (unit-tests/client/crypto.spec.ts)
+  */
+  public encryptRID(RID: string, perpID: string, userInput: string): CryptoData {
     const record = {
-      perpId,
-      userName: "Alice Bob",
+      perpID,
+      userInput,
     };
     const plainTextData = generateDataValues(RID, generateRandNum(), record);
     const encryptedData: EncryptedData = this.encryptData(plainTextData);
@@ -258,10 +263,15 @@ export class CryptoService {
     return { plainTextData, encryptedData };
   }
 
-  public createDataSubmission(perpID: string): Promise<CryptoData> {
+  /*
+    async function
+    handles submitting the post request
+    is the public api for our components
+  */
+  public createDataSubmission(perpID: string, userInput: string): Promise<CryptoData> {
     return $.post("/postPerpId", perpID,
       (data): CryptoData => {
-        return this.encryptRID(data.rid);
+        return this.encryptRID(data.rid, perpID, userInput);
       },
     );
   }

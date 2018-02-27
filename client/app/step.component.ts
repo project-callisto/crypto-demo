@@ -56,7 +56,7 @@ export class StepComponent {
   private advanceFirstStep(perpInput: string, userInput: string): void {
     this.perpInput = perpInput;
     this.userInput = userInput;
-    this.crypto.createDataSubmission(perpInput).then(
+    this.crypto.createDataSubmission(perpInput, userInput).then(
       (cryptoData: CryptoData) => {
         this.firstStep.recordKey = cryptoData.plainTextData.recordKey;
         this.secondStep.plainTextData = cryptoData.plainTextData;
