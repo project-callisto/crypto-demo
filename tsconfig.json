@@ -2,9 +2,10 @@
   "compileOnSave": true,
   "compilerOptions": {
     "alwaysStrict": true,
+    "sourceMap": true,
+    "inlineSources": true,
     "module": "commonjs",
     "outDir": "./dist/out-tsc",
-    "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
