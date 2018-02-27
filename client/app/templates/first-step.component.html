@@ -24,20 +24,37 @@
     class="input-row perp-name-form"
     action="#"
   >
+
     <span class="subtext">ENTER PERP NAME</span>
-    <input
+    <!-- <input
       #perpInput
       required
       type="text"
       id="perpInput"
       (blur)="perpSubmit($event, perpInput.value);"
+    /> -->
+    <input
+      #perpInput
+      required
+      type="text"
+      id="perpInput"
     />
+    <input
+    #userInput
+    required
+    type="text"
+    id="userInput"
+  />
+    <br><br>
+  <span class="subtext">ENTER USER NAME</span>
+
     <input
       class="btn"
       value="submit"
       type="submit"
-      (click)="perpSubmit($event, perpInput.value);"
+      (click)="perpSubmit($event, perpInput.value, userInput.value);"
     />
+
   </form>
   <p class="subtext">Record Key</p>
   <code class='rid-display calc-display-value calc-display' id="calc-rid">{{ recordKey }}</code>

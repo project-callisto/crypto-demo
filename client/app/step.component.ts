@@ -39,6 +39,7 @@ import * as $ from "jquery";
 export class StepComponent {
   // public encryptedDataArr: EncryptedData[] = [];
   private perpInput: string;
+  private userInput: string;
   private encryptedData: EncryptedData;
   private plainTextData: PlainTextData;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
@@ -55,8 +56,9 @@ export class StepComponent {
 
  // input: perpname, username
  // display: kRecord
- private advanceFirstStep(perpInput: string): void {
+ private advanceFirstStep(perpInput: string, userInput: string): void {
   this.perpInput = perpInput;
+  this.userInput = userInput;
 
   this.crypto.createDataSubmission(perpInput).then(
     (plainText: PlainTextData) => {
@@ -64,21 +66,17 @@ export class StepComponent {
 
       this.crypto.postData(encryptedData);
 
-      this.plainTextData = plainText;
+
+      this.firstStep.recordKey = plainText.recordKey;
       this.secondStep.plainTextData = plainText;
       this.thirdStep.plainTextData = plainText;
       this.fourthStep.encryptedData = encryptedData;
-      this.encryptedData = encryptedData;
+
 
       console.log('plainText', plainText, 'encryptedData', encryptedData);
       this.secondStep.shown = true;
       this.scrollTo("second-step");
 
-      // TODO: add these
-      // this.firstStep.recordKey = plainText.recordKey
-
-      // TODO: remove these
-      this.firstStep.recordKey = plainText.recordKey;
     },
   );
 }
@@ -113,6 +111,7 @@ export class StepComponent {
         this.crypto.postData(encryptedData);
         const decryptedData = this.crypto.decryptData(); 
         this.fifthStep.RID = decryptedData.strRid;
+        this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
       },
     );
 

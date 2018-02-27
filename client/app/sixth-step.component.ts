@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
   ],
 })
 export class SixthStepComponent {
-  @Input() public decryptedData: {};
+  @Input() public record: string;
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
 }
