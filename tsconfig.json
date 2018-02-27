@@ -12,7 +12,7 @@
     "target": "es6",
     "typeRoots": [
       "node_modules/@types",
-      "@types/text-encoding",
+      "@types/text-encoding"
     ],
     "lib": [
       "es2017",
