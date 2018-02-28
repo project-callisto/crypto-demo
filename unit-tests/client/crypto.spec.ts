@@ -13,7 +13,7 @@ describe("Crypto service", function () {
 
   it("takes string input on the submission api", function () {
     setTimeout(() => {
-      crypto.createDataSubmission("a").then(
+      crypto.createDataSubmission("perpId", "user").then(
         (plainText: PlainTextData) => {
           const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
           expect(encryptedData).toBeTruthy();
@@ -24,7 +24,7 @@ describe("Crypto service", function () {
 
   it("has an RID", function () {
     setTimeout(() => {
-      crypto.createDataSubmission("a").then(
+      crypto.createDataSubmission("perpId", "user").then(
         (plainText: PlainTextData) => {
           const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
           expect(encryptedData.hashedRid).toBeTruthy();
@@ -39,7 +39,7 @@ describe("Crypto service", function () {
 
     while (perpID <= maxPerpID) {
       setTimeout(() => {
-        crypto.createDataSubmission(String.fromCharCode(perpID)).then(
+        crypto.createDataSubmission(String.fromCharCode(perpID), 'Alice').then(
           (plainText: PlainTextData) => {
             const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
             expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
