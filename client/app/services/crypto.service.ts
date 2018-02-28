@@ -66,8 +66,8 @@ export interface DecryptedData {
  * ENCRYPTION
  */
 
- // TODO: split this to make it more readable
- // Returns base64
+// TODO: split this to make it more readable
+// Returns base64
 function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
@@ -91,7 +91,7 @@ function deriveFromRid(hexRid) {
   // hashing it to make it conform to key size: 32 bytes
   const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
-  return {slope, kId};
+  return { slope, kId };
 }
 
 // Y is a bigInt number
@@ -264,7 +264,7 @@ export class CryptoService {
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {perpId}, (data, status) => {
+      $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
@@ -292,7 +292,7 @@ export class CryptoService {
   public decryptData(): DecryptedData {
     const data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ""};
+      return { decryptedRecords: [], slope: 0, strRid: "" };
     }
 
     let coordA;

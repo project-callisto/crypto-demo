@@ -10,12 +10,12 @@ describe('Valkyrie Demo', () => {
   const FourthStep = $('fourth-step section');
   const FifthStep = $('fifth-step section');
   const SixthStep = $('sixth-step section');
-  const PerpNameInput = $('.perp-name-form [type="text"]');
+  const PerpNameInput = $('#perpInput');
   const PerpNameSubmit = $('.perp-name-form [type="submit"]');
   const RIDDisplay = $('.rid-display');
 
   function RIDExpectations() {
-    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
+    expect(RIDDisplay.getText()).not.toContain('[[ Randomly Generated Key ]]');
     expect(RIDDisplay.getText()).toBeTruthy();
     expect(RIDDisplay.getText()).not.toContain('NaN');
   }
@@ -60,7 +60,7 @@ describe('Valkyrie Demo', () => {
   });
 
   it('starts with no RID rendered', () => {
-    expect(RIDDisplay.getText()).toContain('[[ RID ]]');
+    expect(RIDDisplay.getText()).toContain('[[ Randomly Generated Key ]]');
   });
 
   it('renders a RID after perp name input', () => {
