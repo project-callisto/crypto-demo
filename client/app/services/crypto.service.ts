@@ -5,11 +5,9 @@ import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
 import * as encoding from 'text-encoding';
 
-/*
- *  GLOBAL CONSTANTS
- */
 const HEX = 16;
-const PRIME = ((2 ** 128) - 157); // TODO: use big num library
+const PRIME = ((2 ** 128) - 157); // TODO: use big num library  
+
 
 
 /*  SODIUM INTIALIZATION  */
@@ -107,39 +105,7 @@ function encryptSecretValue(y) {
   return encrypted;
 }
 
-function generateDataValues(rid, userId, record) {
 
-  const hexRid = sodium.to_hex(sodium.from_base64(rid));
-
-  // var prgRid = sodium.crypto_hash_sha256(hexRid);
-
-  // TODO: put rid into prg
-  // derive slope & kId from rid
-  // hex string
-  const derived = deriveFromRid(hexRid);
-  const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId.toString())), HEX);
-  const intRid = bigInt(hexRid, HEX);
-
-  // bigInt
-  const y = derived.slope.times(hashedUserId).plus(intRid);
-
-  // TODO: hook user name and email back to front-end
-  // make issue on github
-
-
-  const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
-
-  const plainTextData = {
-    rid: intRid,
-    slope: derived.slope,
-    recordKey: Krecord,
-    kId: sodium.to_base64(derived.kId),
-    record,
-    hashedX: hashedUserId, // bigInt fix this. should be hash of some user-based value
-    y, // bigInt
-  };
-  return plainTextData;
-}
 
 /*
  *  DECRYPTION
@@ -225,16 +191,44 @@ function getIntercept(c1, slope) {
  */
 @Injectable()
 export class CryptoService {
-  
   private dataSubmissions = [];
-  public postData(encryptedData: EncryptedData) {
-    this.dataSubmissions.push(encryptedData);
-  }
+
+/*
+ *  GLOBAL CONSTANTS
+ */
+
+
 
 
   /*
    *  ENCRYPTION
    */
+
+  // rid: base64 string
+  private generateDataValues(rid: string, userId: string, record: object) {
+    const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));  
+  
+    const derived = deriveFromRid(prgRid);
+    const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), HEX);
+    const intRid = bigInt(prgRid, HEX);
+  
+    // bigInt
+    const y = derived.slope.times(hashedUserId).plus(intRid);
+    const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
+  
+    const plainTextData = {
+      rid: intRid, // 
+      slope: derived.slope, // 
+      recordKey: Krecord, // string, base 64
+      kId: sodium.to_base64(derived.kId),
+      record, // object
+      hashedX: hashedUserId, // bigInt 
+      y, // bigInt
+    };
+    return plainTextData;
+  }
+
+
   public encryptData(plainText: PlainTextData): EncryptedData {
 
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
@@ -261,12 +255,13 @@ export class CryptoService {
       perpId: perpId,
       userName: userName,
     };
-
+    const cryptoService = this;
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
       $.post("/postPerpId", {'perpId':perpId}, (data, status) => {
         if (status === "success") {
-          const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
+          
+          const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
           resolve(plainTextData);
         } else {
           reject(Error("Post request failed"));
@@ -277,6 +272,21 @@ export class CryptoService {
     return dataPromise;
   }
 
+   
+  public postData(encryptedData: EncryptedData) {
+    this.dataSubmissions.push(encryptedData);
+  }
+
+
+
+
+
+
+
+
+  /*
+   * DECRYPTION
+   */
   private getMatchedData(data) {
     for (var i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
@@ -286,9 +296,6 @@ export class CryptoService {
 
   }
 
-  /*
-   * DECRYPTION
-   */
   public decryptData():DecryptedData{
     let data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
