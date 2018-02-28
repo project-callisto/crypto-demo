@@ -21,14 +21,15 @@
     </li>
   </ul>
 
-<div class="explainer">Our encryption method uses four key techniques:
-  <ul>
-    <li><b>Client-side encryption</b> to encrypt user data within the browser</li>
-    <li><b>Oblivious PRF</b> over an elliptic curve to prevent against brute force attacks and ensure that the key servers cannot learn the perpetrator ID and that users cannot learn Callisto’s secret key </li>
-    <li><b>Secure multi-cloud key federation</b> to prevent Callisto’s secret key  from being exposed to any one cloud provider</li>
-    <li><b>Linear Secret Sharing</b> in order to ensure that there must be at least two victims of the same perpetrator before a user’s data can be decrypted  by the Callisto Option Counselor</li>
-  </ul>
-  To begin the demo, input a perpetrator name  and your name; we will refer to the combination of these inputs as “record”. This information is encrypted in the browser using the Libsodium cryptography library.  We also generate a random key K<sub>record</sub> to symmetrically encrypt this information. (In the real product, users will be inputting an array of multiple unique perpetrator identifiers and their own verified contact information. They will also be able to edit their record with an auto-generated passphrase.) </div>
+  <div class="explainer">Our encryption method uses four key techniques:
+    <ul>
+      <li><b>Client-side encryption</b> to encrypt user data within the browser</li>
+      <li><b>Oblivious PRF</b> over an elliptic curve to prevent against brute force attacks and ensure that the key servers cannot learn the perpetrator ID and that users cannot learn Callisto’s secret key </li>
+      <li><b>Secure multi-cloud key federation</b> to prevent Callisto’s secret key  from being exposed to any one cloud provider</li>
+      <li><b>Linear Secret Sharing</b> in order to ensure that there must be at least two victims of the same perpetrator before a user’s data can be decrypted  by the Callisto Option Counselor</li>
+    </ul>
+    <p>To begin the demo, input a perpetrator name  and your name; we will refer to the combination of these inputs as “record”. This information is encrypted in the browser using the Libsodium cryptography library.  We also generate a random key K<sub>record</sub> to symmetrically encrypt this information. (In the real product, users will be inputting an array of multiple unique perpetrator identifiers and their own verified contact information. They will also be able to edit their record with an auto-generated passphrase.)</p>
+  </div>
 
   <form
     class="input-row perp-name-form"
