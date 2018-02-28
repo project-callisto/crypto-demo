@@ -40,7 +40,7 @@ export class GraphComponent implements OnInit {
       .text("Y-Value");
 
     svg.selectAll(".dot")
-      .data({})
+      .data([])
       .enter().append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
