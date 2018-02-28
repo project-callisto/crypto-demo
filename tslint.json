@@ -1,13 +1,23 @@
 {
   "extends": "tslint:recommended",
-  "rulesDirectory": ["."],
+  "rulesDirectory": [
+    "."
+  ],
   "linterOptions": {
     "exclude": "node_modules/*"
   },
   "rules": {
-    "indent": [true, "spaces", 2],
-    "no-consecutive-blank-lines": false,
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
+    "no-consecutive-blank-lines": true,
     "object-literal-sort-keys": false,
+    "space-before-function-paren": [
+      true,
+      "never"
+    ],
     "typedef": [
       true,
       "call-signature",
