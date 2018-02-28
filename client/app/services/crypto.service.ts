@@ -3,6 +3,8 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
+import * as encoding from 'text-encoding';
+
 /*
  *  GLOBAL CONSTANTS
  */
@@ -48,6 +50,12 @@ export interface PlainTextData {
   readonly y: number;
 }
 
+
+export interface DecryptedData {
+  readonly decryptedRecords: Object;
+  readonly slope: number;
+  readonly strRid: string;
+}
 
 /*
  *  HELPER FUNCTIONS
@@ -164,7 +172,7 @@ function decryptRecords(data, rid) {
 
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
+    const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
@@ -188,7 +196,7 @@ function decryptSecretValues(data) {
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
     // Convert back to bigInt
-    const yStr = new TextDecoder("utf-8").decode(y);
+    const yStr = new encoding.TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
   }
 }
@@ -228,11 +236,9 @@ export class CryptoService {
    *  ENCRYPTION
    */
   public encryptData(plainText: PlainTextData): EncryptedData {
-    // encrypt record and key
-    // symmetric
+
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
-    // asymmetric
 
     // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
@@ -249,16 +255,16 @@ export class CryptoService {
   }
 
   // TODO: insert proper type instead of object
-  public createDataSubmission(perpId: string): Promise<{}> {
+  public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
     const record = {
       perpId: perpId,
-      userName: "Alice Bob",
+      userName: userName,
     };
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", perpId, (data, status) => {
+      $.post("/postPerpId", {'perpId':perpId}, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
@@ -271,12 +277,24 @@ export class CryptoService {
     return dataPromise;
   }
 
+  private getMatchedData(data) {
+    for (var i = 1; i < data.length; i++) {
+      if (data[0].hashedRid === data[i].hashedRid) {
+        return [data[0], data[i]]
+      }
+    }
+
+  }
 
   /*
    * DECRYPTION
    */
-  public decryptData() {
-    let data = this.dataSubmissions;
+  public decryptData():DecryptedData{
+    let data = this.getMatchedData(this.dataSubmissions);
+    if (data.length < 2) {
+      return {decryptedRecords: [], slope: 0, strRid: ''};
+    }
+
     let coordA;
     let coordB;
 
