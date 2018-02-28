@@ -50,11 +50,17 @@ export interface PlainTextData {
   readonly y: number;
 }
 
+interface ICoordinate {
+  readonly x: bigInt.BigInteger;
+  readonly y: bigInt.BigInteger;
+}
 
 export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: number;
   readonly strRid: string;
+  readonly coordA: ICoordinate;
+  readonly coordB: ICoordinate;
 }
 
 /*
@@ -291,12 +297,13 @@ export class CryptoService {
    */
   public decryptData(): DecryptedData {
     const data = this.getMatchedData(this.dataSubmissions);
+
     if (data.length < 2) {
-      return { decryptedRecords: [], slope: 0, strRid: "" };
+      return {} as any;
     }
 
-    let coordA;
-    let coordB;
+    let coordA: ICoordinate;
+    let coordB: ICoordinate;
 
     data[0].x = bigInt(data[0].cX);
     data[1].x = bigInt(data[1].cX);
@@ -319,6 +326,8 @@ export class CryptoService {
       decryptedRecords: decryptRecords(data, strRid.toString(HEX)),
       slope,
       strRid,
+      coordA,
+      coordB,
     };
   }
 }

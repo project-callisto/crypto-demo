@@ -1,6 +1,6 @@
 import { Component, ViewChild } from "@angular/core";
 import { FifthStepComponent } from "./fifth-step.component";
-import { FirstStepComponent, UserInput } from "./first-step.component";
+import { FirstStepComponent, IUserInput } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, DecryptedData, EncryptedData, PlainTextData } from "./services/crypto.service";
@@ -57,7 +57,7 @@ export class StepComponent {
    * and interact with the crypto through promises chained from private functions
    */
 
-  public advanceFirstStep(userInput: UserInput): void {
+  public advanceFirstStep(userInput: IUserInput): void {
     this.perpInput = userInput.perpInput;
     this.userName = userInput.userName;
     this.submitUserEntry().then(() => {
@@ -118,6 +118,7 @@ export class StepComponent {
     await this.submitAndEncrypt(this.perpInput, this.userName + this.userName).then(() => {
       const decryptedData: DecryptedData = this.crypto.decryptData();
       this.fifthStep.RID = decryptedData.strRid;
+      this.fifthStep.graph.decryptedData = decryptedData;
       this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
     });
     // unmatched perpInput

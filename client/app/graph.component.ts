@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { d3 } from "d3";
+import * as d3 from "d3";
+import { DecryptedData } from "./services/crypto.service";
 
 const templateSelector = "crypto-graph";
 
@@ -11,7 +12,7 @@ const templateSelector = "crypto-graph";
   ],
 })
 export class GraphComponent implements OnInit {
-  @Input() public RID: string;
+  @Input() public decryptedData: DecryptedData;
 
   public ngOnInit() {
     this.generateGraph();
@@ -21,13 +22,9 @@ export class GraphComponent implements OnInit {
     const x = d3.scaleLinear();
     const y = d3.scaleLinear();
 
-    const xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom");
+    const xAxis = d3.axisBottom(x);
 
-    const yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left");
+    const yAxis = d3.axisLeft(y);
 
     const svg = d3.select(`.${templateSelector}`).append("svg")
       .append("g");
