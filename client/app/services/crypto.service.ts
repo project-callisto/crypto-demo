@@ -11,10 +11,8 @@ import * as encoding from "text-encoding";
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
-
 /*  SODIUM INTIALIZATION  */
 const sodium_promise = sodium.ready;
-
 
 /*
  *  KEY-PAIR GENERATION
@@ -25,7 +23,6 @@ sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
-
 
 /*
  *  DATA OBJECTS
@@ -66,7 +63,6 @@ export interface DecryptedData {
 /*
  *  HELPER FUNCTIONS
  */
-
 
 /*
  * ENCRYPTION
@@ -132,7 +128,6 @@ function generateDataValues(rid, userId, record) {
   // TODO: hook user name and email back to front-end
   // make issue on github
 
-
   const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
   const plainTextData = {
@@ -167,7 +162,6 @@ function symmetricDecrypt(key, cipherText) {
   return decrypted;
 }
 
-
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
@@ -183,7 +177,6 @@ function decryptRecords(data, rid) {
   }
   return decryptedRecords;
 }
-
 
 // decrypt Y values
 function decryptSecretValues(data) {
@@ -207,7 +200,6 @@ function decryptSecretValues(data) {
   }
 }
 
-
 function deriveSlope(c1, c2) {
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
@@ -224,8 +216,6 @@ function getIntercept(c1, slope) {
   return y.minus(slope.times(x));
 }
 
-
-
 /*
  *  CRYPTO SERVICE
  */
@@ -236,7 +226,6 @@ export class CryptoService {
   public postData(encryptedData: EncryptedData) {
     this.dataSubmissions.push(encryptedData);
   }
-
 
   /*
    *  ENCRYPTION
@@ -307,7 +296,6 @@ export class CryptoService {
 
     data[0].x = bigInt(data[0].cX);
     data[1].x = bigInt(data[1].cX);
-
 
     if (data[0].x.leq(data[1].x)) {
       coordA = data[0];
