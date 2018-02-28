@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-import * as encoding from 'text-encoding';
+import * as encoding from "text-encoding";
 
 /*
  *  GLOBAL CONSTANTS
@@ -11,10 +11,8 @@ import * as encoding from 'text-encoding';
 const HEX = 16;
 const PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
-
 /*  SODIUM INTIALIZATION  */
 const sodium_promise = sodium.ready;
-
 
 /*
  *  KEY-PAIR GENERATION
@@ -25,7 +23,6 @@ sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
-
 
 /*
  *  DATA OBJECTS
@@ -50,7 +47,6 @@ export interface PlainTextData {
   readonly y: number;
 }
 
-
 export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: number;
@@ -60,7 +56,6 @@ export interface DecryptedData {
 /*
  *  HELPER FUNCTIONS
  */
-
 
 /*
  * ENCRYPTION
@@ -126,7 +121,6 @@ function generateDataValues(rid, userId, record) {
   // TODO: hook user name and email back to front-end
   // make issue on github
 
-
   const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
 
   const plainTextData = {
@@ -161,7 +155,6 @@ function symmetricDecrypt(key, cipherText) {
   return decrypted;
 }
 
-
 function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
@@ -177,7 +170,6 @@ function decryptRecords(data, rid) {
   }
   return decryptedRecords;
 }
-
 
 // decrypt Y values
 function decryptSecretValues(data) {
@@ -201,7 +193,6 @@ function decryptSecretValues(data) {
   }
 }
 
-
 function deriveSlope(c1, c2) {
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
@@ -218,19 +209,16 @@ function getIntercept(c1, slope) {
   return y.minus(slope.times(x));
 }
 
-
-
 /*
  *  CRYPTO SERVICE
  */
 @Injectable()
 export class CryptoService {
-  
+
   private dataSubmissions = [];
   public postData(encryptedData: EncryptedData) {
     this.dataSubmissions.push(encryptedData);
   }
-
 
   /*
    *  ENCRYPTION
@@ -258,13 +246,13 @@ export class CryptoService {
   public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
     const record = {
-      perpId: perpId,
-      userName: userName,
+      perpId,
+      userName,
     };
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {'perpId':perpId}, (data, status) => {
+      $.post("/postPerpId", {perpId}, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
@@ -278,9 +266,9 @@ export class CryptoService {
   }
 
   private getMatchedData(data) {
-    for (var i = 1; i < data.length; i++) {
+    for (let i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
-        return [data[0], data[i]]
+        return [data[0], data[i]];
       }
     }
 
@@ -289,10 +277,10 @@ export class CryptoService {
   /*
    * DECRYPTION
    */
-  public decryptData():DecryptedData{
-    let data = this.getMatchedData(this.dataSubmissions);
+  public decryptData(): DecryptedData {
+    const data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ''};
+      return {decryptedRecords: [], slope: 0, strRid: ""};
     }
 
     let coordA;
@@ -300,7 +288,6 @@ export class CryptoService {
 
     data[0].x = bigInt(data[0].cX);
     data[1].x = bigInt(data[1].cX);
-
 
     if (data[0].x.leq(data[1].x)) {
       coordA = data[0];
