@@ -76,21 +76,7 @@ function symmetricEncrypt(key, msg) {
   return encrypted;
 }
 
-function generateRandNum() {
-  return Math.floor(Math.random() * 10);
-}
 
-function deriveFromRid(hexRid) {
-
-  const ridLen = hexRid.length;
-
-  const slope = bigInt(hexRid.substr(0, ridLen / 2), HEX);
-
-  // hashing it to make it conform to key size: 32 bytes
-  const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
-
-  return {slope, kId};
-}
 
 // Y is a bigInt number
 function encryptSecretValue(y) {
@@ -127,22 +113,6 @@ function symmetricDecrypt(key, cipherText) {
   return decrypted;
 }
 
-
-function decryptRecords(data, rid) {
-
-  const decryptedRecords = [];
-  const derived = deriveFromRid(rid.toString(HEX));
-
-  for (let i = 0; i < data.length; i++) {
-    const encryptedRecord = data[i].encryptedRecord;
-
-    const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
-    const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
-    decryptedRecords.push(JSON.parse(dStr));
-  }
-  return decryptedRecords;
-}
 
 
 // decrypt Y values
@@ -204,11 +174,26 @@ export class CryptoService {
    *  ENCRYPTION
    */
 
+  /* Used in both encryption and decryption to derive a slope and key for a unique RID 
+     hexRid - hex string
+  */
+  private deriveFromRid(hexRid: string) {
+
+    const ridLen = hexRid.length;
+  
+    const slope = bigInt(hexRid.substr(0, ridLen / 2), HEX);
+  
+    // hashing it to make it conform to key size: 32 bytes
+    const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
+  
+    return {slope, kId};
+  }
+
   // rid: base64 string
   private generateDataValues(rid: string, userId: string, record: object) {
     const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));  
   
-    const derived = deriveFromRid(prgRid);
+    const derived = this.deriveFromRid(prgRid);
     const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), HEX);
     const intRid = bigInt(prgRid, HEX);
   
@@ -280,10 +265,6 @@ export class CryptoService {
 
 
 
-
-
-
-
   /*
    * DECRYPTION
    */
@@ -323,9 +304,28 @@ export class CryptoService {
     const strRid = getIntercept(coordA, slope);
 
     return {
-      decryptedRecords: decryptRecords(data, strRid.toString(HEX)),
+      decryptedRecords: this.decryptRecords(data, strRid.toString(HEX)),
       slope,
       strRid,
     };
   }
+
+  /* */
+  private decryptRecords(data: Array<EncryptedData>, rid) {
+
+    const decryptedRecords = [];
+    const derived = this.deriveFromRid(rid.toString(HEX));
+  
+    for (let i = 0; i < data.length; i++) {
+      const encryptedRecord = data[i].encryptedRecord;
+  
+      const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
+      const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
+      const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+      decryptedRecords.push(JSON.parse(dStr));
+    }
+    return decryptedRecords;
+  }
+  
+  
 }
