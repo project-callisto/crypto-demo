@@ -25,7 +25,7 @@ export interface UserInput {
 
 
 export class FirstStepComponent {
-  @Input() public recordKey: string;
+  @Input() public recordKey: string = '[[ Randomly Generated Key ]]'
   @Output() public advanceStep: EventEmitter<UserInput> = new EventEmitter<UserInput>();
 
   public perpSubmit(event: Event, perpInput: string, userInput: string): void {

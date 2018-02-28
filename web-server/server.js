@@ -14,7 +14,6 @@ const sK = 'Project Callisto Super Secret Key';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-
 const sodium = require('libsodium-wrappers');
 
 
@@ -37,17 +36,15 @@ var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
 
 // KEY SERVER
 app.post('/postPerpId', function(req,res) {
-  var pid = req.body.pid;
 
+  let perpId = req.body.perpId;
   let sodium_promise = sodium.ready;
   
   sodium_promise.then(function() {
-    // TODO: choose adequately safe key that is static
-    
-    // current substitute for OPRF
-    var rid = sodium.to_base64(sodium.crypto_hash(pid+sK));
+    var rid = sodium.to_base64(sodium.crypto_hash(perpId+sK));
 
     res.send({rid});
+    console.log('sent rid: ', rid);
   });
 });
 
