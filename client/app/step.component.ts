@@ -1,6 +1,6 @@
 import { Component, ViewChild } from "@angular/core";
 import { FifthStepComponent } from "./fifth-step.component";
-import { FirstStepComponent } from "./first-step.component";
+import { FirstStepComponent, UserInput } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoData, CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
@@ -39,8 +39,7 @@ import * as $ from "jquery";
 export class StepComponent {
   private perpInput: string;
   private userInput: string;
-  private encryptedData: EncryptedData;
-  private plainTextData: PlainTextData;
+
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
   @ViewChild(ThirdStepComponent) private thirdStep: ThirdStepComponent;
@@ -78,15 +77,17 @@ export class StepComponent {
     this.scrollTo("fourth-step");
   }
 
-  //   Display:
-  // H(RID)
-  // EncPUB(KOC, x)
-  // EncPUB(KOC, y)
-  // EncGCM(Krecord, record)
-  // EncGCM(KID, Krecord)
-  private advanceFourthStep(): void {
+  private submitAndEncrypt(perpInput: string, userName: string) {
+    this.crypto.createDataSubmission(perpInput, userName).then(
+      (plainText: PlainTextData) => {
+        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
+        this.crypto.postData(encryptedData);
+      });
+  }
 
-    this.crypto.createDataSubmission(this.perpInput).then(
+  private advanceFourthStep(): void {
+    // matched perpInput, diff username
+    this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
         this.crypto.postData(encryptedData);
@@ -96,11 +97,14 @@ export class StepComponent {
       },
     );
 
+    // unmatched perpInput
+    this.submitAndEncrypt(this.perpInput + this.perpInput, 'Alice');
+    this.submitAndEncrypt(this.perpInput + '1', 'Bob');
+
     this.fifthStep.shown = true;
     this.scrollTo("fifth-step");
   }
 
-  // simulate data, display chart, display decrypted RID
   private advanceFifthStep(): void {
     this.sixthStep.shown = true;
     this.scrollTo("sixth-step");
@@ -108,7 +112,7 @@ export class StepComponent {
 
   private advanceSixthStep(): void {
     this.summaryStep.shown = true;
-    this.scrollTo("seventh-step");
+    this.scrollTo('summary-step');
   }
 
   private scrollTo(element: string): void {

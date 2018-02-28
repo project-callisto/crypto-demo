@@ -3,6 +3,8 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
+import * as encoding from 'text-encoding';
+
 /*
  *  GLOBAL CONSTANTS
  */
@@ -19,7 +21,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function() {
+sodium_promise.then(function () {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -51,6 +53,12 @@ export interface PlainTextData {
 export interface CryptoData {
   readonly plainTextData: PlainTextData;
   readonly encryptedData: EncryptedData;
+}
+
+export interface DecryptedData {
+  readonly decryptedRecords: Object;
+  readonly slope: number;
+  readonly strRid: string;
 }
 
 /*
@@ -167,7 +175,7 @@ function decryptRecords(data, rid) {
 
     const decryptedRecordKey = symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
     const decryptedRecord = symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-    const dStr = new TextDecoder("utf-8").decode(decryptedRecord);
+    const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
     decryptedRecords.push(JSON.parse(dStr));
   }
   return decryptedRecords;
@@ -191,7 +199,7 @@ function decryptSecretValues(data) {
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
     // Convert back to bigInt
-    const yStr = new TextDecoder("utf-8").decode(y);
+    const yStr = new encoding.TextDecoder("utf-8").decode(y);
     data[i].y = bigInt(yStr);
   }
 }
@@ -231,7 +239,6 @@ export class CryptoService {
     // symmetric
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
-    // asymmetric
 
     // string, base64 encoding
     const cY = encryptSecretValue(plainText.y);
@@ -276,11 +283,22 @@ export class CryptoService {
     );
   }
 
+  private getMatchedData(data) {
+    for (var i = 1; i < data.length; i++) {
+      if (data[0].hashedRid === data[i].hashedRid) {
+        return [data[0], data[i]]
+      }
+    }
+
   /*
    * DECRYPTION
    */
-  public decryptData() {
-    const data = this.dataSubmissions;
+  public decryptData(): DecryptedData {
+    let data = this.getMatchedData(this.dataSubmissions);
+    if (data.length < 2) {
+      return { decryptedRecords: [], slope: 0, strRid: '' };
+    }
+
     let coordA;
     let coordB;
 
