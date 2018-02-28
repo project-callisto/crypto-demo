@@ -82,7 +82,7 @@ export class StepComponent {
   }
 
   private advanceThirdStep(): void {
-  
+
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
@@ -101,15 +101,15 @@ export class StepComponent {
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
         this.crypto.postData(encryptedData);
-        const decryptedData = this.crypto.decryptData(); 
+        const decryptedData = this.crypto.decryptData();
         this.fifthStep.RID = decryptedData.strRid;
         this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
       },
     );
 
     // unmatched perpInput
-    this.submitAndEncrypt(this.perpInput + this.perpInput, 'Alice');
-    this.submitAndEncrypt(this.perpInput + '1', 'Bob');
+    this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    this.submitAndEncrypt(this.perpInput + "1", "Bob");
 
     this.fifthStep.shown = true;
     this.scrollTo("fifth-step");
@@ -117,12 +117,12 @@ export class StepComponent {
 
   private advanceFifthStep(): void {
     this.sixthStep.shown = true;
-    this.scrollTo("sixth-step");  
+    this.scrollTo("sixth-step");
   }
 
   private advanceSixthStep(): void {
     this.summaryStep.shown = true;
-    this.scrollTo('summary-step');
+    this.scrollTo("summary-step");
   }
 
   private scrollTo(element: string): void {

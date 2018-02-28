@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-import * as encoding from 'text-encoding';
+import * as encoding from "text-encoding";
 
 /*
  *  GLOBAL CONSTANTS
@@ -225,7 +225,7 @@ function getIntercept(c1, slope) {
  */
 @Injectable()
 export class CryptoService {
-  
+
   private dataSubmissions = [];
   public postData(encryptedData: EncryptedData) {
     this.dataSubmissions.push(encryptedData);
@@ -258,13 +258,13 @@ export class CryptoService {
   public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
     const record = {
-      perpId: perpId,
-      userName: userName,
+      perpId,
+      userName,
     };
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {'perpId':perpId}, (data, status) => {
+      $.post("/postPerpId", {perpId}, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
@@ -278,9 +278,9 @@ export class CryptoService {
   }
 
   private getMatchedData(data) {
-    for (var i = 1; i < data.length; i++) {
+    for (let i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
-        return [data[0], data[i]]
+        return [data[0], data[i]];
       }
     }
 
@@ -289,10 +289,10 @@ export class CryptoService {
   /*
    * DECRYPTION
    */
-  public decryptData():DecryptedData{
-    let data = this.getMatchedData(this.dataSubmissions);
+  public decryptData(): DecryptedData {
+    const data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ''};
+      return {decryptedRecords: [], slope: 0, strRid: ""};
     }
 
     let coordA;
