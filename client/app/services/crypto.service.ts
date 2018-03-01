@@ -19,7 +19,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function () {
+sodium_promise.then(function() {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -70,7 +70,7 @@ export interface DecryptedData {
 
 // TODO: split this to make it more readable
 // Returns base64
-function symmetricEncrypt (key, msg) {
+function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
@@ -80,11 +80,11 @@ function symmetricEncrypt (key, msg) {
   return encrypted;
 }
 
-function generateRandNum () {
+function generateRandNum() {
   return Math.floor(Math.random() * 10);
 }
 
-function deriveFromRid (hexRid) {
+function deriveFromRid(hexRid) {
 
   const ridLen = hexRid.length;
 
@@ -97,7 +97,7 @@ function deriveFromRid (hexRid) {
 }
 
 // Y is a bigInt number
-function encryptSecretValue (y) {
+function encryptSecretValue(y) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
@@ -109,7 +109,7 @@ function encryptSecretValue (y) {
   return encrypted;
 }
 
-function generateDataValues (rid, userId, record) {
+function generateDataValues(rid, userId, record) {
 
   const hexRid = sodium.to_hex(sodium.from_base64(rid));
 
@@ -148,7 +148,7 @@ function generateDataValues (rid, userId, record) {
 
 // Key is Uint8Array,
 // CipherText: string in base64 encoding
-function symmetricDecrypt (key, cipherText) {
+function symmetricDecrypt(key, cipherText) {
   const split = cipherText.split("$");
 
   // Uint8Arrays
@@ -162,7 +162,7 @@ function symmetricDecrypt (key, cipherText) {
   return decrypted;
 }
 
-function decryptRecords (data, rid) {
+function decryptRecords(data, rid) {
 
   const decryptedRecords = [];
   const derived = deriveFromRid(rid.toString(HEX));
@@ -179,7 +179,7 @@ function decryptRecords (data, rid) {
 }
 
 // decrypt Y values
-function decryptSecretValues (data) {
+function decryptSecretValues(data) {
 
   for (let i = 0; i < data.length; i++) {
     const split = data[i].cY.split("$");
@@ -200,7 +200,7 @@ function decryptSecretValues (data) {
   }
 }
 
-function deriveSlope (c1, c2) {
+function deriveSlope(c1, c2) {
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
 
@@ -209,7 +209,7 @@ function deriveSlope (c1, c2) {
 }
 
 // plug in value for x within line formula to get y-intercept aka rid
-function getIntercept (c1, slope) {
+function getIntercept(c1, slope) {
   const x = c1.x;
   const y = c1.y;
 
@@ -223,14 +223,14 @@ function getIntercept (c1, slope) {
 export class CryptoService {
 
   private dataSubmissions = [];
-  public postData (encryptedData: EncryptedData) {
+  public postData(encryptedData: EncryptedData) {
     this.dataSubmissions.push(encryptedData);
   }
 
   /*
    *  ENCRYPTION
    */
-  public encryptData (plainText: PlainTextData): EncryptedData {
+  public encryptData(plainText: PlainTextData): EncryptedData {
 
     const encryptedRecord = symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
     const encryptedRecordKey = symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
@@ -250,7 +250,7 @@ export class CryptoService {
   }
 
   // TODO: insert proper type instead of object
-  public createDataSubmission (perpId: string, userName: string): Promise<{}> {
+  public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
     const record = {
       perpId,
@@ -258,7 +258,7 @@ export class CryptoService {
     };
 
     // TODO: return post itself
-    const dataPromise = new Promise(function (resolve, reject) {
+    const dataPromise = new Promise(function(resolve, reject) {
       $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
@@ -272,7 +272,7 @@ export class CryptoService {
     return dataPromise;
   }
 
-  private getMatchedData (data) {
+  private getMatchedData(data) {
     for (let i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
         return [data[0], data[i]];
@@ -284,7 +284,7 @@ export class CryptoService {
   /*
    * DECRYPTION
    */
-  public decryptData (): DecryptedData {
+  public decryptData(): DecryptedData {
     const data = this.getMatchedData(this.dataSubmissions);
 
     if (data.length < 2) {
