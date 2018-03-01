@@ -28,9 +28,9 @@ import * as $ from "jquery";
     <fifth-step
       (advanceStep)="advanceFifthStep($event)"
     ></fifth-step>
-    <sixth-step>
+    <sixth-step
       (advanceStep)="advanceSixthStep($event)"
-    </sixth-step>
+    ></sixth-step>
   `,
   providers: [
     CryptoService,
