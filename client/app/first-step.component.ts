@@ -26,7 +26,7 @@ export class FirstStepComponent {
   @Input() public recordKey: string = "[[ Randomly Generated Key ]]";
   @Output() public advanceStep: EventEmitter<UserInput> = new EventEmitter<UserInput>();
 
-  public perpSubmit (event: Event, perpInput: string, userInput: string): void {
+  public perpSubmit(event: Event, perpInput: string, userInput: string): void {
     event.preventDefault();
     if (perpInput && userInput) {
       const data = {perpInput, userName: userInput};

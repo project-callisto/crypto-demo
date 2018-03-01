@@ -16,7 +16,7 @@
     "object-literal-sort-keys": false,
     "space-before-function-paren": [
       true,
-      "always"
+      "never"
     ],
     "typedef": [
       true,
