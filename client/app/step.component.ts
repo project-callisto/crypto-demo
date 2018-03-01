@@ -118,7 +118,7 @@ export class StepComponent {
     await this.submitAndEncrypt(this.perpInput, this.userName + this.userName).then(() => {
       const decryptedData: DecryptedData = this.crypto.decryptData();
       this.fifthStep.RID = decryptedData.strRid;
-      this.fifthStep.graph.decryptedData = decryptedData;
+      this.fifthStep.decryptedData = decryptedData;
       this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
     });
     // unmatched perpInput

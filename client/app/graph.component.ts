@@ -1,13 +1,10 @@
 import { Component, Input, OnInit } from "@angular/core";
-import * as d3 from "d3";
+import { axisBottom, axisLeft } from "d3-axis";
+import { scaleLinear } from "d3-scale";
+import { select } from "d3-selection";
 import { DecryptedData } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
-
-interface IAxes {
-  readonly x: d3.ScaleLinear<number, number>;
-  readonly y: d3.ScaleLinear<number, number>;
-}
 
 @Component({
   selector: `${templateSelector}`,
@@ -24,16 +21,19 @@ export class GraphComponent implements OnInit {
   }
 
   private generateGraph(): void {
-    const svg = d3.select(`.${templateSelector}`).append("svg")
+    const svg = select(`.${templateSelector}`)
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
       .append("g");
 
     svg.append("g")
-      .call(d3.axisBottom(d3.scaleLinear()))
+      .call(axisBottom(scaleLinear()))
       .append("text")
       .text("X-Value");
 
     svg.append("g")
-      .call(d3.axisLeft(d3.scaleLinear()))
+      .call(axisLeft(scaleLinear()))
       .append("text")
       .text("Y-Value");
 
