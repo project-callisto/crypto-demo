@@ -48,11 +48,11 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
   @ViewChild(SummaryStepComponent) private summaryStep: SummaryStepComponent;
 
-  constructor(
+  constructor (
     public crypto: CryptoService,
   ) { }
 
- private advanceFirstStep(userInput: UserInput): void {
+ private advanceFirstStep (userInput: UserInput): void {
   this.perpInput = userInput.perpInput;
   this.userName = userInput.userName;
 
@@ -73,20 +73,20 @@ export class StepComponent {
   );
 }
 
-  private advanceSecondStep(): void {
+  private advanceSecondStep (): void {
     // this.secondStep.encryptedData = encryptedData;
         this.thirdStep.shown = true;
         this.scrollTo("third-step");
 
   }
 
-  private advanceThirdStep(): void {
+  private advanceThirdStep (): void {
 
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
 
-  private submitAndEncrypt(perpInput: string, userName: string) {
+  private submitAndEncrypt (perpInput: string, userName: string) {
     this.crypto.createDataSubmission(perpInput, userName).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
@@ -94,7 +94,7 @@ export class StepComponent {
       });
   }
 
-  private advanceFourthStep(): void {
+  private advanceFourthStep (): void {
     // matched perpInput, diff username
     this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName).then(
       (plainText: PlainTextData) => {
@@ -114,17 +114,17 @@ export class StepComponent {
     this.scrollTo("fifth-step");
   }
 
-  private advanceFifthStep(): void {
+  private advanceFifthStep (): void {
     this.sixthStep.shown = true;
     this.scrollTo("sixth-step");
   }
 
-  private advanceSixthStep(): void {
+  private advanceSixthStep (): void {
     this.summaryStep.shown = true;
     this.scrollTo("summary-step");
   }
 
-  private scrollTo(element: string): void {
+  private scrollTo (element: string): void {
     $("html, body").animate({
       scrollTop: $(element).offset().top,
     }, 400);
