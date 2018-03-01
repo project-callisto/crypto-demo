@@ -25,7 +25,9 @@ export class GraphComponent implements OnInit {
       .append("svg")
       .attr("width", "100%")
       .attr("height", "100%")
-      .append("g");
+      .append("g")
+      .attr("width", "100%")
+      .attr("height", "100%");
 
     svg.append("g")
       .call(axisBottom(scaleLinear()))

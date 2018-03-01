@@ -31,7 +31,7 @@
     </p>
   </div>
   <crypto-graph
-    [decryptedData]="decryptedData"
+    (decryptedData)="decryptedData"
   ></crypto-graph>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
