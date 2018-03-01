@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { GraphComponent } from "./graph.component";
 import { DecryptedData } from "./services/crypto.service";
 
@@ -15,5 +15,4 @@ export class FifthStepComponent {
   @Input() public shown: boolean = false;
   @Input() public decryptedData: DecryptedData;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  @ViewChild(GraphComponent) public graph: GraphComponent;
 }
