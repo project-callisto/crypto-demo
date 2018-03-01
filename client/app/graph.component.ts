@@ -14,11 +14,11 @@ const templateSelector = "crypto-graph";
 export class GraphComponent implements OnInit {
   @Input() public decryptedData: DecryptedData;
 
-  public ngOnInit() {
+  public ngOnInit () {
     this.generateGraph();
   }
 
-  private generateGraph() {
+  private generateGraph () {
     const x = d3.scaleLinear();
     const y = d3.scaleLinear();
 
@@ -44,10 +44,10 @@ export class GraphComponent implements OnInit {
       .enter().append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
-      .attr("cx", function(d) {
+      .attr("cx", function (d) {
         return x(d.x);
       })
-      .attr("cy", function(d) {
+      .attr("cy", function (d) {
         return y(d.y);
       });
   }

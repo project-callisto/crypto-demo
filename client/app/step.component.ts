@@ -48,7 +48,7 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
   @ViewChild(SummaryStepComponent) private summaryStep: SummaryStepComponent;
 
-  constructor(
+  constructor (
     public crypto: CryptoService,
   ) { }
 
@@ -57,7 +57,7 @@ export class StepComponent {
    * and interact with the crypto through promises chained from private functions
    */
 
-  public advanceFirstStep(userInput: IUserInput): void {
+  public advanceFirstStep (userInput: IUserInput): void {
     this.perpInput = userInput.perpInput;
     this.userName = userInput.userName;
     this.submitUserEntry().then(() => {
@@ -66,40 +66,40 @@ export class StepComponent {
     });
   }
 
-  public advanceSecondStep(): void {
+  public advanceSecondStep (): void {
     this.thirdStep.shown = true;
     this.scrollTo("third-step");
   }
 
-  public advanceThirdStep(): void {
+  public advanceThirdStep (): void {
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
 
-  public advanceFourthStep(): void {
+  public advanceFourthStep (): void {
     this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
     });
   }
 
-  public advanceFifthStep(): void {
+  public advanceFifthStep (): void {
     this.sixthStep.shown = true;
     this.scrollTo("sixth-step");
   }
 
-  public advanceSixthStep(): void {
+  public advanceSixthStep (): void {
     this.summaryStep.shown = true;
     this.scrollTo("summary-step");
   }
 
-  private scrollTo(element: string): void {
+  private scrollTo (element: string): void {
     $("html, body").animate({
       scrollTop: $(element).offset().top,
     }, 400);
   }
 
-  private async submitUserEntry(): Promise<void> {
+  private async submitUserEntry (): Promise<void> {
     await this.crypto.createDataSubmission(this.perpInput, this.userName).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
@@ -112,7 +112,7 @@ export class StepComponent {
     );
   }
 
-  private async generateGraphData(): Promise<void> {
+  private async generateGraphData (): Promise<void> {
     // matched perpInput, diff username
     // input is matched, which (in prod) will trigger decryption
     await this.submitAndEncrypt(this.perpInput, this.userName + this.userName).then(() => {
@@ -127,7 +127,7 @@ export class StepComponent {
     await this.submitAndEncrypt(this.perpInput + "1", "Bob");
   }
 
-  private async submitAndEncrypt(perpInput: string, userName: string): Promise<void> {
+  private async submitAndEncrypt (perpInput: string, userName: string): Promise<void> {
     await this.crypto.createDataSubmission(perpInput, userName).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
