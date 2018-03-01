@@ -19,7 +19,7 @@ const sodium_promise = sodium.ready;
  */
 let claKeys, userKeys;
 
-sodium_promise.then(function() {
+sodium_promise.then(function () {
   claKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -258,7 +258,7 @@ export class CryptoService {
     };
 
     // TODO: return post itself
-    const dataPromise = new Promise(function(resolve, reject) {
+    const dataPromise = new Promise(function (resolve, reject) {
       $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
