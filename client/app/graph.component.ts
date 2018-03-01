@@ -24,36 +24,27 @@ export class GraphComponent implements OnInit {
   }
 
   private generateGraph(): void {
-    const x: d3.ScaleLinear<number, number> = d3.scaleLinear();
-    const y: d3.ScaleLinear<number, number> = d3.scaleLinear();
-
-    const xAxis = d3.axisBottom(x);
-    const yAxis = d3.axisLeft(y);
-
     const svg = d3.select(`.${templateSelector}`).append("svg")
       .append("g");
 
     svg.append("g")
-      .call(xAxis)
+      .call(d3.axisBottom(d3.scaleLinear()))
       .append("text")
       .text("X-Value");
 
     svg.append("g")
-      .call(yAxis)
+      .call(d3.axisLeft(d3.scaleLinear()))
       .append("text")
       .text("Y-Value");
 
-    svg.selectAll(".dot")
+    const circle = svg.selectAll(".dot")
       .data([])
-      .enter().append("circle")
+      .enter()
+      .append("circle");
+
+    circle
       .attr("class", "dot")
-      .attr("r", 3.5)
-      .attr("cx", (d) => {
-        return x(d.x);
-      })
-      .attr("cy", (d) => {
-        return y(d.y);
-      });
+      .attr("r", 3.5);
   }
 
 }
