@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, Input, OnChanges } from "@angular/core";
+import { AfterContentChecked, AfterViewInit, Component, Input } from "@angular/core";
 import * as bigInt from "big-integer";
+import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
@@ -14,16 +15,20 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent implements AfterViewInit, OnChanges {
+export class GraphComponent implements AfterViewInit, AfterContentChecked {
   @Input() public decryptedData: DecryptedData;
   private svg: any;
+  private xScale: any;
+  private yScale: any;
 
   public ngAfterViewInit(): void {
     this.generateGraph();
   }
 
-  public ngOnChanges(): void {
-    this.populateGraph();
+  public ngAfterContentChecked(): void {
+    if (this.decryptedData) {
+      this.populateGraph();
+    }
   }
 
   private generateGraph(): void {
@@ -36,11 +41,14 @@ export class GraphComponent implements AfterViewInit, OnChanges {
       .attr("height", height)
       .append("g");
 
+    this.xScale = scaleLinear()
+      .range([0, width]);
+
+    this.yScale = scaleLinear()
+      .range([0, height]);
+
     this.svg.append("g")
-      .call(axisBottom(
-        scaleLinear()
-          .range([0, width]),
-      ))
+      .call(axisBottom(this.xScale))
       .append("text")
       .attr("class", "label-x")
       .text("X-Value");
@@ -56,20 +64,31 @@ export class GraphComponent implements AfterViewInit, OnChanges {
   }
 
   private populateGraph(): void {
+    this.xScale.domain(extent(
+      [this.decryptedData.coordA, this.decryptedData.coordB],
+      (datum: ICoordinate) => {
+        return datum.x.toJSNumber();
+      },
+    ));
+
+    this.yScale.domain(extent(
+      [this.decryptedData.coordA, this.decryptedData.coordB],
+      (datum: ICoordinate) => {
+        return datum.y.toJSNumber();
+      },
+    ));
+
     this.svg.selectAll(".dot")
-      .data([
-        this.decryptedData.coordA,
-        this.decryptedData.coordB,
-      ])
+      .data([this.decryptedData.coordA, this.decryptedData.coordB])
       .enter()
       .append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
       .attr("cx", (datum: ICoordinate): number => {
-        return datum.x.toJSNumber();
+        return this.xScale(datum.x.toJSNumber());
       })
       .attr("cy", (datum: ICoordinate): number => {
-        return datum.y.toJSNumber();
+        return this.yScale(datum.y.toJSNumber());
       });
   }
 
