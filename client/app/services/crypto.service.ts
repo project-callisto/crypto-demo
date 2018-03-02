@@ -39,7 +39,7 @@ export interface Coord {
 export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: bigInt.BigInteger;
-  readonly strRid: string;
+  readonly rid: bigInt.BigInteger;
 }
 
 
@@ -217,8 +217,9 @@ private generateDataValues(rid: string, userId: string, record: object) {
   public decryptData(): DecryptedData {
     let data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: bigInt(0), strRid: ""};
+      return {decryptedRecords: [], slope: bigInt(0), rid: bigInt(0)};
     }
+
     const yValues = this.decryptSecretValues(data);
 
     let coordA = this.createCoord(data[0], yValues[0]);
@@ -230,14 +231,20 @@ private generateDataValues(rid: string, userId: string, record: object) {
       coordB = temp;
     }
 
+    // BigInt
     const slope = this.deriveSlope(coordA, coordB);
-    const strRid = this.getIntercept(coordA, slope);
+    const rid = this.getIntercept(coordA, slope);
 
     return {
-      decryptedRecords: this.decryptRecords(data, strRid.toString(this.HEX)),
+      decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
       slope,
-      strRid,
+      rid
     };
+    // return {
+    //   decryptedRecords: this.decryptRecords(data, strRid.toString(this.HEX)),
+    //   slope,
+    //   strRid,
+    // };
   }
 
   /* TODO: Figure out type of rid*/
@@ -256,56 +263,54 @@ private generateDataValues(rid: string, userId: string, record: object) {
     }
     return decryptedRecords;
   }
-  
+    
 
-// Key is string ,
-// CipherText: string in base64 encoding
-// TODO: what is returned??
-private symmetricDecrypt(key: string, cipherText: string)  {
-  const split = cipherText.split("$");
+  // Key is string ,
+  // CipherText: string in base64 encoding
+  // TODO: what is returned??
+  private symmetricDecrypt(key: string, cipherText: string)  {
+    const split = cipherText.split("$");
 
-  // Uint8Arrays
-  const cT = sodium.from_base64(split[0]);
-  const nonce = sodium.from_base64(split[1]);
-  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
-
-  return decrypted;
-}
-
-// decrypt Y values
-private decryptSecretValues(data: Array<EncryptedData>): Array<Coord> {
-  let yValues = [];
-  for (let i = 0; i < 2; i++) {
-    const split = data[i].cY.split("$");
-
-    // All values are UInt8Array
-    const cY = sodium.from_base64(split[0]);
+    // Uint8Arrays
+    const cT = sodium.from_base64(split[0]);
     const nonce = sodium.from_base64(split[1]);
-    const userPK = sodium.from_base64(data[i].userPubKey);
-    const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
+    const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
 
-    // Convert back to bigInt
-    const yStr = new encoding.TextDecoder("utf-8").decode(y);
-    yValues.push(bigInt(yStr));
+    return decrypted;
   }
-  return yValues;
-}
+
+  // decrypt Y values
+  private decryptSecretValues(data: Array<EncryptedData>): Array<bigInt.BigInteger> {
+    let yValues = [];
+    for (let i = 0; i < 2; i++) {
+      const split = data[i].cY.split("$");
+
+      // All values are UInt8Array
+      const cY = sodium.from_base64(split[0]);
+      const nonce = sodium.from_base64(split[1]);
+      const userPK = sodium.from_base64(data[i].userPubKey);
+      const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
+
+      // Convert back to bigInt
+      const yStr = new encoding.TextDecoder("utf-8").decode(y);
+      yValues.push(bigInt(yStr));
+    }
+    return yValues;
+  }
 
 
-private deriveSlope(c1: Coord, c2: Coord): bigInt.BigInteger {
-  const top = c2.y.minus(c1.y);
-  const bottom = c2.x.minus(c1.x);
+  private deriveSlope(c1: Coord, c2: Coord): bigInt.BigInteger {
+    const top = c2.y.minus(c1.y);
+    const bottom = c2.x.minus(c1.x);
 
-  return top.divide(bottom);
-}
+    return top.divide(bottom);
+  }
 
-// plug in value for x within line formula to get y-intercept aka rid
-private getIntercept(c1: Coord, slope) {
-  const x = c1.x;
-  const y = c1.y;
+  // plug in value for x within line formula to get y-intercept aka rid
+  private getIntercept(c1: Coord, slope) {
+    const x = c1.x;
+    const y = c1.y;
 
-  return y.minus(slope.times(x));
-}
-
-  
+    return y.minus(slope.times(x));
+  }  
 }
