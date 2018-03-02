@@ -47,13 +47,13 @@ export interface PlainTextData {
   readonly y: number;
 }
 
-interface ICoordinate {
+export interface ICoordinate {
   readonly x: bigInt.BigInteger;
   readonly y: bigInt.BigInteger;
 }
 
 export interface DecryptedData {
-  readonly decryptedRecords: Object;
+  readonly decryptedRecords: object;
   readonly slope: number;
   readonly strRid: string;
   readonly coordA: ICoordinate;
