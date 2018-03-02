@@ -91,16 +91,16 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
         return this.yScale(datum.y.toJSNumber());
       });
 
-    this.svg.append("path")
-      .attr("class", "line")
-      .attr("d", line()
-        .x((datum: ICoordinate): number => {
-          return this.xScale(datum.x.toJSNumber());
-        })
-        .y((datum: ICoordinate): number => {
-          return this.yScale(datum.y.toJSNumber());
-        }),
-    );
+    // this.svg.append("path")
+    //   .attr("class", "line")
+    //   .attr("d", line()
+    //     .x((datum: ICoordinate): number => {
+    //       return this.xScale(datum.x.toJSNumber());
+    //     })
+    //     .y((datum: ICoordinate): number => {
+    //       return this.yScale(datum.y.toJSNumber());
+    //     }),
+    // );
   }
 
 }
