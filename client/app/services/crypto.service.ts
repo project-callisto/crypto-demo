@@ -41,7 +41,7 @@ export interface PlainTextData {
   readonly rid: number;
   readonly slope: number;
   readonly kId: string;
-  readonly record: Object;
+  readonly record: object;
   readonly recordKey: string;
   readonly hashedX: number;
   readonly y: number;

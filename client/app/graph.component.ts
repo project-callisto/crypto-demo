@@ -4,6 +4,7 @@ import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
+import { line, Line } from "d3-shape";
 import { DecryptedData, ICoordinate } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
@@ -22,44 +23,43 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
   private yScale: any;
 
   public ngAfterViewInit(): void {
-    this.generateGraph();
+    // this.generateGraph();
   }
 
   public ngAfterContentChecked(): void {
-    if (this.decryptedData) {
-      this.populateGraph();
-    }
+    // if (this.decryptedData) {
+    //   this.populateGraph();
+    // }
   }
 
   private generateGraph(): void {
-    const width: number = 400;
-    const height: number = 400;
+    const margin: number = 30;
+    const width: number = 400 - margin * 2;
+    const height: number = 400 - margin * 2;
 
     this.svg = select(`.${templateSelector}`)
       .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g");
+      .attr("width", width + margin * 2)
+      .attr("height", height + margin * 2)
+      .append("g")
+      .attr("transform", `translate(${margin},${margin})`);
 
     this.xScale = scaleLinear()
       .range([0, width]);
 
     this.yScale = scaleLinear()
-      .range([0, height]);
+      .range([height, 0]);
 
     this.svg.append("g")
       .call(axisBottom(this.xScale))
+      .attr("transform", `translate(0,${height})`)
       .append("text")
-      .attr("class", "label-x")
       .text("X-Value");
 
     this.svg.append("g")
-      .call(axisLeft(
-        scaleLinear()
-          .range([0, height]),
-      ))
+      .call(axisLeft(this.yScale))
       .append("text")
-      .attr("class", "label-y")
+      .attr("transform", "rotate(-90)")
       .text("Y-Value");
   }
 
@@ -90,6 +90,17 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
       .attr("cy", (datum: ICoordinate): number => {
         return this.yScale(datum.y.toJSNumber());
       });
+
+    this.svg.append("path")
+      .attr("class", "line")
+      .attr("d", line()
+        .x((datum: ICoordinate): number => {
+          return this.xScale(datum.x.toJSNumber());
+        })
+        .y((datum: ICoordinate): number => {
+          return this.yScale(datum.y.toJSNumber());
+        }),
+    );
   }
 
 }
