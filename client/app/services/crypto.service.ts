@@ -1,64 +1,63 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 import { Injectable } from "@angular/core";
-import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
 import * as encoding from "text-encoding";
 
+import bigInt = require('big-integer');
 
-  
-  /*
-   *  DATA OBJECTS
-   */
-  export interface EncryptedData {
-    readonly hashedRid: string;
-    readonly encryptedRecord: string;
-    readonly encryptedRecordKey: string;
-    readonly userPubKey: string;
-    readonly cY: string;
-    readonly cX: string;
-    readonly kId: string; // FOR NOW. will need to hash this later
-  }
-  
-  export interface PlainTextData {
-    readonly rid: number;
-    readonly slope: number;
-    readonly kId: string;
-    readonly record: Object;
-    readonly recordKey: string;
-    readonly hashedX: number;
-    readonly y: number;
-  }
+/*
+  *  DATA OBJECTS
+  */
+export interface EncryptedData {
+  readonly hashedRid: string;
+  readonly encryptedRecord: string;
+  readonly encryptedRecordKey: string;
+  readonly userPubKey: string;
+  readonly cY: string;
+  readonly cX: string;
+  readonly kId: string; // FOR NOW. will need to hash this later
+}
 
-  // TODO: type these as big ints
-  export interface Coord {
-    readonly x,
-    readonly y
-  }
-  
-  
-  export interface DecryptedData {
-    readonly decryptedRecords: Object;
-    readonly slope: number;
-    readonly strRid: string;
-  }
-  
-  
-  // TODO: move this into an init function within cryptoservice
-  /*  SODIUM INTIALIZATION  */
-  const sodium_promise = sodium.ready;
-  
-  
-  /*
-   *  KEY-PAIR GENERATION
-   */
-  let claKeys, userKeys;
-  
-  sodium_promise.then(function() {
-    claKeys = sodium.crypto_box_keypair();
-    userKeys = sodium.crypto_box_keypair();
-  });
-  
+export interface PlainTextData {
+  readonly rid: bigInt.BigInteger;
+  readonly slope: bigInt.BigInteger;
+  readonly kId: string;
+  readonly record: Object;
+  readonly recordKey: string;
+  readonly hashedX: bigInt.BigInteger;
+  readonly y: bigInt.BigInteger;
+}
+
+// TODO: type these as big ints
+export interface Coord {
+  readonly x: bigInt.BigInteger,
+  readonly y: bigInt.BigInteger
+}
+
+
+export interface DecryptedData {
+  readonly decryptedRecords: Object;
+  readonly slope: bigInt.BigInteger;
+  readonly strRid: string;
+}
+
+
+// TODO: move this into an init function within cryptoservice
+/*  SODIUM INTIALIZATION  */
+const sodium_promise = sodium.ready;
+
+
+/*
+  *  KEY-PAIR GENERATION
+  */
+let claKeys, userKeys;
+
+sodium_promise.then(function() {
+  claKeys = sodium.crypto_box_keypair();
+  userKeys = sodium.crypto_box_keypair();
+});
+
 
 /*
  *  CRYPTO SERVICE
@@ -79,6 +78,7 @@ export class CryptoService {
 
   /* Used in both encryption and decryption to derive a slope and key for a unique RID 
      hexRid - hex string
+     Returns slope: big number, kId, Uint8Array
   */
   private deriveFromRid(hexRid: string) {
 
@@ -93,32 +93,31 @@ export class CryptoService {
   }
 
 
-// Y is a bigInt number
-private encryptSecretValue(y) {
+  // Returns base64 string
+  private encryptSecretValue(y: bigInt.BigNumber): string {
 
-  const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+    const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 
-  const cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
+    const cY = sodium.crypto_box_easy(y.toString(), nonce, claKeys.publicKey, userKeys.privateKey);
 
-  const encrypted = sodium.to_base64(cY) + "$" + sodium.to_base64(nonce);
+    const encrypted = sodium.to_base64(cY) + "$" + sodium.to_base64(nonce);
 
-  // string base 64
-  return encrypted;
-}
+    return encrypted;
+  }
 
 
-  // rid: base64 string
-  private generateDataValues(rid: string, userId: string, record: object) {
+// rid: base64 string
+private generateDataValues(rid: string, userId: string, record: object) {
     const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));  
-  
+
     const derived = this.deriveFromRid(prgRid);
     const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
     const intRid = bigInt(prgRid, this.HEX);
-  
+
     // bigInt
     const y = derived.slope.times(hashedUserId).plus(intRid);
     const Krecord = sodium.to_base64(sodium.crypto_secretbox_keygen());
-  
+
     const plainTextData = {
       rid: intRid, // 
       slope: derived.slope, // 
@@ -200,7 +199,7 @@ private encryptSecretValue(y) {
    * DECRYPTION
    */
   // TODO: types
-  private getMatchedData(data) {
+  private getMatchedData(data: Array<EncryptedData>): Array<EncryptedData> {
     for (let i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
         return [data[0], data[i]];
@@ -208,7 +207,7 @@ private encryptSecretValue(y) {
     }
   }
 
-  private createCoord(data, y): Coord {
+  private createCoord(data: EncryptedData, y: bigInt.BigInteger): Coord {
     return {
       x: bigInt(data.cX),
       y
@@ -218,7 +217,7 @@ private encryptSecretValue(y) {
   public decryptData(): DecryptedData {
     let data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ""};
+      return {decryptedRecords: [], slope: bigInt(0), strRid: ""};
     }
     const yValues = this.decryptSecretValues(data);
 
@@ -241,7 +240,7 @@ private encryptSecretValue(y) {
     };
   }
 
-  /* */
+  /* TODO: Figure out type of rid*/
   private decryptRecords(data: Array<EncryptedData>, rid) {
 
     const decryptedRecords = [];
@@ -259,26 +258,22 @@ private encryptSecretValue(y) {
   }
   
 
-// Key is Uint8Array,
+// Key is string ,
 // CipherText: string in base64 encoding
-private symmetricDecrypt(key, cipherText) {
+// TODO: what is returned??
+private symmetricDecrypt(key: string, cipherText: string)  {
   const split = cipherText.split("$");
 
   // Uint8Arrays
   const cT = sodium.from_base64(split[0]);
   const nonce = sodium.from_base64(split[1]);
-
-  // cT
-  key = sodium.from_base64(key);
-  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, key);
+  const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
 
   return decrypted;
 }
 
-
-
 // decrypt Y values
-private decryptSecretValues(data) {
+private decryptSecretValues(data: Array<EncryptedData>): Array<Coord> {
   let yValues = [];
   for (let i = 0; i < 2; i++) {
     const split = data[i].cY.split("$");
@@ -297,16 +292,15 @@ private decryptSecretValues(data) {
 }
 
 
-private deriveSlope(c1, c2) {
+private deriveSlope(c1: Coord, c2: Coord): bigInt.BigInteger {
   const top = c2.y.minus(c1.y);
   const bottom = c2.x.minus(c1.x);
 
   return top.divide(bottom);
-
 }
 
 // plug in value for x within line formula to get y-intercept aka rid
-private getIntercept(c1, slope) {
+private getIntercept(c1: Coord, slope) {
   const x = c1.x;
   const y = c1.y;
 
