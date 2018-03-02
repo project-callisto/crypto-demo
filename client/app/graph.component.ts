@@ -13,6 +13,7 @@ const templateSelector: string = "crypto-graph";
   selector: `${templateSelector}`,
   template: `<div class="${templateSelector}"></div>`,
   styleUrls: [
+    "./styles/base.scss",
     "./styles/graph.scss",
   ],
 })
