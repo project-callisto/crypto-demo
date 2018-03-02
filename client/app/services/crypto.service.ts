@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import * as bigInt from "big-integer";
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
-import * as encoding from 'text-encoding';
+import * as encoding from "text-encoding";
 
 
   
@@ -168,13 +168,13 @@ private encryptSecretValue(y) {
   public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
     const record = {
-      perpId: perpId,
-      userName: userName,
+      perpId,
+      userName,
     };
     const cryptoService = this;
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {'perpId':perpId}, (data, status) => {
+      $.post("/postPerpId", {perpId}, (data, status) => {
         if (status === "success") {
           
           const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
@@ -201,9 +201,9 @@ private encryptSecretValue(y) {
    */
   // TODO: types
   private getMatchedData(data) {
-    for (var i = 1; i < data.length; i++) {
+    for (let i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
-        return [data[0], data[i]]
+        return [data[0], data[i]];
       }
     }
   }
@@ -218,7 +218,7 @@ private encryptSecretValue(y) {
   public decryptData(): DecryptedData {
     let data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ''};
+      return {decryptedRecords: [], slope: 0, strRid: ""};
     }
     const yValues = this.decryptSecretValues(data);
 
