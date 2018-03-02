@@ -29,6 +29,12 @@ import * as encoding from 'text-encoding';
     readonly hashedX: number;
     readonly y: number;
   }
+
+  // TODO: type these as big ints
+  export interface Coord {
+    readonly x,
+    readonly y
+  }
   
   
   export interface DecryptedData {
@@ -59,18 +65,12 @@ import * as encoding from 'text-encoding';
  */
 @Injectable()
 export class CryptoService {
+/*
+ *  PRIVATE VARS
+ */
   private dataSubmissions = [];
-
-
   private HEX = 16;
   private PRIME = ((2 ** 128) - 157); // TODO: use big num library  
-  
-
-/*
- *  GLOBAL CONSTANTS
- */
-
-
 
 
   /*
@@ -144,8 +144,6 @@ private encryptSecretValue(y) {
     return encrypted;
   }
 
-
-
   
   public encryptData(plainText: PlainTextData): EncryptedData {
 
@@ -201,37 +199,37 @@ private encryptSecretValue(y) {
   /*
    * DECRYPTION
    */
+  // TODO: types
   private getMatchedData(data) {
     for (var i = 1; i < data.length; i++) {
       if (data[0].hashedRid === data[i].hashedRid) {
         return [data[0], data[i]]
       }
     }
-
   }
 
-  public decryptData():DecryptedData{
+  private createCoord(data, y): Coord {
+    return {
+      x: bigInt(data.cX),
+      y
+    }
+  }
+
+  public decryptData(): DecryptedData {
     let data = this.getMatchedData(this.dataSubmissions);
     if (data.length < 2) {
       return {decryptedRecords: [], slope: 0, strRid: ''};
     }
+    const yValues = this.decryptSecretValues(data);
 
-    let coordA;
-    let coordB;
+    let coordA = this.createCoord(data[0], yValues[0]);
+    let coordB = this.createCoord(data[1], yValues[1]);
 
-    data[0].x = bigInt(data[0].cX);
-    data[1].x = bigInt(data[1].cX);
-
-
-    if (data[0].x.leq(data[1].x)) {
-      coordA = data[0];
-      coordB = data[1];
-    } else {
-      coordA = data[1];
-      coordB = data[0];
+    if (coordA.x.geq(coordB.x)) {
+      const temp = coordA;
+      coordA = coordB;
+      coordB = temp;
     }
-
-    this.decryptSecretValues([coordA, coordB]);
 
     const slope = this.deriveSlope(coordA, coordB);
     const strRid = this.getIntercept(coordA, slope);
@@ -281,24 +279,21 @@ private symmetricDecrypt(key, cipherText) {
 
 // decrypt Y values
 private decryptSecretValues(data) {
-
-  for (let i = 0; i < data.length; i++) {
+  let yValues = [];
+  for (let i = 0; i < 2; i++) {
     const split = data[i].cY.split("$");
 
-    // All values are now Uint8Array
+    // All values are UInt8Array
     const cY = sodium.from_base64(split[0]);
-
     const nonce = sodium.from_base64(split[1]);
-
     const userPK = sodium.from_base64(data[i].userPubKey);
-
-    // Uint8Array
     const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, claKeys.privateKey);
 
     // Convert back to bigInt
     const yStr = new encoding.TextDecoder("utf-8").decode(y);
-    data[i].y = bigInt(yStr);
+    yValues.push(bigInt(yStr));
   }
+  return yValues;
 }
 
 
