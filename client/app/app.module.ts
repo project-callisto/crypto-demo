@@ -5,6 +5,7 @@ import { AppComponent } from "./app.component";
 import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
+import { GraphComponent } from "./graph.component";
 import { HeaderComponent } from "./header.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService } from "./services/crypto.service";
@@ -23,6 +24,7 @@ import { ThirdStepComponent } from "./third-step.component";
     FourthStepComponent,
     FifthStepComponent,
     SixthStepComponent,
+    GraphComponent,
   ],
   imports: [
     BrowserModule,

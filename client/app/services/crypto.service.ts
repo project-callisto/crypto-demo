@@ -41,16 +41,23 @@ export interface PlainTextData {
   readonly rid: number;
   readonly slope: number;
   readonly kId: string;
-  readonly record: Object;
+  readonly record: object;
   readonly recordKey: string;
   readonly hashedX: number;
   readonly y: number;
 }
 
+export interface ICoordinate {
+  readonly x: bigInt.BigInteger;
+  readonly y: bigInt.BigInteger;
+}
+
 export interface DecryptedData {
-  readonly decryptedRecords: Object;
+  readonly decryptedRecords: object;
   readonly slope: number;
   readonly strRid: string;
+  readonly coordA: ICoordinate;
+  readonly coordB: ICoordinate;
 }
 
 /*
@@ -61,8 +68,8 @@ export interface DecryptedData {
  * ENCRYPTION
  */
 
- // TODO: split this to make it more readable
- // Returns base64
+// TODO: split this to make it more readable
+// Returns base64
 function symmetricEncrypt(key, msg) {
 
   const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
@@ -86,7 +93,7 @@ function deriveFromRid(hexRid) {
   // hashing it to make it conform to key size: 32 bytes
   const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
 
-  return {slope, kId};
+  return { slope, kId };
 }
 
 // Y is a bigInt number
@@ -252,7 +259,7 @@ export class CryptoService {
 
     // TODO: return post itself
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {perpId}, (data, status) => {
+      $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
           const plainTextData = generateDataValues(data.rid, generateRandNum(), record);
           resolve(plainTextData);
@@ -279,12 +286,13 @@ export class CryptoService {
    */
   public decryptData(): DecryptedData {
     const data = this.getMatchedData(this.dataSubmissions);
+
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: 0, strRid: ""};
+      return {} as any;
     }
 
-    let coordA;
-    let coordB;
+    let coordA: ICoordinate;
+    let coordB: ICoordinate;
 
     data[0].x = bigInt(data[0].cX);
     data[1].x = bigInt(data[1].cX);
@@ -306,6 +314,8 @@ export class CryptoService {
       decryptedRecords: decryptRecords(data, strRid.toString(HEX)),
       slope,
       strRid,
+      coordA,
+      coordB,
     };
   }
 }

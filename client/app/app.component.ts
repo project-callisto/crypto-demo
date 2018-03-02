@@ -3,8 +3,8 @@ import { Component } from "@angular/core";
 @Component({
   selector: "app-root",
   template: `
-    <header-root></header-root>
-    <step-root></step-root>
+    <header-root class="main-content"></header-root>
+    <step-root class="main-content"></step-root>
   `,
 })
 export class AppComponent {
