@@ -35,9 +35,6 @@ import * as $ from "jquery";
     <sixth-step
       (advanceStep)="advanceSixthStep($event)"
     ></sixth-step>
-    <summary-step
-      (advanceStep)="advanceSixthStep($event)"
-    ></summary-step>
   `,
   providers: [
     CryptoService,
@@ -148,7 +145,7 @@ export class StepComponent {
     // input is matched, trigger decryption
     const decryptedData: DecryptedData = this.crypto.decryptData();
     this.fifthStep.decryptedData = decryptedData;
-    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
   }
 
   private submitAndEncrypt(perpInput: string, userName: string): Promise<EncryptedData> {

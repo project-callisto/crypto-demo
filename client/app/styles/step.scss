@@ -13,6 +13,14 @@ code {
   word-wrap: break-word;
 }
 
+.final-perp-display {
+  text-align: center;
+  margin: 40px auto;
+  display: block;
+  color: $palette-dark-blue;
+  font-size: 1.2rem;
+}
+
 .calc-display-value {
   display: block;
   margin: 10px 0;
