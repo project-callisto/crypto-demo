@@ -11,9 +11,12 @@ a {
 
 .calc-display-value {
   display: block;
-  margin: 10px 5%;
+  margin: 10px 0;
   padding: 10px;
-  color: darkslategray;
+  color: $palette-dark-blue;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
   background-color: $color-code-background;
   border: 1px solid $color-code-border;
   font-family: "Courier New", monospace;
@@ -34,6 +37,7 @@ a {
 .subtext {
   font-size: 0.85rem;
   color: $color-text-faded;
+  letter-spacing: 1px;  
 }
 
 .explainer, p {
@@ -52,6 +56,15 @@ a {
   @media (max-width: $breakpoint-sm) {
     width: 100%;
   }
+}
+
+input {
+  margin: 10px 0;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: $color-code-background;
+  border: 1px solid $color-code-border;
 }
 
 section {
@@ -128,7 +141,7 @@ section {
 .input-row {
   display: flex;
   align-items: center;
-  margin: 40px 0;
+  margin: 40px 0 0;
 
   @media (max-width: $breakpoint-sm) {
     flex-direction: column;
@@ -138,6 +151,12 @@ section {
   > * {
     margin: 5px 0;
     width: 100%;
+  }
+
+  > *:first-child {
+    @media (min-width: $breakpoint-sm) {
+      margin-right: 20px;
+    }
   }
 
   > span {
