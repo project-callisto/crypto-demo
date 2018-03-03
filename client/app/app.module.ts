@@ -7,10 +7,12 @@ import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { GraphComponent } from "./graph.component";
 import { HeaderComponent } from "./header.component";
+import { IntroComponent } from "./intro.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
+import { SummaryStepComponent } from "./summary-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 @NgModule({
@@ -25,6 +27,8 @@ import { ThirdStepComponent } from "./third-step.component";
     FifthStepComponent,
     SixthStepComponent,
     GraphComponent,
+    IntroComponent,
+    SummaryStepComponent,
   ],
   imports: [
     BrowserModule,

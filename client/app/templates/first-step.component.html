@@ -1,4 +1,4 @@
-<section id='first-step'>
+<section *ngIf="shown" id='first-step'>
   <h2 class="main-header text-centered">User Inputs</h2>
   <ul class="step-display">
     <li class="activated-step">
@@ -21,45 +21,46 @@
     </li>
   </ul>
 
-  <div class="explainer">Our encryption method uses four key techniques:
-    <ul>
-      <li><b>Client-side encryption</b> to encrypt user data within the browser</li>
-      <li><b>Oblivious PRF</b> over an elliptic curve to prevent against brute force attacks and ensure that the key servers cannot learn the perpetrator ID and that users cannot learn Callisto’s secret key </li>
-      <li><b>Secure multi-cloud key federation</b> to prevent Callisto’s secret key  from being exposed to any one cloud provider</li>
-      <li><b>Linear Secret Sharing</b> in order to ensure that there must be at least two victims of the same perpetrator before a user’s data can be decrypted  by the Callisto Option Counselor</li>
-    </ul>
-    <p>To begin the demo, input a perpetrator name  and your name; we will refer to the combination of these inputs as “record”. This information is encrypted in the browser using the Libsodium cryptography library.  We also generate a random key K<sub>record</sub> to symmetrically encrypt this information. (In the real product, users will be inputting an array of multiple unique perpetrator identifiers and their own verified contact information. They will also be able to edit their record with an auto-generated passphrase.)</p>
-  </div>
+  <p>Our encryption method uses four key techniques: client-side encryption, oblivious pseudorandom function over an elliptic curve, secure multi-cloud key federation, and linear secret sharing. Our white paper explains these techniques in more detail. This demo focuses on highlighting client-side encryption and linear secret sharing. Data inputs will not be stored.</p>
+  <p>To begin, enter a user name and a perpetrator name.</p>
 
   <form
-    class="input-row perp-name-form"
+    class="perp-name-form"
     action="#"
   >
 
-    <span class="subtext">ENTER PERP NAME</span>
-    <input
-      #perpInput
-      required
-      type="text"
-      id="perpInput"
-    />
-    <input
-      #userInput
-      required
-      type="text"
-      id="userInput"
-    />
+    <div class='input-row'>
+      <div>
+        <span class="subtext">ENTER USER NAME</span>
+        <input
+          #userInput
+          required
+          type="text"
+          id="userInput"
+        />
+      </div>
+      <div>
+        <span class="subtext">ENTER PERP NAME</span>
+        <input
+          #perpInput
+          required
+          type="text"
+          id="perpInput"
+        />
+      </div>
+    </div>
 
-  <span class="subtext">ENTER USER NAME</span>
+  <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
+  <code class='rid-display calc-display-value calc-display' id="calc-rid">{{ recordKey }}</code>
 
+  <div class="align-right-on-large">
     <input
-      class="btn"
-      value="submit"
+      class="btn advance-button"
+      value="next"
       type="submit"
       (click)="perpSubmit($event, perpInput.value, userInput.value);"
     />
+  </div>  
 
   </form>
-  <p class="subtext">Record Key</p>
-  <code class='rid-display calc-display-value calc-display' id="calc-rid">{{ recordKey }}</code>
 </section>

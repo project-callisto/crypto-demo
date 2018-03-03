@@ -1,5 +1,5 @@
 <section *ngIf="shown" id='sixth-step'>
-  <h2 class="main-header text-centered">Unmasking Data</h2>
+  <h2 class="main-header text-centered">Decrypting Perp Name</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -21,14 +21,9 @@
     </li>
   </ul>
 
-  <p class="explainer">By using the RID, the Callisto Options Counselor can input it back into the PRG to recover K<sub>ID</sub>. K<sub>ID</sub> is then used to decrypt K<sub>record</sub>. K<sub>record</sub> is then used to decrypt the record (your name and the perpetrator’s name).</p>
-  <div class='calc-display'>
-    <p>
-      <code>Unmasked Records</code>:
-      <code class="calc-display-value">{{ record }}</code>
-    </p>
-  </div>
-  <div class="align-right-on-large">
-    <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
-  </div>
+  <p>By using the RID, the Callisto Options Counselor can input it back into SHA-256 to recover K<sub>ID</sub>, which is the last 128 bits of the output. The serial perpetrator name is now revealed.</p>
+  <p>
+    <code class="final-perp-display">{{ record }}</code>
+  </p>
+
 </section>
