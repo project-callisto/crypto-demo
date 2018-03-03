@@ -121,30 +121,42 @@ export class StepComponent {
         this.secondStep.plainTextData = plainText;
         this.thirdStep.plainTextData = plainText;
         this.fourthStep.encryptedData = encryptedData;
+        this.fifthStep.RID = encryptedData.hashedRid;
       },
     );
   }
 
   private async generateGraphData(): Promise<void> {
     // matched perpInput, diff username
-    // input is matched, which (in prod) will trigger decryption
-    await this.submitAndEncrypt(this.perpInput, this.userName + this.userName).then(() => {
-      const decryptedData: DecryptedData = this.crypto.decryptData();
-      this.fifthStep.RID = decryptedData.strRid;
-      this.fifthStep.decryptedData = decryptedData;
-      this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
-    });
+    await this.submitAndEncrypt(this.perpInput, this.userName + this.userName).then(
+      (encryptedData: EncryptedData) => {
+        this.fifthStep.RID2 = encryptedData.hashedRid;
+      },
+    );
     // unmatched perpInput
-    await this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    await this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice").then(
+      (encryptedData: EncryptedData) => {
+        this.fifthStep.RID3 = encryptedData.hashedRid;
+      },
+    );
     // unmatched perpInput
-    await this.submitAndEncrypt(this.perpInput + "1", "Bob");
+    await this.submitAndEncrypt(this.perpInput + "1", "Bob").then(
+      (encryptedData: EncryptedData) => {
+        this.fifthStep.RID4 = encryptedData.hashedRid;
+      },
+    );
+    // input is matched, trigger decryption
+    const decryptedData: DecryptedData = this.crypto.decryptData();
+    this.fifthStep.decryptedData = decryptedData;
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
   }
 
-  private async submitAndEncrypt(perpInput: string, userName: string): Promise<void> {
-    await this.crypto.createDataSubmission(perpInput, userName).then(
+  private submitAndEncrypt(perpInput: string, userName: string): Promise<EncryptedData> {
+    return this.crypto.createDataSubmission(perpInput, userName).then(
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
         this.crypto.postData(encryptedData);
+        return encryptedData;
       },
     );
   }

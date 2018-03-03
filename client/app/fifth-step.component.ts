@@ -12,6 +12,9 @@ import { DecryptedData } from "./services/crypto.service";
 })
 export class FifthStepComponent implements AfterContentChecked {
   @Input() public RID: string;
+  @Input() public RID2: string;
+  @Input() public RID3: string = "[[ WIP ]]";
+  @Input() public RID4: string = "[[ WIP ]]";
   @Input() public shown: boolean = false;
   @Input() public decryptedData: DecryptedData;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
