@@ -12,8 +12,8 @@ import { SecondStepComponent } from "./second-step.component";
 import { CryptoService } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
-import { ThirdStepComponent } from "./third-step.component";
 import { SummaryStepComponent } from "./summary-step.component";
+import { ThirdStepComponent } from "./third-step.component";
 
 @NgModule({
   declarations: [
