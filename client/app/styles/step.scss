@@ -1,7 +1,7 @@
 @import "_meta";
 
 h2 {
-  margin: 0;
+  margin: 0 auto 30px;
 }
 
 .calc-display-value {
@@ -31,7 +31,8 @@ h2 {
   color: $color-text-faded;
 }
 
-.explainer {
+.explainer, p {
+  font-family: $font-body;
   color: $color-explainer-text;
   letter-spacing: 2px;
   line-height: 30px;
@@ -79,7 +80,7 @@ section {
   list-style: none;
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin: 0 0 20px;
   padding: 0;
 
   a {

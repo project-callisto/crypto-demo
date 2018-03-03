@@ -2,6 +2,7 @@ import { Component, ViewChild } from "@angular/core";
 import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent, IUserInput } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
+import { IntroComponent } from "./intro.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, DecryptedData, EncryptedData, PlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
@@ -13,6 +14,9 @@ import * as $ from "jquery";
 @Component({
   selector: "step-root",
   template: `
+    <intro-root
+      (advanceStep)="advanceIntro($event)"
+    ></intro-root>
     <first-step
       (advanceStep)="advanceFirstStep($event)"
     ></first-step>
@@ -40,6 +44,7 @@ export class StepComponent {
   private perpInput: string;
   private userName: string;
 
+  @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
   @ViewChild(ThirdStepComponent) private thirdStep: ThirdStepComponent;
@@ -56,6 +61,11 @@ export class StepComponent {
    * advancer functions handle display logic for children
    * and interact with the crypto through promises chained from private functions
    */
+
+  public advanceIntro(): void {
+    this.firstStep.shown = true;
+    this.scrollTo("first-step");
+  }
 
   public advanceFirstStep(userInput: IUserInput): void {
     this.perpInput = userInput.perpInput;

@@ -22,6 +22,7 @@ export interface IUserInput {
   ],
 })
 export class FirstStepComponent {
+  @Input() public shown: boolean = false;
   @Input() public recordKey: string = "[[ Randomly Generated Key ]]";
   @Output() public advanceStep: EventEmitter<IUserInput> = new EventEmitter<IUserInput>();
 
