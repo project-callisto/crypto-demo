@@ -9,6 +9,10 @@ a {
   color: $palette-dark-blue;
 }
 
+code {
+  word-wrap: break-word;
+}
+
 .calc-display-value {
   display: block;
   margin: 10px 0;
@@ -20,14 +24,6 @@ a {
   background-color: $color-code-background;
   border: 1px solid $color-code-border;
   font-family: "Courier New", monospace;
-}
-
-.calc-display {
-  word-wrap: break-word;
-
-  h3 {
-    margin: 0;
-  }
 }
 
 .rid-display {
