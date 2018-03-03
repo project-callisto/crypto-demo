@@ -13,6 +13,7 @@ import { CryptoService } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
 import { ThirdStepComponent } from "./third-step.component";
+import { SummaryStepComponent } from "./summary-step.component";
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ThirdStepComponent } from "./third-step.component";
     SixthStepComponent,
     GraphComponent,
     IntroComponent,
+    SummaryStepComponent,
   ],
   imports: [
     BrowserModule,

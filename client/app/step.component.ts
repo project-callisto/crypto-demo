@@ -35,6 +35,9 @@ import * as $ from "jquery";
     <sixth-step
       (advanceStep)="advanceSixthStep($event)"
     ></sixth-step>
+    <summary-step
+      (advanceStep)="advanceSixthStep($event)"
+    ></summary-step>
   `,
   providers: [
     CryptoService,
