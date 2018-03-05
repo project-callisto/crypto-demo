@@ -52,17 +52,18 @@ export interface Record {
 
 /**
  * SODIUM INITIALIZATION
-*/
-const sodium_promise = sodium.ready;
+ */
+const sodiumPromise = sodium.ready;
 
 /**
  * Key-Pair Generation
  * @param {Object} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
  * @param {Object} userKeys - User public-private key pair (Uint8Array[32]) for message authentication
-*/
-let ocKeys, userKeys;
+ */
+let ocKeys;
+let userKeys;
 
-sodium_promise.then(function() {
+sodiumPromise.then(() {
   ocKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -128,7 +129,7 @@ export class CryptoService {
     const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
     const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
 
-    const pt = {
+    return {
       rid: bigIntRid,
       slope: derived.slope,
       recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()), // base64 encoding
@@ -137,8 +138,6 @@ export class CryptoService {
       hashedX: hashedUserId,
       y: derived.slope.times(hashedUserId).plus(bigIntRid),
     };
-
-    return pt;
   }
 
   /**
@@ -307,7 +306,7 @@ export class CryptoService {
    * @param {string} cipherText - base 64 encoding
    * @returns {Uint8Array} decrypted value
    */
-  //TODO: figure out return statement
+  // TODO: figure out return statement
   private symmetricDecrypt(key: string, cipherText: string) {
     const split = cipherText.split("$");
 
