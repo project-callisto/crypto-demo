@@ -7,8 +7,9 @@ import * as encoding from "text-encoding";
 
 /**
  * Data Objects
-*/
-export interface EncryptedData {
+ */
+
+export interface IEncryptedData {
   readonly hashedRid: string;
   readonly encryptedRecord: string;
   readonly encryptedRecordKey: string;
@@ -18,34 +19,34 @@ export interface EncryptedData {
   readonly kId: string; // FOR NOW. will need to hash this later
 }
 
-export interface PlainTextData {
+export interface IPlainTextData {
   readonly rid: bigInt.BigInteger;
   readonly slope: bigInt.BigInteger;
   readonly kId: string;
-  readonly record: Record;
+  readonly record: IRecord;
   readonly recordKey: string;
   readonly hashedX: bigInt.BigInteger;
   readonly y: bigInt.BigInteger;
 }
 
-export interface Coord {
+export interface ICoord {
   readonly x: bigInt.BigInteger;
   readonly y: bigInt.BigInteger;
 }
 
-export interface DecryptedData {
-  readonly decryptedRecords: Object;
+export interface IDecryptedData {
+  readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
   readonly rid: string;
-  readonly coords: Coord[];
+  readonly coords: ICoord[];
 }
 
-export interface RIDComponents {
+export interface IRIDComponents {
   readonly slope: bigInt.BigInteger;
   readonly kId: Uint8Array;
 }
 
-export interface Record {
+export interface IRecord {
   readonly perpId: string;
   readonly userName: string;
 }
@@ -57,13 +58,13 @@ const sodiumPromise = sodium.ready;
 
 /**
  * Key-Pair Generation
- * @param {Object} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
- * @param {Object} userKeys - User public-private key pair (Uint8Array[32]) for message authentication
+ * @param {object} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
+ * @param {object} userKeys - User public-private key pair (Uint8Array[32]) for message authentication
  */
 let ocKeys;
 let userKeys;
 
-sodiumPromise.then(() {
+sodiumPromise.then(() => {
   ocKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
@@ -76,12 +77,137 @@ export class CryptoService {
 
   /**
    * CONSTANTS
-   * @param {Array<EncryptedData>} dataSubmissions - storage for user inputted and generated data
+   * @param {Array<IEncryptedData>} dataSubmissions - storage for user inputted and generated data
    * @param {number} HEX - constant for conversions to hexadecimal
    */
-  private dataSubmissions: EncryptedData[] = [];
+  private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
   // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
+
+  /**
+   * Main function for encrypting values
+   * @param {IPlainTextData} plainText - all plaintext values needed to be encrypted
+   * @returns {IEncryptedData} object containing all encrypted values to be stored
+   */
+  public encryptData(plainText: IPlainTextData): IEncryptedData {
+
+    const encryptedRecord: string = this.symmetricEncrypt(sodium.from_base64(plainText.recordKey),
+      JSON.stringify(plainText.record));
+    const encryptedRecordKey: string = this.symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
+
+    // base64 encoding
+    const cY: string = this.encryptSecretValue(plainText.y);
+
+    return {
+      hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
+      encryptedRecord,
+      encryptedRecordKey,
+      userPubKey: sodium.to_base64(userKeys.publicKey),
+      cY,
+      cX: plainText.hashedX.toString(),
+      kId: plainText.kId, // TODO: change this when we decide what userID
+    };
+  }
+
+  /**
+   * Function for taking user inputs and returning values to be encrypted
+   * @param {string} perpId - inputted perpetrator name
+   * @param {string} userName - inputted user name
+   * @returns {Promise<{}>} promise resolving a IPlainTextData object
+   */
+  public createDataSubmission(perpId: string, userName: string): Promise<{}> {
+
+    const record: Record = {
+      perpId,
+      userName,
+    };
+
+    const cryptoService = this;
+    const dataPromise = new Promise(function(resolve, reject) {
+      $.post("/postPerpId", { perpId }, (data, status) => {
+        if (status === "success") {
+
+          const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
+          resolve(plainTextData);
+
+        } else {
+          reject(Error("Post request failed"));
+        }
+      });
+    });
+
+    return dataPromise;
+  }
+
+  /**
+   * Stores encrypted data
+   * @param {IEncryptedData} encryptedData
+   * @returns nothing
+   */
+  public postData(encryptedData: IEncryptedData): void {
+    this.dataSubmissions.push(encryptedData);
+  }
+
+  /**
+   * Main function for decryption
+   * @returns {IDecryptedData}
+   */
+  public decryptData(): IDecryptedData {
+    const data = this.getMatchedData();
+    if (data.length < 2) {
+      return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
+    }
+
+    const yValues = this.decryptSecretValues(data);
+
+    let coordA = this.createCoord(data[0], yValues[0]);
+    let coordB = this.createCoord(data[1], yValues[1]);
+
+    if (coordA.x.geq(coordB.x)) {
+      const temp = coordA;
+      coordA = coordB;
+      coordB = temp;
+    }
+
+    const slope = this.deriveSlope(coordA, coordB);
+    const rid = this.getIntercept(coordA, slope);
+
+    return {
+      decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
+      slope,
+      rid: rid.toString(),
+      coords: [coordA, coordB],
+    };
+  }
+
+  /**
+   * DECRYPTION
+   */
+
+  /**
+   * Searches for and returns entries with the same RID
+   * @returns {Array<IEncryptedData} matched entries
+   */
+  private getMatchedData(): IEncryptedData[] {
+    for (let i = 1; i < this.dataSubmissions.length; i++) {
+      if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
+        return [this.dataSubmissions[0], this.dataSubmissions[i]];
+      }
+    }
+  }
+
+  /**
+   * Creates a Coord object based on inputs
+   * @param {IEncryptedData} data - Encrypted data object containing an x value
+   * @param {bigInt.BigInteger} y
+   * @returns {Coord} coordinate used for computations
+   */
+  private createCoord(data: IEncryptedData, y: bigInt.BigInteger): Coord {
+    return {
+      x: bigInt(data.cX),
+      y,
+    };
+  }
 
   /**
    * ENCRYPTION
@@ -90,9 +216,9 @@ export class CryptoService {
   /**
    * Takes RID partitions the first 128 bits for the slope and the second 128 bits for kId
    * @param {string} hexRid - RID in hex string form
-   * @returns {RidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
+   * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
    */
-  private deriveFromRid(hexRid: string): RIDComponents {
+  private deriveFromRid(hexRid: string): IRIDComponents {
 
     const ridLen: number = hexRid.length;
     const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
@@ -120,9 +246,9 @@ export class CryptoService {
    * @param {string} rid - randomized perpetrator ID in base 64 encoding
    * @param {string} userId - inputted user name
    * @param {Record} record - object containing the perpetrator ID and user name
-   * @returns {PlainTextData} all values needed to be encrypted
+   * @returns {IPlainTextData} all values needed to be encrypted
    */
-  private generateDataValues(rid: string, userId: string, record: Record): PlainTextData {
+  private generateDataValues(rid: string, userId: string, record: Record): IPlainTextData {
     const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
 
     const derived = this.deriveFromRid(prgRid);
@@ -155,146 +281,23 @@ export class CryptoService {
   }
 
   /**
-   * Main function for encrypting values
-   * @param {PlainTextData} plainText - all plaintext values needed to be encrypted
-   * @returns {EncryptedData} object containing all encrypted values to be stored
-   */
-  public encryptData(plainText: PlainTextData): EncryptedData {
-
-    const encryptedRecord = this.symmetricEncrypt(sodium.from_base64(plainText.recordKey), JSON.stringify(plainText.record));
-    const encryptedRecordKey = this.symmetricEncrypt(sodium.from_base64(plainText.kId), plainText.recordKey);
-
-    // base64 encoding
-    const cY = this.encryptSecretValue(plainText.y);
-
-    return {
-      hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
-      encryptedRecord,
-      encryptedRecordKey,
-      userPubKey: sodium.to_base64(userKeys.publicKey),
-      cY,
-      cX: plainText.hashedX.toString(),
-      kId: plainText.kId, // TODO: change this when we decide what userID
-    };
-  }
-
-  /**
-   * Function for taking user inputs and returning values to be encrypted
-   * @param {string} perpId - inputted perpetrator name
-   * @param {string} userName - inputted user name
-   * @returns {Promise<{}>} promise resolving a PlainTextData object
-   */
-  public createDataSubmission(perpId: string, userName: string): Promise<{}> {
-
-    const record = {
-      perpId,
-      userName,
-    };
-
-    const cryptoService = this;
-    const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", { perpId }, (data, status) => {
-        if (status === "success") {
-
-          const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
-          resolve(plainTextData);
-
-        } else {
-          reject(Error("Post request failed"));
-        }
-      });
-    });
-
-    return dataPromise;
-  }
-
-  /**
-   * Stores encrypted data
-   * @param {EncryptedData} encryptedData
-   * @returns nothing
-   */
-  public postData(encryptedData: EncryptedData): void {
-    this.dataSubmissions.push(encryptedData);
-  }
-
-  /**
-   * DECRYPTION
-   */
-
-  /**
-   * Searches for and returns entries with the same RID
-   * @returns {Array<EncryptedData} matched entries
-   */
-  private getMatchedData(): EncryptedData[] {
-    for (let i = 1; i < this.dataSubmissions.length; i++) {
-      if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
-        return [this.dataSubmissions[0], this.dataSubmissions[i]];
-      }
-    }
-  }
-
-  /**
-   * Creates a Coord object based on inputs
-   * @param {EncryptedData} data - Encrypted data object containing an x value
-   * @param {bigInt.BigInteger} y
-   * @returns {Coord} coordinate used for computations
-   */
-  private createCoord(data: EncryptedData, y: bigInt.BigInteger): Coord {
-    return {
-      x: bigInt(data.cX),
-      y,
-    };
-  }
-
-  /**
-   * Main function for decryption
-   * @returns {DecryptedData}
-   */
-  public decryptData(): DecryptedData {
-    const data = this.getMatchedData();
-    if (data.length < 2) {
-      return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
-    }
-
-    const yValues = this.decryptSecretValues(data);
-
-    let coordA = this.createCoord(data[0], yValues[0]);
-    let coordB = this.createCoord(data[1], yValues[1]);
-
-    if (coordA.x.geq(coordB.x)) {
-      const temp = coordA;
-      coordA = coordB;
-      coordB = temp;
-    }
-
-    const slope = this.deriveSlope(coordA, coordB);
-    const rid = this.getIntercept(coordA, slope);
-
-    return {
-      decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
-      slope,
-      rid: rid.toString(),
-      coords: [coordA, coordB],
-    };
-  }
-
-  /**
    * Handles record decryption based on RID
-   * @param {Array<EncryptedData>} data - matched encrypted data
+   * @param {Array<IEncryptedData>} data - matched encrypted data
    * @param {string} rid - randomized perpetrator ID
    * @returns {Array<Record>} array of decrypted records
    */
   /* TODO: Figure out type of rid*/
-  private decryptRecords(data: EncryptedData[], rid) {
+  private decryptRecords(data: IEncryptedData[], rid): IRecord[] {
 
-    const decryptedRecords = [];
+    const decryptedRecords: Record[] = [];
     const derived = this.deriveFromRid(rid.toString(this.HEX));
 
     for (let i = 0; i < data.length; i++) {
-      const encryptedRecord = data[i].encryptedRecord;
+      const encryptedRecord: string = data[i].encryptedRecord;
+      // TODO: resolve type IO
       const decryptedRecordKey = this.symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
       const decryptedRecord = this.symmetricDecrypt(decryptedRecordKey, encryptedRecord);
-      const dStr = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+      const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
     return decryptedRecords;
@@ -306,33 +309,32 @@ export class CryptoService {
    * @param {string} cipherText - base 64 encoding
    * @returns {Uint8Array} decrypted value
    */
-  // TODO: figure out return statement
-  private symmetricDecrypt(key: string, cipherText: string) {
-    const split = cipherText.split("$");
+  private symmetricDecrypt(key: string, cipherText: string): Uint8Array {
+    const split: string[] = cipherText.split("$");
 
     // Uint8Arrays
-    const cT = sodium.from_base64(split[0]);
-    const nonce = sodium.from_base64(split[1]);
-    const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
+    const cT: Uint8Array = sodium.from_base64(split[0]);
+    const nonce: Uint8Array = sodium.from_base64(split[1]);
+    const decrypted: Uint8Array = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
 
     return decrypted;
   }
 
   /**
    * Decrypts y value, which has been assymetrically encrypted
-   * @param {Array<EncryptedData>} data - array of matched EncryptedData values
+   * @param {Array<IEncryptedData>} data - array of matched IEncryptedData values
    * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
-  private decryptSecretValues(data: EncryptedData[]): bigInt.BigInteger[] {
+  private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (let i = 0; i < 2; i++) {
-      const split = data[i].cY.split("$");
+    for (let i: number = 0; i < 2; i++) {
+      const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array
-      const cY = sodium.from_base64(split[0]);
-      const nonce = sodium.from_base64(split[1]);
-      const userPK = sodium.from_base64(data[i].userPubKey);
-      const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, ocKeys.privateKey);
+      const cY: Uint8Array = sodium.from_base64(split[0]);
+      const nonce: Uint8Array = sodium.from_base64(split[1]);
+      const userPK: Uint8Array = sodium.from_base64(data[i].userPubKey);
+      const y: Uint8Array = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, ocKeys.privateKey);
 
       // Convert back to bigInt
       const yStr: string = new encoding.TextDecoder("utf-8").decode(y);
@@ -347,9 +349,9 @@ export class CryptoService {
    * @param {Coord} c2 - 2nd coordinate
    * @returns {bigInt.BigInteger} slope value
    */
-  private deriveSlope(c1: Coord, c2: Coord): bigInt.BigInteger {
-    const top = c2.y.minus(c1.y);
-    const bottom = c2.x.minus(c1.x);
+  private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
+    const top: bigInt.BigInteger = c2.y.minus(c1.y);
+    const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
 
     return top.divide(bottom);
   }
@@ -359,9 +361,9 @@ export class CryptoService {
    * @param {Coord} c1 - a given coordinate
    * @param {bigInt.BigInteger} slope
    */
-  private getIntercept(c1: Coord, slope: bigInt.BigInteger): bigInt.BigInteger {
-    const x = c1.x;
-    const y = c1.y;
+  private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
+    const x: bigInt.BigInteger = c1.x;
+    const y: bigInt.BigInteger = c1.y;
 
     return y.minus(slope.times(x));
   }
