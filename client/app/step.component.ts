@@ -62,12 +62,12 @@ export class StepComponent {
    * and interact with the crypto through promises chained from private functions
    */
 
-  public advanceIntro(): void {
+  private advanceIntro(): void {
     this.firstStep.shown = true;
     this.scrollTo("first-step");
   }
 
-  public advanceFirstStep(userInput: IUserInput): void {
+  private advanceFirstStep(userInput: IUserInput): void {
     this.perpInput = userInput.perpInput;
     this.userName = userInput.userName;
     this.submitUserEntry().then(() => {
@@ -76,12 +76,12 @@ export class StepComponent {
     });
   }
 
-  public advanceSecondStep(): void {
+  private advanceSecondStep(): void {
     this.thirdStep.shown = true;
     this.scrollTo("third-step");
   }
 
-  public advanceThirdStep(): void {
+  private advanceThirdStep(): void {
     this.fourthStep.shown = true;
     this.scrollTo("fourth-step");
   }
@@ -92,7 +92,7 @@ export class StepComponent {
       (plainText: PlainTextData) => {
         const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
         this.crypto.postData(encryptedData);
-        const decryptedData = this.crypto.decryptData();
+        const decryptedData: DecryptedData = this.crypto.decryptData();
         this.fifthStep.RID = decryptedData.rid;
         this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
       },
@@ -113,7 +113,7 @@ export class StepComponent {
     this.scrollTo("sixth-step");
   }
 
-  public advanceSixthStep(): void {
+  private advanceSixthStep(): void {
     this.summaryStep.shown = true;
     this.scrollTo("summary-step");
   }
