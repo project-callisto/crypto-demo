@@ -37,7 +37,7 @@ export interface Coord {
 export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: bigInt.BigInteger;
-  readonly rid: bigInt.BigInteger;
+  readonly rid: string;
 }
 
 export interface RIDComponents {
@@ -257,7 +257,7 @@ export class CryptoService {
   public decryptData(): DecryptedData {
     let data = this.getMatchedData();
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: bigInt(0), rid: bigInt(0)};
+      return {decryptedRecords: [], slope: bigInt(0), rid: '0'};
     }
 
     const yValues = this.decryptSecretValues(data);
@@ -277,7 +277,7 @@ export class CryptoService {
     return {
       decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
       slope,
-      rid
+      rid: rid.toString()
     };
   }
 
