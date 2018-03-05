@@ -158,19 +158,19 @@ export class CryptoService {
       return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
     }
 
-    const yValues = this.decryptSecretValues(data);
+    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(data);
 
-    let coordA = this.createCoord(data[0], yValues[0]);
-    let coordB = this.createCoord(data[1], yValues[1]);
+    let coordA: ICoord = this.createCoord(data[0], yValues[0]);
+    let coordB: ICoord = this.createCoord(data[1], yValues[1]);
 
     if (coordA.x.geq(coordB.x)) {
-      const temp = coordA;
+      const temp: ICoord = coordA;
       coordA = coordB;
       coordB = temp;
     }
 
-    const slope = this.deriveSlope(coordA, coordB);
-    const rid = this.getIntercept(coordA, slope);
+    const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
+    const rid: bigInt.BigInteger = this.getIntercept(coordA, slope);
 
     return {
       decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
@@ -185,7 +185,7 @@ export class CryptoService {
    * @returns {Array<IEncryptedData} matched entries
    */
   private getMatchedData(): IEncryptedData[] {
-    for (let i = 1; i < this.dataSubmissions.length; i++) {
+    for (let i: number = 1; i < this.dataSubmissions.length; i++) {
       if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
         return [this.dataSubmissions[0], this.dataSubmissions[i]];
       }
@@ -301,13 +301,13 @@ export class CryptoService {
    * @param {string} cipherText - base 64 encoding
    * @returns {Uint8Array} decrypted value
    */
-  private symmetricDecrypt(key: string, cipherText: string): Uint8Array {
+  private symmetricDecrypt(key: string, cipherText: string) {
     const split: string[] = cipherText.split("$");
 
     // Uint8Arrays
     const cT: Uint8Array = sodium.from_base64(split[0]);
     const nonce: Uint8Array = sodium.from_base64(split[1]);
-    const decrypted: Uint8Array = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
+    const decrypted = sodium.crypto_secretbox_open_easy(cT, nonce, sodium.from_base64(key));
 
     return decrypted;
   }
