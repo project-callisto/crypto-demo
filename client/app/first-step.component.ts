@@ -1,8 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 
-import { SecondStepComponent } from "./second-step.component";
-import { CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
-
 import * as $ from "jquery";
 
 export interface IUserInput {
@@ -16,9 +13,6 @@ export interface IUserInput {
   styleUrls: [
     "./styles/base.scss",
     "./styles/step.scss",
-  ],
-  providers: [
-    CryptoService,
   ],
 })
 export class FirstStepComponent {

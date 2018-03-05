@@ -5,7 +5,7 @@ import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
-import { DecryptedData, ICoordinate } from "./services/crypto.service";
+import { ICoord, IDecryptedData } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
 
@@ -18,7 +18,7 @@ const templateSelector: string = "crypto-graph";
   ],
 })
 export class GraphComponent implements AfterViewInit, AfterContentChecked {
-  @Input() public decryptedData: DecryptedData;
+  @Input() public decryptedData: IDecryptedData;
   private svg: any;
   private xScale: any;
   private yScale: any;
@@ -66,39 +66,39 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
 
   private populateGraph(): void {
     this.xScale.domain(extent(
-      [this.decryptedData.coordA, this.decryptedData.coordB],
-      (datum: ICoordinate) => {
+      this.decryptedData.coords,
+      (datum: ICoord) => {
         return datum.x.toJSNumber();
       },
     ));
 
     this.yScale.domain(extent(
-      [this.decryptedData.coordA, this.decryptedData.coordB],
-      (datum: ICoordinate) => {
+      this.decryptedData.coords,
+      (datum: ICoord) => {
         return datum.y.toJSNumber();
       },
     ));
 
     this.svg.selectAll(".dot")
-      .data([this.decryptedData.coordA, this.decryptedData.coordB])
+      .data(this.decryptedData.coords)
       .enter()
       .append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
-      .attr("cx", (datum: ICoordinate): number => {
+      .attr("cx", (datum: ICoord): number => {
         return this.xScale(datum.x.toJSNumber());
       })
-      .attr("cy", (datum: ICoordinate): number => {
+      .attr("cy", (datum: ICoord): number => {
         return this.yScale(datum.y.toJSNumber());
       });
 
     // this.svg.append("path")
     //   .attr("class", "line")
     //   .attr("d", line()
-    //     .x((datum: ICoordinate): number => {
+    //     .x((datum: ICoord): number => {
     //       return this.xScale(datum.x.toJSNumber());
     //     })
-    //     .y((datum: ICoordinate): number => {
+    //     .y((datum: ICoord): number => {
     //       return this.yScale(datum.y.toJSNumber());
     //     }),
     // );

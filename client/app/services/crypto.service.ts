@@ -117,13 +117,13 @@ export class CryptoService {
    */
   public createDataSubmission(perpId: string, userName: string): Promise<{}> {
 
-    const record: Record = {
+    const record: IRecord = {
       perpId,
       userName,
     };
 
     const cryptoService = this;
-    const dataPromise = new Promise(function (resolve, reject) {
+    const dataPromise = new Promise(function(resolve, reject) {
       $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
 
@@ -196,9 +196,9 @@ export class CryptoService {
    * Creates a Coord object based on inputs
    * @param {IEncryptedData} data - Encrypted data object containing an x value
    * @param {bigInt.BigInteger} y
-   * @returns {Coord} coordinate used for computations
+   * @returns {ICoord} coordinate used for computations
    */
-  private createCoord(data: IEncryptedData, y: bigInt.BigInteger): Coord {
+  private createCoord(data: IEncryptedData, y: bigInt.BigInteger): ICoord {
     return {
       x: bigInt(data.cX),
       y,
@@ -237,10 +237,10 @@ export class CryptoService {
    * Generates and formats all values needed to for linear secret sharing
    * @param {string} rid - randomized perpetrator ID in base 64 encoding
    * @param {string} userId - inputted user name
-   * @param {Record} record - object containing the perpetrator ID and user name
+   * @param {IRecord} record - object containing the perpetrator ID and user name
    * @returns {IPlainTextData} all values needed to be encrypted
    */
-  private generateDataValues(rid: string, userId: string, record: Record): IPlainTextData {
+  private generateDataValues(rid: string, userId: string, record: IRecord): IPlainTextData {
     const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
 
     const derived = this.deriveFromRid(prgRid);
@@ -276,12 +276,12 @@ export class CryptoService {
    * Handles record decryption based on RID
    * @param {Array<IEncryptedData>} data - matched encrypted data
    * @param {string} rid - randomized perpetrator ID
-   * @returns {Array<Record>} array of decrypted records
+   * @returns {Array<IRecord>} array of decrypted records
    */
   /* TODO: Figure out type of rid*/
   private decryptRecords(data: IEncryptedData[], rid): IRecord[] {
 
-    const decryptedRecords: Record[] = [];
+    const decryptedRecords: IRecord[] = [];
     const derived = this.deriveFromRid(rid.toString(this.HEX));
 
     for (let i = 0; i < data.length; i++) {
