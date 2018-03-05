@@ -1,12 +1,11 @@
 // classes ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 import { Injectable } from "@angular/core";
+import bigInt = require("big-integer");
 import * as $ from "jquery";
 import * as sodium from "libsodium-wrappers";
 import * as encoding from "text-encoding";
-import bigInt = require('big-integer');
 
-
-/** 
+/**
  * Data Objects
 */
 export interface EncryptedData {
@@ -30,15 +29,15 @@ export interface PlainTextData {
 }
 
 export interface Coord {
-  readonly x: bigInt.BigInteger,
-  readonly y: bigInt.BigInteger
+  readonly x: bigInt.BigInteger;
+  readonly y: bigInt.BigInteger;
 }
 
 export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: bigInt.BigInteger;
   readonly rid: string;
-  readonly coords: Array<Coord>;
+  readonly coords: Coord[];
 }
 
 export interface RIDComponents {
@@ -51,12 +50,12 @@ export interface Record {
   readonly userName: string;
 }
 
-/** 
+/**
  * SODIUM INITIALIZATION
 */
 const sodium_promise = sodium.ready;
 
-/** 
+/**
  * Key-Pair Generation
  * @param {Object} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
  * @param {Object} userKeys - User public-private key pair (Uint8Array[32]) for message authentication
@@ -67,7 +66,6 @@ sodium_promise.then(function() {
   ocKeys = sodium.crypto_box_keypair();
   userKeys = sodium.crypto_box_keypair();
 });
-
 
 /**
  * CRYPTO SERVICE
@@ -82,8 +80,7 @@ export class CryptoService {
    */
   private dataSubmissions = [];
   private HEX = 16;
-  // private PRIME = ((2 ** 128) - 157); // TODO: use big num library  
-
+  // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
   /**
    * ENCRYPTION
@@ -98,7 +95,7 @@ export class CryptoService {
 
     const ridLen = hexRid.length;
     const slope = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
-  
+
     const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
     return {slope, kId};
   }
@@ -125,20 +122,20 @@ export class CryptoService {
    * @returns {PlainTextData} all values needed to be encrypted
    */
   private generateDataValues(rid: string, userId: string, record: Record): PlainTextData {
-    const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));  
+    const prgRid = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
 
     const derived = this.deriveFromRid(prgRid);
     const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
     const bigIntRid = bigInt(prgRid, this.HEX);
 
     const pt = {
-      rid: bigIntRid, 
-      slope: derived.slope,  
+      rid: bigIntRid,
+      slope: derived.slope,
       recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()), // base64 encoding
       kId: sodium.to_base64(derived.kId),
-      record, 
-      hashedX: hashedUserId, 
-      y: derived.slope.times(hashedUserId).plus(bigIntRid), 
+      record,
+      hashedX: hashedUserId,
+      y: derived.slope.times(hashedUserId).plus(bigIntRid),
     };
 
     return pt;
@@ -202,7 +199,7 @@ export class CryptoService {
 
           const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
           resolve(plainTextData);
-        
+
         } else {
           reject(Error("Post request failed"));
         }
@@ -212,25 +209,24 @@ export class CryptoService {
     return dataPromise;
   }
 
-  /** 
-   * Stores encrypted data 
-   * @param {EncryptedData} encryptedData 
-   * @returns nothing 
-   */ 
+  /**
+   * Stores encrypted data
+   * @param {EncryptedData} encryptedData
+   * @returns nothing
+   */
   public postData(encryptedData: EncryptedData): void {
     this.dataSubmissions.push(encryptedData);
   }
-
 
   /**
    * DECRYPTION
    */
 
   /**
-   * Searches for and returns entries with the same RID 
+   * Searches for and returns entries with the same RID
    * @returns {Array<EncryptedData} matched entries
    */
-  private getMatchedData(): Array<EncryptedData> {
+  private getMatchedData(): EncryptedData[] {
     for (let i = 1; i < this.dataSubmissions.length; i++) {
       if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
         return [this.dataSubmissions[0], this.dataSubmissions[i]];
@@ -241,14 +237,14 @@ export class CryptoService {
   /**
    * Creates a Coord object based on inputs
    * @param {EncryptedData} data - Encrypted data object containing an x value
-   * @param {bigInt.BigInteger} y 
-   * @returns {Coord} coordinate used for computations 
+   * @param {bigInt.BigInteger} y
+   * @returns {Coord} coordinate used for computations
    */
   private createCoord(data: EncryptedData, y: bigInt.BigInteger): Coord {
     return {
       x: bigInt(data.cX),
-      y
-    }
+      y,
+    };
   }
 
   /**
@@ -256,9 +252,9 @@ export class CryptoService {
    * @returns {DecryptedData}
    */
   public decryptData(): DecryptedData {
-    let data = this.getMatchedData();
+    const data = this.getMatchedData();
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: bigInt(0), rid: '0', coords: []};
+      return {decryptedRecords: [], slope: bigInt(0), rid: "0", coords: []};
     }
 
     const yValues = this.decryptSecretValues(data);
@@ -279,7 +275,7 @@ export class CryptoService {
       decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
       slope,
       rid: rid.toString(),
-      coords: [coordA, coordB]
+      coords: [coordA, coordB],
     };
   }
 
@@ -290,11 +286,11 @@ export class CryptoService {
    * @returns {Array<Record>} array of decrypted records
    */
   /* TODO: Figure out type of rid*/
-  private decryptRecords(data: Array<EncryptedData>, rid) {
+  private decryptRecords(data: EncryptedData[], rid) {
 
     const decryptedRecords = [];
     const derived = this.deriveFromRid(rid.toString(this.HEX));
-  
+
     for (let i = 0; i < data.length; i++) {
       const encryptedRecord = data[i].encryptedRecord;
       const decryptedRecordKey = this.symmetricDecrypt(data[i].kId, data[i].encryptedRecordKey);
@@ -304,12 +300,12 @@ export class CryptoService {
     }
     return decryptedRecords;
   }
-    
+
   /**
    * Symmetric decryption
-   * @param {string} key 
+   * @param {string} key
    * @param {string} cipherText - base 64 encoding
-   * @returns {Uint8Array} decrypted value 
+   * @returns {Uint8Array} decrypted value
    */
   //TODO: figure out return statement
   private symmetricDecrypt(key: string, cipherText: string) {
@@ -326,10 +322,10 @@ export class CryptoService {
   /**
    * Decrypts y value, which has been assymetrically encrypted
    * @param {Array<EncryptedData>} data - array of matched EncryptedData values
-   * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions 
+   * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
-  private decryptSecretValues(data: Array<EncryptedData>): Array<bigInt.BigInteger> {
-    let yValues = [];
+  private decryptSecretValues(data: EncryptedData[]): bigInt.BigInteger[] {
+    const yValues = [];
     for (let i = 0; i < 2; i++) {
       const split = data[i].cY.split("$");
 
@@ -362,12 +358,12 @@ export class CryptoService {
   /**
    * Computes RID, which is the y-intercept
    * @param {Coord} c1 - a given coordinate
-   * @param {bigInt.BigInteger} slope 
+   * @param {bigInt.BigInteger} slope
    */
   private getIntercept(c1: Coord, slope: bigInt.BigInteger) {
     const x = c1.x;
     const y = c1.y;
 
     return y.minus(slope.times(x));
-  }  
+  }
 }
