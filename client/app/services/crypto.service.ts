@@ -123,7 +123,7 @@ export class CryptoService {
     };
 
     const cryptoService = this;
-    const dataPromise = new Promise(function(resolve, reject) {
+    const dataPromise = new Promise(function (resolve, reject) {
       $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
 
@@ -181,10 +181,6 @@ export class CryptoService {
   }
 
   /**
-   * DECRYPTION
-   */
-
-  /**
    * Searches for and returns entries with the same RID
    * @returns {Array<IEncryptedData} matched entries
    */
@@ -208,10 +204,6 @@ export class CryptoService {
       y,
     };
   }
-
-  /**
-   * ENCRYPTION
-   */
 
   /**
    * Takes RID partitions the first 128 bits for the slope and the second 128 bits for kId
