@@ -78,8 +78,8 @@ export class CryptoService {
    * @param {Array<EncryptedData>} dataSubmissions - storage for user inputted and generated data
    * @param {number} HEX - constant for conversions to hexadecimal
    */
-  private dataSubmissions = [];
-  private HEX = 16;
+  private dataSubmissions: EncryptedData[] = [];
+  private HEX: number = 16;
   // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
   /**
@@ -93,11 +93,11 @@ export class CryptoService {
    */
   private deriveFromRid(hexRid: string): RIDComponents {
 
-    const ridLen = hexRid.length;
-    const slope = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
+    const ridLen: number = hexRid.length;
+    const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
 
     const kId = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
-    return {slope, kId};
+    return { slope, kId };
   }
 
   /**
@@ -126,7 +126,7 @@ export class CryptoService {
 
     const derived = this.deriveFromRid(prgRid);
     const hashedUserId = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
-    const bigIntRid = bigInt(prgRid, this.HEX);
+    const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
 
     const pt = {
       rid: bigIntRid,
@@ -254,7 +254,7 @@ export class CryptoService {
   public decryptData(): DecryptedData {
     const data = this.getMatchedData();
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: bigInt(0), rid: "0", coords: []};
+      return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
     }
 
     const yValues = this.decryptSecretValues(data);
@@ -325,7 +325,7 @@ export class CryptoService {
    * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
   private decryptSecretValues(data: EncryptedData[]): bigInt.BigInteger[] {
-    const yValues = [];
+    const yValues: bigInt.BigInteger[] = [];
     for (let i = 0; i < 2; i++) {
       const split = data[i].cY.split("$");
 
@@ -336,7 +336,7 @@ export class CryptoService {
       const y = sodium.crypto_box_open_easy(cY, nonce, userKeys.publicKey, ocKeys.privateKey);
 
       // Convert back to bigInt
-      const yStr = new encoding.TextDecoder("utf-8").decode(y);
+      const yStr: string = new encoding.TextDecoder("utf-8").decode(y);
       yValues.push(bigInt(yStr));
     }
     return yValues;
@@ -360,7 +360,7 @@ export class CryptoService {
    * @param {Coord} c1 - a given coordinate
    * @param {bigInt.BigInteger} slope
    */
-  private getIntercept(c1: Coord, slope: bigInt.BigInteger) {
+  private getIntercept(c1: Coord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x = c1.x;
     const y = c1.y;
 
