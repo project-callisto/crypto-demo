@@ -18,9 +18,6 @@ export class FifthStepComponent implements AfterContentChecked {
   @Input() public shown: boolean = false;
   @Input() public decryptedData: DecryptedData;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-<<<<<<< HEAD
-}
-=======
   @ViewChild(GraphComponent) public graph: GraphComponent;
 
   public ngAfterContentChecked(): void {
@@ -30,4 +27,3 @@ export class FifthStepComponent implements AfterContentChecked {
   }
 
 }
->>>>>>> 50be108419fe9647cb4026bac0ba2cce83a8bfec
