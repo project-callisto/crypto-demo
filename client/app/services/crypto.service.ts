@@ -38,6 +38,7 @@ export interface DecryptedData {
   readonly decryptedRecords: Object;
   readonly slope: bigInt.BigInteger;
   readonly rid: string;
+  readonly coords: Array<Coord>;
 }
 
 export interface RIDComponents {
@@ -196,7 +197,7 @@ export class CryptoService {
 
     const cryptoService = this;
     const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", {perpId}, (data, status) => {
+      $.post("/postPerpId", { perpId }, (data, status) => {
         if (status === "success") {
 
           const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
@@ -257,7 +258,7 @@ export class CryptoService {
   public decryptData(): DecryptedData {
     let data = this.getMatchedData();
     if (data.length < 2) {
-      return {decryptedRecords: [], slope: bigInt(0), rid: '0'};
+      return {decryptedRecords: [], slope: bigInt(0), rid: '0', coords: []};
     }
 
     const yValues = this.decryptSecretValues(data);
@@ -277,7 +278,8 @@ export class CryptoService {
     return {
       decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
       slope,
-      rid: rid.toString()
+      rid: rid.toString(),
+      coords: [coordA, coordB]
     };
   }
 

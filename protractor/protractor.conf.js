@@ -10,16 +10,27 @@ exports.config = {
   capabilities: {
     'browserName': 'chrome',
     'chromeOptions': {
-        'args': ['no-sandbox']
+      'args': ['no-sandbox']
     }
   },
+  SELENIUM_PROMISE_MANAGER: false,
   specs: ['spec.js'],
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,
-    print: function() {}
+    print: function () { }
   },
   onPrepare() {
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+    // https://github.com/angular/protractor/issues/4294#issuecomment-357941307
+    let currentCommand = Promise.resolve();
+    // Serialise all webdriver commands to prevent EPIPE errors
+    const webdriverSchedule = browser.driver.schedule;
+    browser.driver.schedule = (command, description) => {
+      currentCommand = currentCommand.then(() =>
+        webdriverSchedule.call(browser.driver, command, description)
+      );
+      return currentCommand;
+    };
   }
 }

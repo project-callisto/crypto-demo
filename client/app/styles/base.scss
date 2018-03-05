@@ -1,6 +1,6 @@
 @import "_meta";
 
-content-root {
+.main-content:host, * {
   font-family: $font-body;
 }
 
