@@ -46,7 +46,7 @@ li:not(:last-child) {
 
 
 .step-explainer {
-  @media (max-width: $breakpoint-sm) {
+  @media (max-width: $breakpoint-md) {
     display: none;
   }
 }
