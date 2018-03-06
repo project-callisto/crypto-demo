@@ -14,7 +14,7 @@ export class NavComponent {
   private Array: ArrayConstructor = Array;  // angular templates dont have Array by default
 
   private stepToID(key: number): string {
-    return [
+    return "#" + [
       "first-step",
       "second-step",
       "third-step",

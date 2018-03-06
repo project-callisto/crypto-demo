@@ -9,6 +9,6 @@
     *ngFor="let navStep of Array.from(Array(maxSteps).keys())"
     [ngClass]="{'activated-step': (navStep + 1)===sectionStep}"
   >
-    <a [ngClass]="stepToID(navStep)"><span class="step-explainer">STEP</span> {{navStep + 1}}</a>
+    <a [href]="stepToID(navStep)"><span class="step-explainer">STEP</span> {{navStep + 1}}</a>
   </li>
 </ul>
