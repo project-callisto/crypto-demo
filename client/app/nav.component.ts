@@ -11,7 +11,7 @@ import { Component, Input } from "@angular/core";
 export class NavComponent {
   @Input() public sectionStep: number = 0;
   private maxSteps: number = 6;
-  private Array: ArrayConstructor = Array;
+  private Array: ArrayConstructor = Array;  // angular templates dont have Array by default
 
   private stepToID(key: number): string {
     return [
