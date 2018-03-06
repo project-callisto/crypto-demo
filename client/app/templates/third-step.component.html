@@ -1,50 +1,31 @@
 <section *ngIf="shown" id='third-step'>
   <h2 class="main-header text-centered">Linear Secret Sharing</h2>
-  <ul class="step-display">
-    <li class="activated-step">
-      <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
-    </li>
-    <li class="activated-step">
-      <a href="#second-step"><span class="step-explainer">STEP</span> 2</a>
-    </li>
-    <li class="activated-step">
-      <a href="#third-step"><span class="step-explainer">STEP</span> 3</a>
-    </li>
-    <li>
-      <a href="#fourth-step"><span class="step-explainer">STEP</span> 4</a>
-    </li>
-    <li>
-      <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
-    </li>
-    <li>
-      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
-    </li>
-  </ul>
-  <div class='calc-display'>
-    <p>First we hash RID using SHA-256 to standardize outputs to 256 bits.</p>
-    <p>
-      <code>H(RID)</code>
-      <code class="calc-display-value">{{ plainTextData.rid }}</code>
-    </p>
-    <p>From this value, we use the first 128 bits as a slope (m) and the remaining 128 bits as a key, K<sub>ID</sub> to encrypt user data. We also hash your inputted user name to create a value, x</p>
-    <p>
-      <code>m</code>
-      <code class="calc-display-value">{{ plainTextData.slope }}</code>
-    </p>
-    <p>
-      <code>K<sub>ID</sub></code>
-      <code class="calc-display-value">{{ plainTextData.kId }}</code>
-    </p>
-    <p>
-      <code>X</code>
-      <code class="calc-display-value">{{ plainTextData.hashedX }}</code>
-    </p>
-    <p>These values are now the inputs for the line <code>y = mx + RID</code></p>
-    <p>
-      <code>y = mx + RID</code>
-      <code class="calc-display-value">{{ plainTextData.y }}</code>
-    </p>
-  </div>
+  <step-nav [sectionStep]=3></step-nav>
+
+  <p>First we hash RID using SHA-256 to standardize outputs to 256 bits.</p>
+  <p>
+    <code>H(RID)</code>
+    <code class="calc-display-value">{{ plainTextData.rid }}</code>
+  </p>
+  <p>From this value, we use the first 128 bits as a slope (m) and the remaining 128 bits as a key, K<sub>ID</sub> to encrypt user data. We also hash your inputted user name to create a value, x</p>
+  <p>
+    <code>m</code>
+    <code class="calc-display-value">{{ plainTextData.slope }}</code>
+  </p>
+  <p>
+    <code>K<sub>ID</sub></code>
+    <code class="calc-display-value">{{ plainTextData.kId }}</code>
+  </p>
+  <p>
+    <code>X</code>
+    <code class="calc-display-value">{{ plainTextData.hashedX }}</code>
+  </p>
+  <p>These values are now the inputs for the line <code>y = mx + RID</code></p>
+  <p>
+    <code>y = mx + RID</code>
+    <code class="calc-display-value">{{ plainTextData.y }}</code>
+  </p>
+
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>  
