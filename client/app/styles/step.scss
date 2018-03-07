@@ -34,19 +34,15 @@ code {
   font-family: "Courier New", monospace;
 }
 
-.rid-display {
-  text-align: center;
-}
-
 .subtext {
   font-size: 0.85rem;
   color: $color-text-faded;
   letter-spacing: 1px;  
 }
 
-.explainer, p {
+p {
   font-family: $font-body;
-  color: $color-explainer-text;
+  color: $color-paragraph-text;
   letter-spacing: 2px;
   line-height: 30px;
   margin: 20px 0;
@@ -71,10 +67,10 @@ input {
   border: 1px solid $color-code-border;
 }
 
-section {
+article {
   margin: 60px 15%;
   padding: 40px;
-  background-color: $color-section-background;
+  background-color: $color-article-background;
 
   @media (max-width: $breakpoint-sm) {
     margin-left: 0;

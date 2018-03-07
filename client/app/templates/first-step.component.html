@@ -1,31 +1,25 @@
-<section *ngIf="shown" id='first-step'>
+<article *ngIf="shown" id='first-step'>
   <h2 id='first-step-h2' class="main-header text-centered">User Inputs</h2>
   <step-nav [sectionStep]=1></step-nav>
-  <main aria-describedby="first-step-h2">
+  <p>Our encryption method uses four key techniques: client-side encryption, oblivious pseudorandom function over an elliptic curve, secure multi-cloud key federation, and linear secret sharing. Our white paper explains these techniques in more detail. This demo focuses on highlighting client-side encryption and linear secret sharing. Data inputs will not be stored.</p>
+  <p>To begin, enter a user name and a perpetrator name.</p>  
 
-    <p>Our encryption method uses four key techniques: client-side encryption, oblivious pseudorandom function over an elliptic curve, secure multi-cloud key federation, and linear secret sharing. Our white paper explains these techniques in more detail. This demo focuses on highlighting client-side encryption and linear secret sharing. Data inputs will not be stored.</p>
-    <p>To begin, enter a user name and a perpetrator name.</p>  
-
-    <form class="perp-name-form" action="#">
-  
-      <div class='input-row'>
-        <div>
-          <span class="subtext">ENTER USER NAME</span>
-          <input #userInput required type="text" id="userInput" />
-        </div>
-        <div>
-          <span class="subtext">ENTER PERP NAME</span>
-          <input #perpInput required type="text" id="perpInput" />
-        </div>
+  <form class="perp-name-form" action="#">
+    <div class='input-row'>
+      <div>
+        <span class="subtext">ENTER USER NAME</span>
+        <input #userInput required type="text" id="userInput" />
       </div>
-    
-      <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
-      <code class='rid-display calc-display-value' id="calc-rid">{{ recordKey }}</code>
-    
-      <div class="align-right-on-large">
-        <input class="btn advance-button" value="next" type="submit" (click)="perpSubmit($event, perpInput.value, userInput.value);" />
-      </div>  
+      <div>
+        <span class="subtext">ENTER PERP NAME</span>
+        <input #perpInput required type="text" id="perpInput" />
+      </div>
+    </div>  
+    <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
+    <code class='calc-display-value' id="calc-rid">{{ recordKey }}</code>
+    <div class="align-right-on-large">
+      <input class="btn advance-button" value="next" type="submit" (click)="perpSubmit($event, perpInput.value, userInput.value);" />
+    </div>  
+  </form>
 
-    </form>
-  </main>
-</section>
+</article>

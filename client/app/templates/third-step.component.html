@@ -1,7 +1,6 @@
-<section *ngIf="shown" id='third-step'>
-  <h2 class="main-header text-centered">Linear Secret Sharing</h2>
+<article *ngIf="shown" id='third-step'>
+  <h2 class="main-header text-centered" id="third-step-h2">Linear Secret Sharing</h2>
   <step-nav [sectionStep]=3></step-nav>
-
   <p>First we hash RID using SHA-256 to standardize outputs to 256 bits.</p>
   <p>
     <code>H(RID)</code>
@@ -25,8 +24,7 @@
     <code>y = mx + RID</code>
     <code class="calc-display-value">{{ plainTextData.y }}</code>
   </p>
-
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>  
-</section>
+</article>
