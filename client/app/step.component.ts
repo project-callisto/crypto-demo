@@ -131,7 +131,6 @@ export class StepComponent {
     this.thirdStep.plainTextData = plainText;
     this.fourthStep.encryptedData = encryptedData;
     this.fifthStep.RID = encryptedData.hashedRid;
-
   }
 
   private async generateGraphData(): Promise<void> {

@@ -180,10 +180,15 @@ export class CryptoService {
    * @returns {string} randomized perp id
    */
   private randomizePerpId(perpId: string): string {
+<<<<<<< HEAD
 
     const sK: string = "Project Callisto Super Secret Key";
     return sodium.to_base64(sodium.crypto_hash(perpId + sK));
 
+=======
+    const sK: string = "Project Callisto Super Secret Key";
+    return sodium.to_base64(sodium.crypto_hash(perpId + sK));
+>>>>>>> ba0858b2e9571e699ac8a754a34a985373bb3a18
   }
 
   /**
