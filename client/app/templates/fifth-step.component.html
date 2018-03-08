@@ -1,5 +1,5 @@
 <section *ngIf="shown" id='fifth-step'>
-  <h2 class="main-header text-centered">Matching of Perpetrator ID's</h2>
+  <h2 class="main-header text-centered">Matching</h2>
   <ul class="step-display">
     <li class="activated-step">
       <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
@@ -16,20 +16,33 @@
     <li class="activated-step">
       <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
     </li>
-    <li class="activated-step">
+    <li>
       <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
     </li>
   </ul>
 
-
-  <p class="explainer">Over time, different victims will enter their information into Callisto. When two H(RID)’s in the database match, the Options Counselor decrypts the secret values and uses those two shares to interpolate the line and reveal the y-intercept (the RID). 
+  <p>Over time, different users will enter their information into Callisto. When two H(H(RID))s in the database match, the Options Counselor decrypts the secret values and uses those two shares to interpolate the line and reveal the y-intercept (the RID).</p>
+  <p>
+    <code>Your H(RID)</code>
+    <code class="calc-display-value">{{ RID }}</code>
   </p>
-  <div class='calc-display'>
-    <p>
-      <code>RID</code>:
-      <code class="calc-display-value">{{ RID }}</code>
-    </p>
-  </div>
+  <p>
+    <code>User 2's H(RID)</code>
+    <code class="calc-display-value">{{ RID2 }}</code>
+  </p>
+  <p>
+    <code>User 3's H(RID)</code>
+    <code class="calc-display-value">{{ RID3 }}</code>
+  </p>
+  <p>
+    <code>User 4's H(RID)</code>
+    <code class="calc-display-value">{{ RID4 }}</code>
+  </p>
+  <p>You and User 2 have matching H(RID)s, and now the Options Counselor can begin to decrypt your data.</p>
+  
+  <crypto-graph
+    (decryptedData)="decryptedData"
+  ></crypto-graph>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>

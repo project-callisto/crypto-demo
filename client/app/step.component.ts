@@ -1,9 +1,10 @@
 import { Component, ViewChild } from "@angular/core";
 import { FifthStepComponent } from "./fifth-step.component";
-import { FirstStepComponent, UserInput } from "./first-step.component";
+import { FirstStepComponent, IUserInput } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
+import { IntroComponent } from "./intro.component";
 import { SecondStepComponent } from "./second-step.component";
-import { CryptoData, CryptoService, EncryptedData, PlainTextData } from "./services/crypto.service";
+import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { SummaryStepComponent } from "./summary-step.component";
 import { ThirdStepComponent } from "./third-step.component";
@@ -13,6 +14,9 @@ import * as $ from "jquery";
 @Component({
   selector: "step-root",
   template: `
+    <intro-root
+      (advanceStep)="advanceIntro($event)"
+    ></intro-root>
     <first-step
       (advanceStep)="advanceFirstStep($event)"
     ></first-step>
@@ -28,9 +32,9 @@ import * as $ from "jquery";
     <fifth-step
       (advanceStep)="advanceFifthStep($event)"
     ></fifth-step>
-    <sixth-step>
-    (advanceStep)="advanceSixthStep($event)"
-    </sixth-step>
+    <sixth-step
+      (advanceStep)="advanceSixthStep($event)"
+    ></sixth-step>
   `,
   providers: [
     CryptoService,
@@ -40,6 +44,7 @@ export class StepComponent {
   private perpInput: string;
   private userInput: string;
 
+  @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
   @ViewChild(ThirdStepComponent) private thirdStep: ThirdStepComponent;
@@ -52,19 +57,23 @@ export class StepComponent {
     public crypto: CryptoService,
   ) { }
 
-  private advanceFirstStep(perpInput: string, userInput: string): void {
-    this.perpInput = perpInput;
-    this.userInput = userInput;
-    this.crypto.createDataSubmission(perpInput, userInput).then(
-      (cryptoData: CryptoData) => {
-        this.firstStep.recordKey = cryptoData.plainTextData.recordKey;
-        this.secondStep.plainTextData = cryptoData.plainTextData;
-        this.thirdStep.plainTextData = cryptoData.plainTextData;
-        this.fourthStep.encryptedData = cryptoData.encryptedData;
-        this.secondStep.shown = true;
-        this.scrollTo("second-step");
-      },
-    );
+  /*
+   * advancer functions handle display logic for children
+   * and interact with the crypto through promises chained from private functions
+   */
+
+  private advanceIntro(): void {
+    this.firstStep.shown = true;
+    this.scrollTo("first-step");
+  }
+
+  private advanceFirstStep(userInput: IUserInput): void {
+    this.perpInput = userInput.perpInput;
+    this.userInput = userInput.userName;
+    this.submitUserEntry().then(() => {
+      this.secondStep.shown = true;
+      this.scrollTo("second-step");
+    });
   }
 
   private advanceSecondStep(): void {
@@ -77,32 +86,24 @@ export class StepComponent {
     this.scrollTo("fourth-step");
   }
 
-  private submitAndEncrypt(perpInput: string, userName: string) {
-    this.crypto.createDataSubmission(perpInput, userName).then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        this.crypto.postData(encryptedData);
-      });
-  }
-
   private advanceFourthStep(): void {
     // matched perpInput, diff username
-    this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName).then(
-      (plainText: PlainTextData) => {
-        const encryptedData: EncryptedData = this.crypto.encryptData(plainText);
-        this.crypto.postData(encryptedData);
-        const decryptedData = this.crypto.decryptData();
-        this.fifthStep.RID = decryptedData.strRid;
-        this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
-      },
-    );
+
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    const decryptedData: IDecryptedData = this.crypto.decryptData();
+    this.fifthStep.RID = decryptedData.rid;
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
 
     // unmatched perpInput
-    this.submitAndEncrypt(this.perpInput + this.perpInput, 'Alice');
-    this.submitAndEncrypt(this.perpInput + '1', 'Bob');
+    this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    this.submitAndEncrypt(this.perpInput + "1", "Bob");
 
-    this.fifthStep.shown = true;
-    this.scrollTo("fifth-step");
+    this.generateGraphData().then(() => {
+      this.fifthStep.shown = true;
+      this.scrollTo("fifth-step");
+    });
   }
 
   private advanceFifthStep(): void {
@@ -112,7 +113,7 @@ export class StepComponent {
 
   private advanceSixthStep(): void {
     this.summaryStep.shown = true;
-    this.scrollTo('summary-step');
+    this.scrollTo("summary-step");
   }
 
   private scrollTo(element: string): void {
@@ -120,4 +121,42 @@ export class StepComponent {
       scrollTop: $(element).offset().top,
     }, 400);
   }
+
+  private async submitUserEntry(): Promise<void> {
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    this.firstStep.recordKey = plainText.recordKey;
+    this.secondStep.plainTextData = plainText;
+    this.thirdStep.plainTextData = plainText;
+    this.fourthStep.encryptedData = encryptedData;
+    this.fifthStep.RID = encryptedData.hashedRid;
+  }
+
+  private async generateGraphData(): Promise<void> {
+    // matched perpInput, diff username
+    let encryptedData: IEncryptedData = this.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+    this.fifthStep.RID2 = encryptedData.hashedRid;
+
+    // unmatched perpInput
+    encryptedData = this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    this.fifthStep.RID3 = encryptedData.hashedRid;
+
+    // unmatched perpInput
+    encryptedData = this.submitAndEncrypt(this.perpInput + "1", "Bob");
+    this.fifthStep.RID4 = encryptedData.hashedRid;
+
+    // input is matched, trigger decryption
+    const decryptedData: IDecryptedData = this.crypto.decryptData();
+    this.fifthStep.decryptedData = decryptedData;
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
+  }
+
+  private submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(perpInput, userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    return encryptedData;
+  }
+
 }

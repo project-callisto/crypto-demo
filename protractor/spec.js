@@ -10,29 +10,25 @@ describe('Valkyrie Demo', () => {
   const FourthStep = $('fourth-step section');
   const FifthStep = $('fifth-step section');
   const SixthStep = $('sixth-step section');
-  const PerpNameInput = $('.perp-name-form [type="text"]');
+  const PerpNameInput = $('#perpInput');
   const PerpNameSubmit = $('.perp-name-form [type="submit"]');
   const RIDDisplay = $('.rid-display');
 
-  function RIDExpectations() {
-    expect(RIDDisplay.getText()).not.toContain('[[ RID ]]');
-    expect(RIDDisplay.getText()).toBeTruthy();
-    expect(RIDDisplay.getText()).not.toContain('NaN');
-  }
-
-  function sleep(millis) {
-    return new Promise(resolve => setTimeout(resolve, millis));
+  async function RIDExpectations() {
+    expect(await RIDDisplay.getText()).not.toContain('[[ Randomly Generated Key ]]');
+    expect(await RIDDisplay.getText()).toBeTruthy();
+    expect(await RIDDisplay.getText()).not.toContain('NaN');
   }
 
   async function doPerpInput(perp = 'facebook.com/callistoorg') {
-    PerpNameInput.sendKeys(perp);
+    $('#perpInput').sendKeys(perp);
+    $('#userInput').sendKeys('alice');
     PerpNameSubmit.click();
-    await sleep(1000); // this is bad, but satisfies our needs
-    RIDExpectations();
+    await RIDExpectations();
   }
 
-  function AdvanceStepTwo() {
-    SecondStep.$('.advance-button').click();
+  async function AdvanceStepTwo() {
+    await SecondStep.$('.advance-button').click();
   }
 
   function AdvanceStepThree() {
@@ -47,70 +43,59 @@ describe('Valkyrie Demo', () => {
     FifthStep.$('.advance-button').click();
   }
 
-  beforeEach(() => {
-    browser.get('/');
+  beforeEach(async () => {
+    await browser.get('/');
   });
 
   it('should have a title', () => {
     expect(browser.getTitle()).toEqual('Valkyrie Demo');
   });
 
-  it('should start with a perp name displayed', () => {
-    expect(FirstStep.getText()).toContain('PERP NAME');
+  it('should start with a perp name displayed', async () => {
+    expect(await FirstStep.getText()).toContain('PERP NAME');
   });
 
-  it('starts with no RID rendered', () => {
-    expect(RIDDisplay.getText()).toContain('[[ RID ]]');
+  it('starts with no RID rendered', async () => {
+    expect(await RIDDisplay.getText()).toContain('[[ Randomly Generated Key ]]');
   });
 
-  it('renders a RID after perp name input', () => {
-    doPerpInput();
-    RIDExpectations();
+  it('renders a RID after perp name input', async () => {
+    await doPerpInput();
   });
 
-  it('renders a RID for perp names starting with a', () => {
-    doPerpInput('apple');
-    RIDExpectations();
-  });
-
-  it('renders a RID for perp names starting with z', () => {
-    doPerpInput('zebra');
-    RIDExpectations();
-  });
-
-  it('advances to step 2', () => {
-    expect(SecondStep.isPresent()).toBeFalsy();
-    doPerpInput();
+  it('advances to step 2', async () => {
+    expect(await SecondStep.isPresent()).toBeFalsy();
+    await doPerpInput();
     expect(SecondStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 3', () => {
-    expect(ThirdStep.isPresent()).toBeFalsy();
-    doPerpInput();
+  it('advances to step 3', async () => {
+    expect(await ThirdStep.isPresent()).toBeFalsy();
+    await doPerpInput();
     AdvanceStepTwo();
     expect(ThirdStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 4', () => {
-    expect(FourthStep.isPresent()).toBeFalsy();
-    doPerpInput();
+  it('advances to step 4', async () => {
+    expect(await FourthStep.isPresent()).toBeFalsy();
+    await doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     expect(FourthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 5', () => {
-    expect(FifthStep.isPresent()).toBeFalsy();
-    doPerpInput();
+  it('advances to step 5', async () => {
+    expect(await FifthStep.isPresent()).toBeFalsy();
+    await doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     AdvanceStepFour();
     expect(FifthStep.isPresent()).toBeTruthy();
   });
 
-  it('advances to step 6', () => {
-    expect(SixthStep.isPresent()).toBeFalsy();
-    doPerpInput();
+  it('advances to step 6', async () => {
+    expect(await SixthStep.isPresent()).toBeFalsy();
+    await doPerpInput();
     AdvanceStepTwo();
     AdvanceStepThree();
     AdvanceStepFour();

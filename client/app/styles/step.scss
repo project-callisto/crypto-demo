@@ -1,25 +1,37 @@
 @import "_meta";
 
 h2 {
-  margin: 0;
+  margin: 0 auto 30px;
+  color: $color-step-headers;
+}
+
+a {
+  color: $palette-dark-blue;
+}
+
+code {
+  word-wrap: break-word;
+}
+
+.final-perp-display {
+  text-align: center;
+  margin: 40px auto;
+  display: block;
+  color: $palette-dark-blue;
+  font-size: 1.2rem;
 }
 
 .calc-display-value {
   display: block;
-  margin: 10px 5%;
+  margin: 10px 0;
   padding: 10px;
-  color: darkslategray;
+  color: $palette-dark-blue;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
   background-color: $color-code-background;
   border: 1px solid $color-code-border;
   font-family: "Courier New", monospace;
-}
-
-.calc-display {
-  word-wrap: break-word;
-
-  h3 {
-    margin: 0;
-  }
 }
 
 .rid-display {
@@ -29,9 +41,11 @@ h2 {
 .subtext {
   font-size: 0.85rem;
   color: $color-text-faded;
+  letter-spacing: 1px;  
 }
 
-.explainer {
+.explainer, p {
+  font-family: $font-body;
   color: $color-explainer-text;
   letter-spacing: 2px;
   line-height: 30px;
@@ -46,6 +60,15 @@ h2 {
   @media (max-width: $breakpoint-sm) {
     width: 100%;
   }
+}
+
+input {
+  margin: 10px 0;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: $color-code-background;
+  border: 1px solid $color-code-border;
 }
 
 section {
@@ -79,7 +102,7 @@ section {
   list-style: none;
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin: 0 0 20px;
   padding: 0;
 
   a {
@@ -122,7 +145,7 @@ section {
 .input-row {
   display: flex;
   align-items: center;
-  margin: 40px 0;
+  margin: 40px 0 0;
 
   @media (max-width: $breakpoint-sm) {
     flex-direction: column;
@@ -132,6 +155,12 @@ section {
   > * {
     margin: 5px 0;
     width: 100%;
+  }
+
+  > *:first-child {
+    @media (min-width: $breakpoint-sm) {
+      margin-right: 20px;
+    }
   }
 
   > span {

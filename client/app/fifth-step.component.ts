@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { AfterContentChecked, Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { GraphComponent } from "./graph.component";
+import { IDecryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "fifth-step",
@@ -8,8 +10,20 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
     "./styles/step.scss",
   ],
 })
-export class FifthStepComponent {
+export class FifthStepComponent implements AfterContentChecked {
   @Input() public RID: string;
+  @Input() public RID2: string;
+  @Input() public RID3: string;
+  @Input() public RID4: string;
   @Input() public shown: boolean = false;
+  @Input() public decryptedData: IDecryptedData;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
+  @ViewChild(GraphComponent) public graph: GraphComponent;
+
+  public ngAfterContentChecked(): void {
+    if (this.graph && this.decryptedData) {
+      this.graph.decryptedData = this.decryptedData;
+    }
+  }
+
 }
