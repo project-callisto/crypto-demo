@@ -110,19 +110,6 @@ export class CryptoService {
   }
 
   /**
-   * Randomizing perp Id
-   *
-   * @param {string} perpId - inputted perpetrator name
-   * @returns {string} randomized perp id
-   */
-  private randomizePerpId(perpId) {
-
-    const sK = "Project Callisto Super Secret Key";
-    return sodium.to_base64(sodium.crypto_hash(perpId + sK));
-
-  }
-
-  /**
    * Function for taking user inputs and returning values to be encrypted
    * @param {string} perpId - inputted perpetrator name
    * @param {string} userName - inputted user name
@@ -135,7 +122,7 @@ export class CryptoService {
       userName,
     };
 
-    const rid = this.randomizePerpId(perpId);
+    const rid: string = this.randomizePerpId(perpId);
     return this.generateDataValues(rid, userName, record);
   }
 
@@ -178,6 +165,17 @@ export class CryptoService {
       rid: rid.toString(),
       coords: [coordA, coordB],
     };
+  }
+
+  /**
+   * Randomizing perp Id
+   *
+   * @param {string} perpId - inputted perpetrator name
+   * @returns {string} randomized perp id
+   */
+  private randomizePerpId(perpId: string): string {
+    const sK: string = "Project Callisto Super Secret Key";
+    return sodium.to_base64(sodium.crypto_hash(perpId + sK));
   }
 
   /**
