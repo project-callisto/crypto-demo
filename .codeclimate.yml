@@ -3,8 +3,6 @@ languages:
   TypeScript: true
   JavaScript: true
 plugins:
-  nodesecurity:
-    enabled: true
   eslint:
     enabled: true
   tslint:
