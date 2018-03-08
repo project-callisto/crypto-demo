@@ -42,7 +42,7 @@ import * as $ from "jquery";
 })
 export class StepComponent {
   private perpInput: string;
-  private userInput: string;
+  private userName: string;
 
   @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
@@ -69,7 +69,7 @@ export class StepComponent {
 
   private advanceFirstStep(userInput: IUserInput): void {
     this.perpInput = userInput.perpInput;
-    this.userInput = userInput.userName;
+    this.userName = userInput.userName;
     this.submitUserEntry().then(() => {
       this.secondStep.shown = true;
       this.scrollTo("second-step");
