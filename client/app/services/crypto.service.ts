@@ -221,7 +221,8 @@ export class CryptoService {
     const ridLen: number = hexRid.length;
     const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
 
-    const kId: Uint8Array = sodium.crypto_generichash(sodium.crypto_generichash_BYTES, hexRid.substr(ridLen / 2, ridLen));
+    const kId: Uint8Array = sodium.crypto_generichash(sodium.crypto_generichash_BYTES,
+                                                      hexRid.substr(ridLen / 2, ridLen));
     return { slope, kId };
   }
 
@@ -291,9 +292,11 @@ export class CryptoService {
 
     for (const i in data) {
       const encryptedRecord: string = data[i].encryptedRecord;
-      const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(sodium.from_base64(data[i].kId), data[i].encryptedRecordKey);
+      const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(sodium.from_base64(data[i].kId),
+                                              data[i].encryptedRecordKey);
 
-      const decryptedRecord: Uint8Array = this.symmetricDecrypt(sodium.from_base64(decryptedRecordKey), encryptedRecord);
+      const decryptedRecord: Uint8Array = this.symmetricDecrypt(sodium.from_base64(decryptedRecordKey),
+                                                                encryptedRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
