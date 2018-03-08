@@ -5,6 +5,7 @@
   },
   "apps": [
     {
+      "test": "./../unit-tests/client/crypto.spec.ts",
       "root": "client",
       "outDir": "dist",
       "index": "index.html",
