@@ -12,42 +12,42 @@ describe("Crypto service", () => {
   });
 
   it("takes string input on the submission api", () => {
-    setTimeout(() => {
-      crypto.createDataSubmission("perpId", "user").then(
-        (plainText: IPlainTextData) => {
-          const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-          expect(encryptedData).toBeTruthy();
-        },
-      );
-    }, 10000);
+    // setTimeout(() => {
+    //   crypto.createDataSubmission("perpId", "user").then(
+    //     (plainText: IPlainTextData) => {
+    //       const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    //       expect(encryptedData).toBeTruthy();
+    //     },
+    //   );
+    // }, 10000);
   });
 
   it("has an RID", () => {
-    setTimeout(() => {
-      crypto.createDataSubmission("perpId", "user").then(
-        (plainText: IPlainTextData) => {
-          const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-          expect(encryptedData.hashedRid).toBeTruthy();
-        },
-      );
-    }, 10000);
+    // setTimeout(() => {
+    //   crypto.createDataSubmission("perpId", "user").then(
+    //     (plainText: IPlainTextData) => {
+    //       const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    //       expect(encryptedData.hashedRid).toBeTruthy();
+    //     },
+    //   );
+    // }, 10000);
   });
 
   it("returns RID for perpIDs starting with A-Z", () => {
-    let perpID: number = 65;
-    const maxPerpID: number = 90;
+    // let perpID: number = 65;
+    // const maxPerpID: number = 90;
 
-    while (perpID <= maxPerpID) {
-      setTimeout(() => {
-        crypto.createDataSubmission(String.fromCharCode(perpID), "Alice").then(
-          (plainText: IPlainTextData) => {
-            const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-            expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
-          },
-        );
-      }, 10000);
-      perpID++;
-    }
+    // while (perpID <= maxPerpID) {
+    //   setTimeout(() => {
+    //     crypto.createDataSubmission(String.fromCharCode(perpID), "Alice").then(
+    //       (plainText: IPlainTextData) => {
+    //         const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    //         expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+    //       },
+    //     );
+    //   }, 10000);
+    //   perpID++;
+    // }
 
   });
 

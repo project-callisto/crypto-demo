@@ -5,6 +5,7 @@
   },
   "apps": [
     {
+      "test": "./../unit-tests/client/crypto.spec.ts",
       "root": "client",
       "outDir": "dist",
       "index": "index.html",
@@ -13,6 +14,11 @@
       "main": "main.ts"
     }
   ],
+  "test": {
+    "karma": {
+      "config": "./unit-tests/karma.conf.js"
+    }
+  },
   "e2e": {
     "protractor": {
       "config": "./protractor/protractor.conf.js"
