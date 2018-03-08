@@ -1,0 +1,14 @@
+<!--
+  navStep is 0 indexed
+  sectionStep is 1 indexed
+  stepToID is 0 indexed
+  user display is 1 indexed
+-->
+<ul class="step-display">
+  <li
+    *ngFor="let navStep of Array.from(Array(maxSteps).keys())"
+    [ngClass]="{'activated-step': (navStep + 1)===sectionStep}"
+  >
+    <a [href]="stepToID(navStep)"><span class="step-explainer">STEP</span> {{navStep + 1}}</a>
+  </li>
+</ul>

@@ -1,26 +1,6 @@
-<section *ngIf="shown" id='fourth-step'>
+<article *ngIf="shown" id='fourth-step'>
   <h2 class="main-header text-centered">Encrypted Values</h2>
-  <ul class="step-display">
-    <li class="activated-step">
-      <a href="#first-step"><span class="step-explainer">STEP</span> 1</a>
-    </li>
-    <li class="activated-step">
-      <a href="#second-step"><span class="step-explainer">STEP</span> 2</a>
-    </li>
-    <li class="activated-step">
-      <a href="#third-step"><span class="step-explainer">STEP</span> 3</a>
-    </li>
-    <li class="activated-step">
-      <a href="#fourth-step"><span class="step-explainer">STEP</span> 4</a>
-    </li>
-    <li>
-      <a href="#fifth-step"><span class="step-explainer">STEP</span> 5</a>
-    </li>
-    <li>
-      <a href="#sixth-step"><span class="step-explainer">STEP</span> 6</a>
-    </li>
-  </ul>
-
+  <step-nav [sectionStep]=4></step-nav>
   <p>The following values are now encrypted using the corresponding methods.</p>
   <p>
     <code>H(H(RID))</code>
@@ -46,4 +26,4 @@
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>
-</section>
+</article>
