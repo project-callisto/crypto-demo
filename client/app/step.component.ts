@@ -15,25 +15,25 @@ import * as $ from "jquery";
   selector: "step-root",
   template: `
     <intro-root
-      (advanceStep)="advanceIntro($event)"
+      (advanceStep)="advanceIntro()"
     ></intro-root>
     <first-step
-      (advanceStep)="advanceFirstStep($event)"
+      (advanceStep)="advanceFirstStep()"
     ></first-step>
     <second-step
-      (advanceStep)="advanceSecondStep($event)"
+      (advanceStep)="advanceSecondStep()"
     ></second-step>
     <third-step
-      (advanceStep)="advanceThirdStep($event)"
+      (advanceStep)="advanceThirdStep()"
     ></third-step>
     <fourth-step
-      (advanceStep)="advanceFourthStep($event)"
+      (advanceStep)="advanceFourthStep()"
     ></fourth-step>
     <fifth-step
-      (advanceStep)="advanceFifthStep($event)"
+      (advanceStep)="advanceFifthStep()"
     ></fifth-step>
     <sixth-step
-      (advanceStep)="advanceSixthStep($event)"
+      (advanceStep)="advanceSixthStep()"
     ></sixth-step>
   `,
   providers: [
