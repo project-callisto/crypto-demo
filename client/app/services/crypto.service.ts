@@ -111,15 +111,15 @@ export class CryptoService {
 
   /**
    * Randomizing perp Id
-   * 
+   *
    * @param {string} perpId - inputted perpetrator name
    * @returns {string} randomized perp id
    */
   private randomizePerpId(perpId) {
 
-    const sK = 'Project Callisto Super Secret Key';
-    return sodium.to_base64(sodium.crypto_hash(perpId+sK));
-        
+    const sK = "Project Callisto Super Secret Key";
+    return sodium.to_base64(sodium.crypto_hash(perpId + sK));
+
   }
 
   /**
@@ -254,7 +254,7 @@ export class CryptoService {
       kId: sodium.to_base64(derived.kId),
       record,
       hashedX: hashedUserId,
-      y: derived.slope.times(hashedUserId).plus(bigIntRid),
+      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(2 ** 128).minus(159)),
     };
   }
 
