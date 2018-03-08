@@ -89,13 +89,13 @@ export class StepComponent {
   private advanceFourthStep(): void {
     // matched perpInput, diff username
 
-    var plainText = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
-      const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-      this.crypto.postData(encryptedData);
-      const decryptedData: IDecryptedData = this.crypto.decryptData();
-      this.fifthStep.RID = decryptedData.rid;
-      this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
-     
+    let plainText = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    const decryptedData: IDecryptedData = this.crypto.decryptData();
+    this.fifthStep.RID = decryptedData.rid;
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
+
     // unmatched perpInput
     this.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
     this.submitAndEncrypt(this.perpInput + "1", "Bob");
@@ -146,7 +146,7 @@ export class StepComponent {
     // unmatched perpInput
     encryptedData = this.submitAndEncrypt(this.perpInput + "1", "Bob");
     this.fifthStep.RID4 = encryptedData.hashedRid;
-  
+
     // input is matched, trigger decryption
     const decryptedData: IDecryptedData = this.crypto.decryptData();
     this.fifthStep.decryptedData = decryptedData;
@@ -159,5 +159,5 @@ export class StepComponent {
     this.crypto.postData(encryptedData);
     return encryptedData;
   }
-    
+
 }
