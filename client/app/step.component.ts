@@ -18,7 +18,7 @@ import * as $ from "jquery";
       (advanceStep)="advanceIntro()"
     ></intro-root>
     <first-step
-      (advanceStep)="advanceFirstStep()"
+      (advanceStep)="advanceFirstStep($event)"
     ></first-step>
     <second-step
       (advanceStep)="advanceSecondStep()"
