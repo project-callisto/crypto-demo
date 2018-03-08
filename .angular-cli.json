@@ -13,6 +13,11 @@
       "main": "main.ts"
     }
   ],
+  "test": {
+    "karma": {
+      "config": "./unit-tests/karma.conf.js"
+    }
+  },
   "e2e": {
     "protractor": {
       "config": "./protractor/protractor.conf.js"

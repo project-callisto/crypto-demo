@@ -7,6 +7,10 @@ module.exports = function (config) {
     frameworks: [
       "jasmine",
       "karma-typescript",
+      '@angular/cli',
+    ],
+    plugins: [
+      require('@angular/cli/plugins/karma')
     ],
     files: [
       "client/app/services/crypto.service.ts",
@@ -14,6 +18,9 @@ module.exports = function (config) {
     ],
     preprocessors: {
       "**/*.ts": "karma-typescript",
+    },
+    angularCli: {
+      environment: 'dev'
     },
     karmaTypescriptConfig: {
       tsconfig: "unit-tests/tsconfig.json",
