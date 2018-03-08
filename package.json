@@ -11,9 +11,8 @@
         "clean": "tslint -p . --fix --force",
         "test:unit": "ng test",
         "test:e2e": "ng e2e",
-        "start": "node web-server/server.js",
-        "start:e2e": "PORT=4202 node web-server/server.js",
-        "heroku-postbuild": "webpack --config web-server/webpack.config.js --bail"
+        "start": "ng server",
+        "heroku-postbuild": "webpack --config webpack.config.js --bail"
     },
     "repository": {
         "type": "git",
