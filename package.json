@@ -14,7 +14,7 @@
         "start": "npm run start:dev",
         "stard:dev": "ng server",
         "start:prod": "node server.js",
-        "heroku-postbuild": "ng build --aot -prod --verbose --progress --sourcemaps"
+        "heroku-postbuild": "ng build --aot -prod --progress --sourcemaps"
     },
     "repository": {
         "type": "git",
