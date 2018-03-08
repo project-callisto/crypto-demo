@@ -89,7 +89,7 @@ export class StepComponent {
   private advanceFourthStep(): void {
     // matched perpInput, diff username
 
-    let plainText = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
     this.crypto.postData(encryptedData);
     const decryptedData: IDecryptedData = this.crypto.decryptData();
@@ -123,7 +123,7 @@ export class StepComponent {
   }
 
   private async submitUserEntry(): Promise<void> {
-    const plainText = this.crypto.createDataSubmission(this.perpInput, this.userName);
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName);
     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
     this.crypto.postData(encryptedData);
     this.firstStep.recordKey = plainText.recordKey;
@@ -131,12 +131,11 @@ export class StepComponent {
     this.thirdStep.plainTextData = plainText;
     this.fourthStep.encryptedData = encryptedData;
     this.fifthStep.RID = encryptedData.hashedRid;
-
   }
 
   private async generateGraphData(): Promise<void> {
     // matched perpInput, diff username
-    let encryptedData = this.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+    let encryptedData: IEncryptedData = this.submitAndEncrypt(this.perpInput, this.userName + this.userName);
     this.fifthStep.RID2 = encryptedData.hashedRid;
 
     // unmatched perpInput
@@ -154,7 +153,7 @@ export class StepComponent {
   }
 
   private submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-    const plainText = this.crypto.createDataSubmission(perpInput, userName);
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(perpInput, userName);
     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
     this.crypto.postData(encryptedData);
     return encryptedData;
