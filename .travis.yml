@@ -17,7 +17,7 @@ before_script:
 - npm run start:e2e &
 script:
 - bin/json-lint.sh
-- npm run test:unit
+- npm run test:unit -- --single-run
 # - npm run test:e2e
 notifications:
   email: false
