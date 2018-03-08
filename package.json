@@ -11,7 +11,10 @@
         "clean": "tslint -p . --fix --force",
         "test:unit": "ng test",
         "test:e2e": "ng e2e",
-        "start": "ng server"
+        "start": "npm run start:dev",
+        "stard:dev": "ng server",
+        "start:prod": "node server.js",
+        "heroku-postbuild": "ng build --aot -prod"
     },
     "repository": {
         "type": "git",
