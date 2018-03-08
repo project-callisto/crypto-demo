@@ -6,10 +6,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const DEFAULT_PORT = 8080
 
-// TODO: change this 
-const sK = 'Project Callisto Super Secret Key';
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -31,20 +27,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 var server = app.listen(process.env.PORT || DEFAULT_PORT, function() {
   console.log('Listening on port %d', server.address().port)
-});
-
-// KEY SERVER
-app.post('/postPerpId', function(req,res) {
-
-  let perpId = req.body.perpId;
-  let sodium_promise = sodium.ready;
-  
-  sodium_promise.then(function() {
-    var rid = sodium.to_base64(sodium.crypto_hash(perpId+sK));
-
-    res.send({rid});
-    console.log('sent rid: ', rid);
-  });
 });
 
 

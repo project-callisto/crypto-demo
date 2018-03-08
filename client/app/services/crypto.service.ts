@@ -110,33 +110,33 @@ export class CryptoService {
   }
 
   /**
+   * Randomizing perp Id
+   * 
+   * @param {string} perpId - inputted perpetrator name
+   * @returns {string} randomized perp id
+   */
+  private randomizePerpId(perpId) {
+
+    const sK = 'Project Callisto Super Secret Key';
+    return sodium.to_base64(sodium.crypto_hash(perpId+sK));
+        
+  }
+
+  /**
    * Function for taking user inputs and returning values to be encrypted
    * @param {string} perpId - inputted perpetrator name
    * @param {string} userName - inputted user name
-   * @returns {Promise<{}>} promise resolving a IPlainTextData object
+   * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public createDataSubmission(perpId: string, userName: string): Promise<{}> {
+  public createDataSubmission(perpId: string, userName: string): IPlainTextData {
 
     const record: IRecord = {
       perpId,
       userName,
     };
 
-    const cryptoService = this;
-    const dataPromise = new Promise(function(resolve, reject) {
-      $.post("/postPerpId", { perpId }, (data, status) => {
-        if (status === "success") {
-
-          const plainTextData = cryptoService.generateDataValues(data.rid, userName, record);
-          resolve(plainTextData);
-
-        } else {
-          reject(Error("Post request failed"));
-        }
-      });
-    });
-
-    return dataPromise;
+    const rid = this.randomizePerpId(perpId);
+    return this.generateDataValues(rid, userName, record);
   }
 
   /**
