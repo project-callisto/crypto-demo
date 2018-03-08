@@ -34,6 +34,7 @@
         "@types/jquery": "^3.3.0",
         "@types/node": "^9.4.5",
         "@types/text-encoding": "0.0.32",
+        "@types/jasmine": "^2.8.6",
         "big-integer": "^1.6.26",
         "bigint-typescript-definitions": "^5.5.3-0",
         "core-js": "^2.5.3",
@@ -50,7 +51,6 @@
         "zone.js": "^0.8.20"
     },
     "devDependencies": {
-        "@types/jasmine": "^2.8.6",
         "jasmine": "^3.0.0",
         "jasmine-core": "^2.99.1",
         "jasmine-spec-reporter": "^4.2.1",
