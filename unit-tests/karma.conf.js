@@ -10,7 +10,9 @@ module.exports = function (config) {
       '@angular/cli',
     ],
     plugins: [
-      require('@angular/cli/plugins/karma')
+      require('karma-jasmine'),
+      require('karma-typescript'),
+      require('@angular/cli/plugins/karma'),
     ],
     files: [
       "client/app/services/crypto.service.ts",
