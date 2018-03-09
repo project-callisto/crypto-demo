@@ -5,26 +5,31 @@
   },
   "apps": [
     {
-      "test": "./../unit-tests/client/crypto.spec.ts",
       "root": "client",
       "outDir": "dist",
-      "index": "index.html",
-      "polyfills": "polyfills.ts",
-      "tsconfig": "../tsconfig.json",
-      "main": "main.ts",
       "assets": [
         "assets"
-      ]
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "./../unit-tests/client/crypto.spec.ts",
+      "tsconfig": "../tsconfig.json"
     }
   ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor/protractor.conf.js"
+    }
+  },
   "test": {
     "karma": {
       "config": "./unit-tests/karma.conf.js"
     }
   },
-  "e2e": {
-    "protractor": {
-      "config": "./protractor/protractor.conf.js"
+  "defaults": {
+    "serve": {
+      "port": 8080
     }
   }
 }
