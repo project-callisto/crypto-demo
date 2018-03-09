@@ -1,45 +1,37 @@
 @import "_meta";
-
-.header-logo {
-  width: 100px;
-  height: 100px;
-  display: block;
-  margin: 0 auto 20px;
-}
-
 .starter-card {
-  color: $palette-white;
-  background-color: $color-header-background;
-  background-image: url("/../assets/headerimage.png");
-  background-size: cover;
-  padding: 20px 5%;
+    color: $palette-white;
+    background-color: $color-header-background;
+    background-image: url("/../assets/headerimage.png");
+    background-size: cover;
+    padding: 20px 5%;
 }
 
 a {
-  color: $palette-white;
-  font-weight: bold;
+    color: $palette-white;
+    font-weight: bold;
 }
 
 p {
-  line-height: 1.5rem;
+    line-height: 1.5rem;
 }
 
 .starter-header-1 {
-  font-family: $font-headers;
-  font-size: 2.2rem;
-  letter-spacing: 3px;
-  font-weight: 900;
+    font-family: $font-headers;
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    font-weight: 900;
 }
 
 .starter-header-2 {
-  padding-top: 14%;
-  padding-bottom: 20px;
-  margin: 0;
-  font-weight: 900;
+    padding-top: 14%;
+    padding-bottom: 20px;
+    margin: 0;
+    font-weight: 900;
 }
 
 .starter-header-3 {
-  font-family: $font-body;
-  padding-bottom: 16%;
-  letter-spacing: 2px;
+    font-family: $font-body;
+    padding-bottom: 16%;
+    letter-spacing: 2px;
 }

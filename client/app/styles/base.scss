@@ -1,4 +1,15 @@
 @import "_meta";
+.callisto-logo {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.buffer {
+    padding: 30px 30px 60px;
+}
+
 .main-content:host,
 * {
     font-family: $font-body;

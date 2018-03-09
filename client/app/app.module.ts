@@ -15,6 +15,7 @@ import { CryptoService } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
 import { SummaryStepComponent } from "./summary-step.component";
+import { LastStepComponent } from "./last-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 @NgModule({
@@ -33,6 +34,7 @@ import { ThirdStepComponent } from "./third-step.component";
     IntroComponent,
     SummaryStepComponent,
     NavComponent,
+    LastStepComponent,
   ],
   imports: [
     BrowserModule,
