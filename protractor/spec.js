@@ -24,8 +24,8 @@ describe('Valkyrie Demo', () => {
   })
 
   function article(index) {
-    const element = $(`step-root > *:nth-child(${index}) article`);
-    element.next = () => { element.$('button:contains("next")').click(); }
+    const element = $(`step-root *:nth-child(${index}) article`);
+    element.next = () => { element.$('.advance-button').click(); }
     return element
   }
 
