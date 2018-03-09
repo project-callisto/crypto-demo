@@ -15,11 +15,18 @@ describe('Valkyrie Demo', () => {
 
   it('advances to step 1', () => {
     // there's only 1 article visible on page start
-    expect($('article:nth-child(1)').isPresent()).toBeFalsy();
+    expect(article(1).isPresent()).toBeTruthy();
+    expect(article(2).isPresent()).toBeFalsy();
     // we click the "next" button in the 1st article
-    $('article:nth-child(0) button:contains("next")').click()
+    article(1).next();
     // and now a second article is visible
-    expect($('article:nth-child(1)').isPresent()).toBeTruthy();
+    expect(article(2).isPresent()).toBeTruthy();
   })
+
+  function article(index) {
+    const element = $(`step-root *:nth-child(${index}) article`);
+    element.next = () => { element.$('.advance-button').click(); }
+    return element
+  }
 
 });
