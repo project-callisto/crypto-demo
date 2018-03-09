@@ -20,8 +20,16 @@ npm install
 NODE_ENV=dev DEBUG=* npm start
 ```
 
-## running local e2e tests
+## running a mock production server locally
 
 ```
-npm run test:e2e
+npm run heroku-postbuild
+npm run start:prod
+```
+
+## running the tests
+
+```
+npm run test:unit -- --single-run
+npm run test:e2e -- --single-run
 ```
