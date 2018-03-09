@@ -1,36 +1,45 @@
 @import "_meta";
-
-.main-content:host, * {
-  font-family: $font-body;
+.main-content:host,
+* {
+    font-family: $font-body;
 }
 
 .text-centered {
-  text-align: center;
+    text-align: center;
 }
 
 h1,
 h2 {
-  font-family: $font-headers;
-  font-size: 3rem;
+    font-family: $font-headers;
+    font-size: 3rem;
 }
 
 .align-right-on-large {
-  @media (min-width: $breakpoint-sm) {
-    text-align: right;
-  }
+    @media (min-width: $breakpoint-sm) {
+        text-align: right;
+    }
 }
 
 .btn {
-  color: $palette-white;
-  background-color: $palette-dark-blue;
-  letter-spacing: 1px;
-  padding: 15px 10px;
-  border: 0;
-
-  &:hover,
-  &:active,
-  &:focus {
     color: $palette-white;
-    background-color: $color-button-hover-background;
-  }
+    background-color: $palette-dark-blue;
+    letter-spacing: 1px;
+    padding: 15px 10px;
+    border: 0;
+    &:hover,
+    &:active,
+    &:focus {
+        color: $palette-white;
+        background-color: $color-button-hover-background;
+    }
+}
+
+@media (min-width: $breakpoint-lg) {
+    .float-left-on-large {
+        float: left;
+    }
+    .float-right-on-large {
+        float: right;
+        text-align: right;
+    }
 }

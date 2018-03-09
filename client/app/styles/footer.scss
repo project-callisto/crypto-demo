@@ -1,0 +1,70 @@
+@import "_meta";
+.svg-inline--fa {
+    color: $palette-dark-blue;
+    font-size: 2rem;
+}
+
+footer {
+    padding: 20px 70px;
+}
+
+.top-nav {
+    margin: 20px 0 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.bottom-nav {
+    padding: 40px 0 0;
+    margin: 0 0 40px;
+    border-top: 1px solid #A4B3B7;
+}
+
+.callisto-logo {
+    height: 45px;
+    width: 45px;
+    position: absolute;
+    left: 65px;
+}
+
+.footer-links {
+    font-family: $font-body;
+    margin: 0;
+    padding: 0 0 0 50px;
+    a {
+        text-align: left;
+        padding: 0px 17px;
+        font-weight: 600;
+        color: black;
+    }
+    li {
+        float: none;
+        display: inline-block;
+        padding: 10px 5px;
+        text-align: center;
+    }
+}
+
+@media (max-width: $breakpoint-sm) {
+    footer {
+        padding: 0 20px;
+    }
+    .top-nav {
+        display: block;
+    }
+    .callisto-logo {
+        display: none;
+    }
+    .footer-links {
+        padding: 0;
+        float: none;
+        li {
+            text-align: left;
+            display: block;
+            padding-left: 0;
+        }
+    }
+    .footer-icons {
+        text-align: left;
+    }
+}
