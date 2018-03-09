@@ -18,13 +18,15 @@ describe('Valkyrie Demo', () => {
     expect(article(1).isPresent()).toBeTruthy();
     expect(article(2).isPresent()).toBeFalsy();
     // we click the "next" button in the 1st article
-    article(1).$('button:contains("next")').click();
+    article(1).next();
     // and now a second article is visible
     expect(article(2).isPresent()).toBeTruthy();
   })
 
   function article(index) {
-    return $(`step-root > *:nth-child(0n+${index})`)
+    this = $(`step-root > *:nth-child(${index}) article`);
+    this.next = () => { this.$('button:contains("next")').click(); }
+    return this
   }
 
 });
