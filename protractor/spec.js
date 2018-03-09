@@ -12,9 +12,12 @@ describe("Valkyrie Demo", () => {
     expect(browser.getTitle()).toEqual("Valkyrie Demo");
   });
 
+  it("displays article 1", () => {
+    expect(article(1).isPresent()).toBeTruthy();
+  });
+
   it("advances to article 2", () => {
     // there's only 1 article visible on page start
-    expect(article(1).isPresent()).toBeTruthy();
     expect(article(2).isPresent()).toBeFalsy();
     // we click the "next" button in the 1st article
     article(1).next();
@@ -27,6 +30,44 @@ describe("Valkyrie Demo", () => {
     article(1).next();
     article(2).next();
     expect(article(3).isPresent()).toBeTruthy();
+  });
+
+  it("advances to article 4", () => {
+    expect(article(4).isPresent()).toBeFalsy();
+    article(1).next();
+    article(2).next();
+    article(3).next();
+    expect(article(4).isPresent()).toBeTruthy();
+  });
+
+  it("advances to article 5", () => {
+    expect(article(5).isPresent()).toBeFalsy();
+    article(1).next();
+    article(2).next();
+    article(3).next();
+    article(4).next();
+    expect(article(5).isPresent()).toBeTruthy();
+  });
+
+  it("advances to article 6", () => {
+    expect(article(6).isPresent()).toBeFalsy();
+    article(1).next();
+    article(2).next();
+    article(3).next();
+    article(4).next();
+    article(5).next();
+    expect(article(6).isPresent()).toBeTruthy();
+  });
+
+  it("advances to article 7", () => {
+    expect(article(7).isPresent()).toBeFalsy();
+    article(1).next();
+    article(2).next();
+    article(3).next();
+    article(4).next();
+    article(5).next();
+    article(6).next();
+    expect(article(7).isPresent()).toBeTruthy();
   });
 
   function article(index) {
