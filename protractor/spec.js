@@ -17,7 +17,7 @@ describe('Valkyrie Demo', () => {
     // there's only 1 article visible on page start
     expect($('article:nth-child(1)').isPresent()).toBeFalsy();
     // we click the "next" button in the 1st article
-    $('article:nth-child(0) button:contains("next")').click()
+    $('article:nth-child(0) button:contains("next")').click();
     // and now a second article is visible
     expect($('article:nth-child(1)').isPresent()).toBeTruthy();
   })
