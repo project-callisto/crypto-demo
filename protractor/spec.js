@@ -70,9 +70,8 @@ describe("Valkyrie Demo", () => {
     expect(article(7).isPresent()).toBeTruthy();
   });
 
-  it("advances to article 8 (the last one)", () => {
+  it("advances to article 8", () => {
     expect(article(8).isPresent()).toBeFalsy();
-    expect($('#last-step article').isPresent()).toBeFalsy();
     article(1).next();
     article(2).next();
     article(3).next();
@@ -81,7 +80,18 @@ describe("Valkyrie Demo", () => {
     article(6).next();
     article(7).next();
     expect(article(8).isPresent()).toBeTruthy();
-    expect($('#last-step article').isPresent()).toBeTruthy();
+  });
+
+  it("advances to last article", () => {
+    expect($('#last-step').isPresent()).toBeFalsy();
+    article(1).next();
+    article(2).next();
+    article(3).next();
+    article(4).next();
+    article(5).next();
+    article(6).next();
+    article(7).next();
+    expect($('#last-step').isPresent()).toBeTruthy();
   });
 
   function article(index) {
