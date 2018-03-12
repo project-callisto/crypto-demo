@@ -18,7 +18,7 @@ script:
 - bin/json-lint.sh
 - npm run heroku-postbuild
 - npm run test:unit -- --single-run
-# - npm run test:e2e
+- npm run test:e2e
 notifications:
   email: false
   slack:
