@@ -8,14 +8,11 @@ plugins:
   tslint:
     enabled: true
     config: tslint.json
-  scss-lint:
-    enabled: true
 ratings:
   paths:
   - "**.js"
   - "**.ts"
   - "**.css"
-  - "**.scss"
 exclude_paths:
 - "unit-tests/"
 - "protractor/"

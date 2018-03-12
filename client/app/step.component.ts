@@ -3,10 +3,10 @@ import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent, IUserInput } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { IntroComponent } from "./intro.component";
+import { LastStepComponent } from "./last-step.component";
 import { SecondStepComponent } from "./second-step.component";
 import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
-import { SummaryStepComponent } from "./summary-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 import * as $ from "jquery";
@@ -35,7 +35,8 @@ import * as $ from "jquery";
     <sixth-step
       (advanceStep)="advanceSixthStep()"
     ></sixth-step>
-  `,
+    <last-step></last-step>
+    `,
   providers: [
     CryptoService,
   ],
@@ -51,7 +52,7 @@ export class StepComponent {
   @ViewChild(FourthStepComponent) private fourthStep: FourthStepComponent;
   @ViewChild(FifthStepComponent) private fifthStep: FifthStepComponent;
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
-  @ViewChild(SummaryStepComponent) private summaryStep: SummaryStepComponent;
+  @ViewChild(LastStepComponent) private lastStep: LastStepComponent;
 
   constructor(
     public crypto: CryptoService,
@@ -112,8 +113,8 @@ export class StepComponent {
   }
 
   public advanceSixthStep(): void {
-    this.summaryStep.shown = true;
-    this.scrollTo("summary-step");
+    this.lastStep.shown = true;
+    this.scrollTo("last-step");
   }
 
   private scrollTo(element: string): void {

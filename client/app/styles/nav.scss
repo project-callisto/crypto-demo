@@ -8,32 +8,13 @@
   padding: 0;
 }
 
-a {
+.btn {
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   padding: 10px;
-  color: $palette-dark-blue;
-  background-color: $palette-white;
   font-size: 0.85rem;
   letter-spacing: 1px;
-  border: 1px solid $palette-dark-blue;
-}
-
-.activated-step a {
-  color: $palette-white;
-  background-color: $palette-dark-blue;
-}
-
-.activated-step a:hover,
-.activated-step a:active,
-.activated-step a:focus,
-a:hover,
-a:active,
-a:focus {
-  color: $palette-dark-blue;
-  background-color: $color-step-hover-background;
-  border-color: $color-step-hover-border;
 }
 
 li {
@@ -44,9 +25,36 @@ li:not(:last-child) {
   margin-right: 20px;
 }
 
+@media (max-width: $breakpoint-md) {
 
-.step-explainer {
-  @media (max-width: $breakpoint-md) {
+  .btn {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .step-explainer {
     display: none;
   }
+
+}
+
+@media (max-width: $breakpoint-sm) {
+
+  li.activated-step {
+    width: 2.6rem;
+  }
+
+  li:not(.activated-step) {
+    margin-top: 10px;
+  }
+
+  li:not(:last-child) {
+    margin-right: 5px;
+  }
+
+  .btn:not(.activated-step) {
+    font-size: 0;
+    padding: 10px;
+  }
+
 }
