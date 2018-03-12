@@ -7,8 +7,12 @@
   margin: 0 auto 20px;
 }
 
-.buffer {
-  padding: 30px 30px 60px;
+.bold {
+  font-weight: bolder;
+}
+
+.block {
+  display: block;
 }
 
 .main-content:host,
@@ -32,17 +36,33 @@ h2 {
   }
 }
 
+a.btn {
+  text-decoration: none;
+}
+
 .btn {
   color: $palette-white;
   background-color: $palette-dark-blue;
   letter-spacing: 1px;
   padding: 15px 10px;
-  border: 0;
+  border: 2px solid $palette-dark-blue;
   &:hover,
   &:active,
   &:focus {
     color: $palette-white;
-    background-color: $color-button-hover-background;
+    background-color: $palette-dark-gray;
+  }
+}
+
+.white-btn {
+  background-color: white;
+  border: 2px solid $palette-dark-gray;
+  color: $palette-dark-gray;
+
+  &:hover,
+  &:active,
+  &:focus {
+    border: 2px solid $palette-dark-blue;
   }
 }
 

@@ -7,6 +7,7 @@ $font-headers: "Playfair Display", serif;
 // general purpose palettes
 $palette-white: #fff;
 $palette-dark-blue: #385c6c;
+$palette-dark-gray: #323232;
 // specific purpose colors
 $color-step-headers: #4f4f4f;
 $color-paragraph-text: gray(79);
@@ -17,7 +18,6 @@ $color-code-border: gray(204);
 $color-text-faded: gray(119);
 $color-step-hover-background: gray(200);
 $color-step-hover-border: gray(220);
-$color-button-hover-background: gray(50);
 $breakpoint-sm: 768px;
 $breakpoint-md: 992px;
 $breakpoint-lg: 1200px;
