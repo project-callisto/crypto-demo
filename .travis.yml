@@ -9,7 +9,7 @@ language: node_js
 node_js:
   - "node"
 install:
-- npm ci
+- npm install
 - npx webdriver-manager update
 before_script:
 - export DISPLAY=:99.0
