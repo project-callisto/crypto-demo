@@ -94,7 +94,6 @@ export class StepComponent {
     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
     this.crypto.postData(encryptedData);
     const decryptedData: IDecryptedData = this.crypto.decryptData();
-    console.log(decryptedData);
     this.fifthStep.RID = decryptedData.rid;
     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
 
