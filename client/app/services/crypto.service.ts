@@ -116,6 +116,27 @@ export class CryptoService {
   }
 
   /**
+   * Submits inputted information to be processed and encrypted
+   * @param perpInput - inputted perpetrator name
+   * @param userName - inputted user name
+   * @returns {IEncryptedData} 
+   */
+  public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
+    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
+    const encryptedData: IEncryptedData = this.encryptData(plainText);
+    this.postData(encryptedData);
+    return encryptedData;
+  }
+
+  /** 
+   * Returns all data submissions
+   * @returns {Array<IEncryptedData}
+  */
+  public retrieveData(): Array<IEncryptedData> {
+    return this.dataSubmissions;
+  }
+
+  /**
    * Function for taking user inputs and returning values to be encrypted
    * @param {string} perpId - inputted perpetrator name
    * @param {string} userName - inputted user name
