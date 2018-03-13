@@ -15,6 +15,27 @@
   display: block;
 }
 
+.sr-only-focusable {
+  position: absolute;
+  clip: rect(0,0,0,0);
+
+  &:hover,
+  &:active,
+  &:focus {
+    position: static;
+    clip: auto;
+  }
+}
+
+.skip-to-main {
+  font-size: 2rem;
+  text-align: center;
+  padding: 40px;
+  display: block;
+  color: white;
+  background-color: $palette-dark-gray;
+}
+
 .main-content:host,
 * {
   font-family: $font-body;
