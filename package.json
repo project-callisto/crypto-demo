@@ -14,7 +14,8 @@
         "start": "npm run start:dev",
         "start:dev": "ng server",
         "start:prod": "node server.js",
-        "heroku-postbuild": "ng build --aot -prod --progress --sourcemaps"
+        "heroku-postbuild": "ng build --aot -prod --progress --sourcemaps",
+        "storybook": "start-storybook -p 9001 -c storybook"
     },
     "repository": {
         "type": "git",
@@ -57,6 +58,9 @@
         "zone.js": "^0.8.20"
     },
     "devDependencies": {
+        "@angular/forms": "^5.2.8",
+        "@storybook/angular": "^3.3.15",
+        "babel-core": "^6.26.0",
         "jasmine": "^3.0.0",
         "jasmine-core": "^2.99.1",
         "jasmine-spec-reporter": "^4.2.1",

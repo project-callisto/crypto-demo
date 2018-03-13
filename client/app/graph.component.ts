@@ -24,13 +24,13 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
   private yScale: any;
 
   public ngAfterViewInit(): void {
-    // this.generateGraph();
+    this.generateGraph();
   }
 
   public ngAfterContentChecked(): void {
-    // if (this.decryptedData) {
-    //   this.populateGraph();
-    // }
+    if (this.decryptedData) {
+      this.populateGraph();
+    }
   }
 
   private generateGraph(): void {
