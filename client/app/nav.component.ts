@@ -24,6 +24,13 @@ $.widget("custom.menu", $.ui.menu, {
         this._super(event);
     }
   },
+  // change location on selection
+  select(event: any): void {
+    this._super(event);
+    const directEventHref: string = $(event.target).attr("href");
+    const descendentEventHref: string = $(`#${$(event.target).attr("aria-activedescendant")}`).attr("href");
+    window.location.href = directEventHref || descendentEventHref || window.location.href;
+  },
 });
 
 @Component({
