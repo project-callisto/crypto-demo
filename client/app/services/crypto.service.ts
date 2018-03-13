@@ -116,6 +116,35 @@ export class CryptoService {
   }
 
   /**
+   * Submits inputted information to be processed and encrypted
+   * @param perpInput - inputted perpetrator name
+   * @param userName - inputted user name
+   * @returns {IEncryptedData}
+   */
+  public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
+    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
+    const encryptedData: IEncryptedData = this.encryptData(plainText);
+    this.postData(encryptedData);
+    return encryptedData;
+  }
+
+  /**
+   * Returns all coordinates for displaying on graph
+   * @returns {Array<ICoord>}
+   */
+  public retrieveCoords(): ICoord[] {
+    const coords: ICoord[] = [];
+    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
+
+    for (let i: number = 0; i < this.dataSubmissions.length; i++) {
+      coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
+    }
+
+    return coords;
+
+  }
+
+  /**
    * Function for taking user inputs and returning values to be encrypted
    * @param {string} perpId - inputted perpetrator name
    * @param {string} userName - inputted user name
@@ -325,7 +354,7 @@ export class CryptoService {
    */
   private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (let i: number = 0; i < 2; i++) {
+    for (var i in data) {
       const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array
