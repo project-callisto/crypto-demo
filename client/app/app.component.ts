@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { AfterViewInit, Component } from "@angular/core";
 
 @Component({
   selector: "app-root",
@@ -12,5 +12,12 @@ import { Component } from "@angular/core";
     "./styles/base.scss",
   ],
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
+
+  public ngAfterViewInit(): void {
+    window.onbeforeunload = (): void => {
+      window.scrollTo(0, 0);
+    };
+    window.location.href = "#";
+  }
 }
