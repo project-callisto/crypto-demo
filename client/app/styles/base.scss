@@ -1,6 +1,43 @@
 @import "_meta";
 
-.main-content:host, * {
+.callisto-logo {
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.bold {
+  font-weight: bolder;
+}
+
+.block {
+  display: block;
+}
+
+.sr-only-focusable {
+  position: absolute;
+  clip: rect(0,0,0,0);
+
+  &:hover,
+  &:active,
+  &:focus {
+    position: static;
+    clip: auto;
+  }
+}
+
+.skip-to-main {
+  font-size: 2rem;
+  text-align: center;
+  padding: 40px;
+  display: block;
+  color: white;
+  background-color: $palette-dark-gray;
+}
+
+.main-content:host,
+* {
   font-family: $font-body;
 }
 
@@ -20,17 +57,45 @@ h2 {
   }
 }
 
+a.btn {
+  text-decoration: none;
+}
+
 .btn {
   color: $palette-white;
   background-color: $palette-dark-blue;
   letter-spacing: 1px;
   padding: 15px 10px;
-  border: 0;
+  border: 2px solid $palette-dark-blue;
 
+  &.ui-state-active,
   &:hover,
   &:active,
   &:focus {
     color: $palette-white;
-    background-color: $color-button-hover-background;
+    background-color: $palette-dark-gray;
+  }
+}
+
+.white-btn {
+  background-color: white;
+  border: 2px solid $palette-dark-gray;
+  color: $palette-dark-gray;
+
+  &.ui-state-active,
+  &:hover,
+  &:active,
+  &:focus {
+    border: 2px solid $palette-dark-blue;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .float-left-on-large {
+    float: left;
+  }
+  .float-right-on-large {
+    float: right;
+    text-align: right;
   }
 }

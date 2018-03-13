@@ -3,21 +3,16 @@ languages:
   TypeScript: true
   JavaScript: true
 plugins:
-  nodesecurity:
-    enabled: true
   eslint:
     enabled: true
   tslint:
     enabled: true
     config: tslint.json
-  scss-lint:
-    enabled: true
 ratings:
   paths:
   - "**.js"
   - "**.ts"
   - "**.css"
-  - "**.scss"
 exclude_paths:
 - "unit-tests/"
 - "protractor/"

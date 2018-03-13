@@ -21,7 +21,7 @@ export interface IEncryptedData {
   readonly userPubKey: string;
   readonly cY: string;
   readonly cX: string;
-  readonly kId: string; // FOR NOW. will need to hash this later
+  readonly kId: string;
 }
 
 export interface IPlainTextData {
@@ -88,7 +88,6 @@ export class CryptoService {
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
   private PRIME: string = "340282366920938463463374607431768211297";
-  // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
   /**
    * Main function for encrypting values
