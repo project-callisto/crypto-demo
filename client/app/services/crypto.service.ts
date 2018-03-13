@@ -354,7 +354,7 @@ export class CryptoService {
    */
   private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (let i: number = 0; i < data.length; i++) {
+    for (var i in data) {
       const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array
