@@ -4,8 +4,8 @@ import { GraphComponent } from "./../../client/app/graph.component";
 
 /* tslint:disable */
 
-storiesOf("My Button", module)
-  .add("with some emoji", () => ({
+storiesOf("Graph Component", module)
+  .add("[ old ] basic data case", () => ({
     component: GraphComponent,
     props: {
       decryptedData: {
