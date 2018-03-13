@@ -153,6 +153,4 @@ export class StepComponent {
     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
   }
 
-
-
 }

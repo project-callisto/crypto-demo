@@ -119,7 +119,7 @@ export class CryptoService {
    * Submits inputted information to be processed and encrypted
    * @param perpInput - inputted perpetrator name
    * @param userName - inputted user name
-   * @returns {IEncryptedData} 
+   * @returns {IEncryptedData}
    */
   public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
     const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
@@ -128,13 +128,13 @@ export class CryptoService {
     return encryptedData;
   }
 
-  /** 
+  /**
    * Returns all coordinates for displaying on graph
    * @returns {Array<ICoord>}
-  */
-  public retrieveCoords(): Array<ICoord> {
-    let coords: Array<ICoord> = [];
-    const yValues: Array<bigInt.BigInteger> = this.decryptSecretValues(this.dataSubmissions); 
+   */
+  public retrieveCoords(): ICoord[] {
+    const coords: ICoord[] = [];
+    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
 
     for (let i: number = 0; i < this.dataSubmissions.length; i++) {
       coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
