@@ -125,15 +125,28 @@ export class CryptoService {
     const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
     const encryptedData: IEncryptedData = this.encryptData(plainText);
     this.postData(encryptedData);
+    // this.retrieveData();
     return encryptedData;
   }
 
   /** 
-   * Returns all data submissions
-   * @returns {Array<IEncryptedData}
+   * Returns all coordinates for displaying on graph
+   * @returns {Array<ICoord>}
   */
-  public retrieveData(): Array<IEncryptedData> {
-    return this.dataSubmissions;
+  public retrieveCoords(): Array<ICoord> {
+    let coords: Array<ICoord> = [];
+    const yValues = this.decryptSecretValues(this.dataSubmissions); 
+
+    for (let i: number = 0; i < this.dataSubmissions.length; i++) {
+      coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
+    }
+
+
+    return coords;
+    // for (var d in this.dataSubmissions) {
+    //   console.log(this.dataSubmissions[d]); 
+    // }
+    // return this.dataSubmissions;
   }
 
   /**
@@ -346,7 +359,7 @@ export class CryptoService {
    */
   private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (let i: number = 0; i < 2; i++) {
+    for (let i: number = data.length; i < 2; i++) {
       const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array
