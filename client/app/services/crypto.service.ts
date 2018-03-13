@@ -87,6 +87,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
+  private PRIME: string = "340282366920938463463374607431768211297";
   // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
 
   /**
@@ -180,15 +181,10 @@ export class CryptoService {
    * @returns {string} randomized perp id
    */
   private randomizePerpId(perpId: string): string {
-<<<<<<< HEAD
 
     const sK: string = "Project Callisto Super Secret Key";
     return sodium.to_base64(sodium.crypto_hash(perpId + sK));
 
-=======
-    const sK: string = "Project Callisto Super Secret Key";
-    return sodium.to_base64(sodium.crypto_hash(perpId + sK));
->>>>>>> ba0858b2e9571e699ac8a754a34a985373bb3a18
   }
 
   /**
@@ -253,8 +249,8 @@ export class CryptoService {
    * @returns {IPlainTextData} all values needed to be encrypted
    */
   private generateDataValues(rid: string, userId: string, record: IRecord): IPlainTextData {
-    const prgRid: string = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
 
+    const prgRid: string = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
     const derived: IRIDComponents = this.deriveFromRid(prgRid);
     const hashedUserId: bigInt.BigInteger = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
     const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
@@ -266,7 +262,7 @@ export class CryptoService {
       kId: sodium.to_base64(derived.kId),
       record,
       hashedX: hashedUserId,
-      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(2 ** 128).minus(159)),
+      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(this.PRIME)),
     };
   }
 
