@@ -15,9 +15,11 @@ import { AfterViewInit, Component } from "@angular/core";
 export class AppComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
+    // restart the page at the top
     window.onbeforeunload = (): void => {
       window.scrollTo(0, 0);
     };
+    // clear any navigation hrefs
     window.location.href = "#";
   }
 }
