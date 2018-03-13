@@ -15,6 +15,27 @@
   display: block;
 }
 
+.sr-only-focusable {
+  position: absolute;
+  clip: rect(0,0,0,0);
+
+  &:hover,
+  &:active,
+  &:focus {
+    position: static;
+    clip: auto;
+  }
+}
+
+.skip-to-main {
+  font-size: 2rem;
+  text-align: center;
+  padding: 40px;
+  display: block;
+  color: white;
+  background-color: $palette-dark-gray;
+}
+
 .main-content:host,
 * {
   font-family: $font-body;
@@ -46,6 +67,8 @@ a.btn {
   letter-spacing: 1px;
   padding: 15px 10px;
   border: 2px solid $palette-dark-blue;
+
+  &.ui-state-active,
   &:hover,
   &:active,
   &:focus {
@@ -59,6 +82,7 @@ a.btn {
   border: 2px solid $palette-dark-gray;
   color: $palette-dark-gray;
 
+  &.ui-state-active,
   &:hover,
   &:active,
   &:focus {

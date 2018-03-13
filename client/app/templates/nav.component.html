@@ -10,8 +10,8 @@
     [ngClass]="{'activated-step': (navStep + 1)===sectionStep}"
   >
     <a
-      [href]="stepToID(navStep)"
       class="btn"
+      [href]="stepToID(navStep)"
       [ngClass]="{'white-btn activated-step': (navStep + 1)===sectionStep}"
     >
       <span class="step-explainer">STEP</span> {{navStep + 1}}
