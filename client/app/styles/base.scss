@@ -46,6 +46,8 @@ a.btn {
   letter-spacing: 1px;
   padding: 15px 10px;
   border: 2px solid $palette-dark-blue;
+
+  &.ui-state-active,
   &:hover,
   &:active,
   &:focus {
@@ -59,6 +61,7 @@ a.btn {
   border: 2px solid $palette-dark-gray;
   color: $palette-dark-gray;
 
+  &.ui-state-active,
   &:hover,
   &:active,
   &:focus {
