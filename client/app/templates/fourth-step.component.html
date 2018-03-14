@@ -7,19 +7,19 @@
     <code class="calc-display-value">{{ encryptedData.hashedRid }}</code>
   </p>
   <p>
-    <code>E(pk_OC, x)</code>
+    <code>E(pk<sub>OC</sub>, x)</code>
     <code class="calc-display-value">{{ encryptedData.cX }}</code>
   </p>
   <p>
-    <code>E(pk_OC, y)</code>
+    <code>E(pk<sub>OC</sub>, y)</code>
     <code class="calc-display-value">{{ encryptedData.cY }}</code>
   </p>
   <p>
-    <code>E_GCM(k_record, record)</code>
+    <code>E<sub>GCM</sub>(k<sub>record</sub>, record)</code>
     <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code>
   </p>
   <p>
-    <code>E(pk_OC, E_GCM(k_ID, k_record))</code>
+    <code>E(pk<sub>OC</sub>, E<sub>GCM</sub>(k<sub>ID</sub>, k<sub>record</sub>))</code>
     <code class="calc-display-value">{{ encryptedData.encryptedRecordKey }}</code>
   </p>
 

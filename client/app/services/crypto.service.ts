@@ -21,11 +21,12 @@ export interface IEncryptedData {
   readonly userPubKey: string;
   readonly cY: string;
   readonly cX: string;
-  readonly kId: string; // FOR NOW. will need to hash this later
+  readonly kId: string;
 }
 
 export interface IPlainTextData {
   readonly rid: bigInt.BigInteger;
+  readonly hRid: bigInt.BigInteger;
   readonly slope: bigInt.BigInteger;
   readonly kId: string;
   readonly record: IRecord;
@@ -87,7 +88,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  // private PRIME = ((2 ** 128) - 157); // TODO: use big num library
+  private PRIME: string = "340282366920938463463374607431768211297";
 
   /**
    * Main function for encrypting values
@@ -97,9 +98,9 @@ export class CryptoService {
   public encryptData(plainText: IPlainTextData): IEncryptedData {
 
     const encryptedRecord: string = this.symmetricEncrypt(sodium.from_base64(plainText.recordKey),
-      JSON.stringify(plainText.record));
+                                                          JSON.stringify(plainText.record));
     const encryptedRecordKey: string = this.symmetricEncrypt(sodium.from_base64(plainText.kId),
-      plainText.recordKey);
+                                                            plainText.recordKey);
 
     // base64 encoding
     const cY: string = this.encryptSecretValue(plainText.y);
@@ -209,8 +210,10 @@ export class CryptoService {
    * @returns {string} randomized perp id
    */
   private randomizePerpId(perpId: string): string {
+
     const sK: string = "Project Callisto Super Secret Key";
     return sodium.to_base64(sodium.crypto_hash(perpId + sK));
+
   }
 
   /**
@@ -249,7 +252,7 @@ export class CryptoService {
     const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
 
     const kId: Uint8Array = sodium.crypto_generichash(sodium.crypto_generichash_BYTES,
-      hexRid.substr(ridLen / 2, ridLen));
+                                                      hexRid.substr(ridLen / 2, ridLen));
     return { slope, kId };
   }
 
@@ -275,20 +278,21 @@ export class CryptoService {
    * @returns {IPlainTextData} all values needed to be encrypted
    */
   private generateDataValues(rid: string, userId: string, record: IRecord): IPlainTextData {
-    const prgRid: string = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
 
+    const prgRid: string = sodium.to_hex(sodium.crypto_hash(sodium.from_base64(rid)));
     const derived: IRIDComponents = this.deriveFromRid(prgRid);
     const hashedUserId: bigInt.BigInteger = bigInt(sodium.to_hex(sodium.crypto_hash(userId)), this.HEX);
     const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
 
     return {
-      rid: bigIntRid,
+      rid: bigInt(sodium.to_hex(sodium.from_base64(rid)), this.HEX),
+      hRid: bigInt(prgRid, this.HEX),
       slope: derived.slope,
       recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()), // base64 encoding
       kId: sodium.to_base64(derived.kId),
       record,
       hashedX: hashedUserId,
-      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(2 ** 128).minus(159)),
+      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(this.PRIME)),
     };
   }
 
@@ -320,10 +324,10 @@ export class CryptoService {
     for (const i in data) {
       const encryptedRecord: string = data[i].encryptedRecord;
       const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(sodium.from_base64(data[i].kId),
-        data[i].encryptedRecordKey);
+                                              data[i].encryptedRecordKey);
 
       const decryptedRecord: Uint8Array = this.symmetricDecrypt(sodium.from_base64(decryptedRecordKey),
-        encryptedRecord);
+                                                                encryptedRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
