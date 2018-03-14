@@ -85,12 +85,16 @@ export class GraphComponent implements AfterContentChecked {
       .attr("transform", `translate(0,${size})`);
 
     svg.append("text")
-      .text("X-Value");
+      .text("hashedUserID")
+      .attr("y", size + margin / 1.5);
 
     svg.append("g")
-      .call(yAxis)
-      .append("text")
-      .text("Y-Value");
+      .call(yAxis);
+
+    svg.append("text")
+      .text("secretValue")
+      .attr("x", - margin)
+      .attr("dy", "-.2em");
 
     svg.selectAll(".dot")
       .data(this.coords)
