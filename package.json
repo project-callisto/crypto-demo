@@ -15,7 +15,7 @@
         "start:dev": "ng server",
         "start:prod": "node server.js",
         "heroku-postbuild": "ng build --aot -prod --progress --sourcemaps",
-        "storybook": "start-storybook -p 9001 -c storybook"
+        "storybook": "cp client/index.html storybook/preview-head.html && start-storybook -p 9001 -c storybook"
     },
     "repository": {
         "type": "git",
