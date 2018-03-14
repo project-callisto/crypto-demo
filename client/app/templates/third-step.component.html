@@ -4,7 +4,7 @@
   <p>First we hash RID using SHA-256 to standardize outputs to 256 bits.</p>
   <p>
     <code>H(RID)</code>
-    <code class="calc-display-value">{{ plainTextData.rid }}</code>
+    <code class="calc-display-value">{{ plainTextData.hRid }}</code>
   </p>
   <p>From this value, we use the first 128 bits as a slope (m) and the remaining 128 bits as a key, K<sub>ID</sub> to encrypt user data. We also hash your inputted user name to create a value, x</p>
   <p>

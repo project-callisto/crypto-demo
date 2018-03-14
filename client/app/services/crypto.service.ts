@@ -26,6 +26,7 @@ export interface IEncryptedData {
 
 export interface IPlainTextData {
   readonly rid: bigInt.BigInteger;
+  readonly hRid: bigInt.BigInteger;
   readonly slope: bigInt.BigInteger;
   readonly kId: string;
   readonly record: IRecord;
@@ -284,7 +285,8 @@ export class CryptoService {
     const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
 
     return {
-      rid: bigIntRid,
+      rid: bigInt(sodium.to_hex(sodium.from_base64(rid)), this.HEX),
+      hRid: bigInt(prgRid, this.HEX),
       slope: derived.slope,
       recordKey: sodium.to_base64(sodium.crypto_secretbox_keygen()), // base64 encoding
       kId: sodium.to_base64(derived.kId),
