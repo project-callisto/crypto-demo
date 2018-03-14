@@ -90,7 +90,7 @@ export class GraphComponent implements AfterContentChecked {
       .attr("x", size / 2)
       .attr("y", size)
       .attr("dx", "-2em")
-      .attr("dy", "2em");
+      .attr("dy", "2.4em");
 
     svg.append("g")
       .call(yAxis);
@@ -99,7 +99,7 @@ export class GraphComponent implements AfterContentChecked {
       .attr("class", "axis-label y")
       .text("secretValue")
       .attr("x", 0 - margin)
-      .attr("dy", "-.2em");
+      .attr("dy", "-.4em");
 
     svg.selectAll(".dot")
       .data(this.coords)
