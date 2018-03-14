@@ -94,18 +94,6 @@ describe("Valkyrie Demo", () => {
     expect($('#last-step').isPresent()).toBeTruthy();
   });
 
-  it("renders a graph", () => {
-    expect($(".crypto-graph").isPresent()).toBeFalsy();
-    article(1).next();
-    article(2).next();
-    article(3).next();
-    article(4).next();
-    article(5).next();
-    article(6).next();
-    article(7).next();
-    expect($(".crypto-graph").isPresent()).toBeTruthy();
-  });
-
   function article(index) {
     const element = $(`step-root *:nth-child(${index}) article`);
     if (index === 2) {
