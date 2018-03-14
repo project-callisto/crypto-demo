@@ -41,35 +41,19 @@ export class GraphComponent implements AfterContentChecked {
       .append("g")
       .attr("transform", `translate(${margin},${margin})`);
 
-    const graphBufferFactor: number = 4;
-
-    const xMin: number = min(this.coords, (datum: ICoord) => datum.x.toJSNumber());
+    const graphBufferFactor: number = 1.25;
     const xMax: number = max(this.coords, (datum: ICoord) => datum.x.toJSNumber());
-    const xAxisBuffer: number = (xMax - xMin) / graphBufferFactor;
-    let xStart: number = xMin - xAxisBuffer;
-    if (xStart < 0) { xStart = 0; }
-
-    const yMin: number = min(this.coords, (datum: ICoord) => datum.y.toJSNumber());
     const yMax: number = max(this.coords, (datum: ICoord) => datum.y.toJSNumber());
-    const yAxisBuffer: number = (yMax - yMin) / graphBufferFactor;
-    let yStart: number = yMin - yAxisBuffer;
-    if (yStart < 0) { yStart = 0; }
-
-    const tickCount: number = 5;
 
     const xScale: any = scaleLinear()
       .rangeRound([0, size])
-      .domain([
-        xStart,
-        xMax + xAxisBuffer,
-      ]);
+      .domain([0, xMax * graphBufferFactor]);
 
     const yScale: any = scaleLinear()
       .rangeRound([size, 0])
-      .domain([
-        yStart,
-        yMax + yAxisBuffer,
-      ]);
+      .domain([0, yMax * graphBufferFactor]);
+
+    const tickCount: number = 5;
 
     function applyCustomFormat(axis: any): any {
       return axis
