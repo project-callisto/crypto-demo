@@ -130,7 +130,6 @@ export class StepComponent {
     this.firstStep.recordKey = plainText.recordKey;
     this.secondStep.plainTextData = plainText;
     this.thirdStep.plainTextData = plainText;
-    console.log(plainText);
     this.fourthStep.encryptedData = encryptedData;
     this.fifthStep.RID = encryptedData.hashedRid;
   }
