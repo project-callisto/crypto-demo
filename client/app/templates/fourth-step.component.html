@@ -15,11 +15,11 @@
     <code class="calc-display-value">{{ encryptedData.cY }}</code>
   </p>
   <p>
-    <code>E<sub>GCM</sub>(k<sub>record</sub>, record)</code>
+    <code>E(k<sub>record</sub>, record)</code>
     <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code>
   </p>
   <p>
-    <code>E(pk<sub>OC</sub>, E<sub>GCM</sub>(k<sub>ID</sub>, k<sub>record</sub>))</code>
+    <code>E(pk<sub>OC</sub>, E(k<sub>ID</sub>, k<sub>record</sub>))</code>
     <code class="calc-display-value">{{ encryptedData.encryptedRecordKey }}</code>
   </p>
 
