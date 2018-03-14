@@ -2,6 +2,7 @@ import { AfterContentChecked, Component, Input } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
+import { format } from "d3-format";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
@@ -30,14 +31,13 @@ export class GraphComponent implements AfterContentChecked {
   }
 
   private populateGraph(): void {
-    const margin: number = 30;
-    const width: number = 400 - margin * 2;
-    const height: number = 400 - margin * 2;
+    const margin: number = 50;
+    const size: number = 400;
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
-      .attr("width", width + margin * 2)
-      .attr("height", height + margin * 2)
+      .attr("width", size + margin * 2)
+      .attr("height", size + margin * 2)
       .append("g")
       .attr("transform", `translate(${margin},${margin})`);
 
@@ -46,35 +46,50 @@ export class GraphComponent implements AfterContentChecked {
     const xMin: number = min(this.coords, (datum: ICoord) => datum.x.toJSNumber());
     const xMax: number = max(this.coords, (datum: ICoord) => datum.x.toJSNumber());
     const xAxisBuffer: number = (xMax - xMin) / graphBufferFactor;
+    let xStart: number = xMin - xAxisBuffer;
+    if (xStart < 0) { xStart = 0; }
 
     const yMin: number = min(this.coords, (datum: ICoord) => datum.y.toJSNumber());
     const yMax: number = max(this.coords, (datum: ICoord) => datum.y.toJSNumber());
     const yAxisBuffer: number = (yMax - yMin) / graphBufferFactor;
+    let yStart: number = yMin - yAxisBuffer;
+    if (yStart < 0) { yStart = 0; }
+
+    const tickCount: number = 5;
 
     const xScale: any = scaleLinear()
-      .range([0, width])
+      .rangeRound([0, size])
       .domain([
-        xMin - xAxisBuffer,
+        xStart,
         xMax + xAxisBuffer,
       ]);
 
     const yScale: any = scaleLinear()
-      .range([height, 0])
+      .rangeRound([size, 0])
       .domain([
-        yMin - yAxisBuffer,
+        yStart,
         yMax + yAxisBuffer,
       ]);
 
+    function applyCustomFormat(axis: any): any {
+      return axis
+        .ticks(tickCount)
+        .tickFormat(format(".2g"));
+    }
+
+    const xAxis: any = applyCustomFormat(axisBottom(xScale));
+    const yAxis: any = applyCustomFormat(axisLeft(yScale));
+
     svg.append("g")
-      .call(axisBottom(xScale))
-      .attr("transform", `translate(0,${height})`)
-      .append("text")
+      .call(xAxis)
+      .attr("transform", `translate(0,${size})`);
+
+    svg.append("text")
       .text("X-Value");
 
     svg.append("g")
-      .call(axisLeft(yScale))
+      .call(yAxis)
       .append("text")
-      .attr("transform", "rotate(-90)")
       .text("Y-Value");
 
     svg.selectAll(".dot")
