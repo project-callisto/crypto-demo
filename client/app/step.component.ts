@@ -94,7 +94,6 @@ export class StepComponent {
     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
     this.crypto.postData(encryptedData);
     const decryptedData: IDecryptedData = this.crypto.decryptData();
-    console.log(decryptedData);
     this.fifthStep.RID = decryptedData.rid;
     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
 
@@ -151,6 +150,7 @@ export class StepComponent {
     // input is matched, trigger decryption
     const decryptedData: IDecryptedData = this.crypto.decryptData();
     this.fifthStep.decryptedData = decryptedData;
+    this.fifthStep.coords = this.crypto.retrieveCoords();
     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
   }
 

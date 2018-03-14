@@ -1,4 +1,4 @@
-import { AfterContentChecked, AfterViewInit, Component, Input } from "@angular/core";
+import { AfterViewInit, Component, Input } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -17,18 +17,12 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent implements AfterViewInit, AfterContentChecked {
+export class GraphComponent implements AfterViewInit {
   @Input() public decryptedData: IDecryptedData;
+  @Input() public coords: ICoord[];
 
   public ngAfterViewInit(): void {
-    console.log("[ RUN ] ngAfterViewInit");
     this.populateGraph();
-  }
-
-  public ngAfterContentChecked(): void {
-    if (this.decryptedData) {
-      console.log("[ RUN ] ngAfterContentChecked");
-    }
   }
 
   private populateGraph(): void {
@@ -45,9 +39,13 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
 
     const graphBufferFactor: number = 4;
 
-    const xMin: number = min(this.decryptedData.coords, (datum: ICoord) => datum.x.toJSNumber());
-    const xMax: number = max(this.decryptedData.coords, (datum: ICoord) => datum.x.toJSNumber());
+    const xMin: number = min(this.coords, (datum: ICoord) => datum.x.toJSNumber());
+    const xMax: number = max(this.coords, (datum: ICoord) => datum.x.toJSNumber());
     const xAxisBuffer: number = (xMax - xMin) / graphBufferFactor;
+
+    const yMin: number = min(this.coords, (datum: ICoord) => datum.y.toJSNumber());
+    const yMax: number = max(this.coords, (datum: ICoord) => datum.y.toJSNumber());
+    const yAxisBuffer: number = (yMax - yMin) / graphBufferFactor;
 
     const xScale: any = scaleLinear()
       .range([0, width])
@@ -55,10 +53,6 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
         xMin - xAxisBuffer,
         xMax + xAxisBuffer,
       ]);
-
-    const yMin: number = min(this.decryptedData.coords, (datum: ICoord) => datum.y.toJSNumber());
-    const yMax: number = max(this.decryptedData.coords, (datum: ICoord) => datum.y.toJSNumber());
-    const yAxisBuffer: number = (yMax - yMin) / graphBufferFactor;
 
     const yScale: any = scaleLinear()
       .range([height, 0])
@@ -80,7 +74,7 @@ export class GraphComponent implements AfterViewInit, AfterContentChecked {
       .text("Y-Value");
 
     svg.selectAll(".dot")
-      .data(this.decryptedData.coords)
+      .data(this.coords)
       .enter()
       .append("circle")
       .attr("class", "dot")

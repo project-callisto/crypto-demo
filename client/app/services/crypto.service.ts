@@ -59,7 +59,7 @@ export interface IRecord {
 /**
  * SODIUM INITIALIZATION
  */
-const sodiumPromise = sodium.ready;
+const sodiumPromise: any = sodium.ready;
 
 /**
  * Key-Pair Generation
@@ -354,7 +354,7 @@ export class CryptoService {
    */
   private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (var i in data) {
+    for (const i in data) {
       const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array
