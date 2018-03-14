@@ -19,6 +19,7 @@ script:
 - npm run heroku-postbuild
 - npm run test:unit -- --single-run
 - npm run test:e2e
+- npm run storybook -- --smoke-test
 notifications:
   email: false
   slack:

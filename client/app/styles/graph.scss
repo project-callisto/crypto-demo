@@ -1,3 +1,20 @@
+@import "_meta";
+
 .crypto-graph {
   text-align: center;
+}
+
+:host ::ng-deep {
+  * {
+    font-family: $font-body;    
+  }
+
+  circle {
+    fill: $palette-dark-blue;
+  }
+
+  .matched-data-line {
+    stroke: $palette-dark-blue;
+    stroke-width: 3;
+  }
 }
