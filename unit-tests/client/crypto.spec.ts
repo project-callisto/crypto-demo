@@ -17,7 +17,7 @@ describe("Crypto service", () => {
     expect(crypto.decryptData).toBeDefined();
   });
 
-  it("[REGRESSION TEST] returns non-zero slopes", () => {
+  it("[REGRESSION] returns non-zero slopes", () => {
     generateMultiplePerpInput();
     const decryptedData: IDecryptedData = crypto.decryptData();
     expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
