@@ -107,23 +107,23 @@ export class GraphComponent implements AfterContentChecked {
       .append("circle")
       .attr("class", "dot data-point")
       .attr("r", 3.5)
-      .attr("cx", (datum: ICoord): number => {
-        return xScale(datum.x.toJSNumber());
+      .attr("cx", (coord: ICoord): number => {
+        return xScale(coord.x.toJSNumber());
       })
-      .attr("cy", (datum: ICoord): number => {
-        return yScale(datum.y.toJSNumber());
+      .attr("cy", (coord: ICoord): number => {
+        return yScale(coord.y.toJSNumber());
       });
 
-    // this.svg.append("path")
-    //   .attr("class", "line")
-    //   .attr("d", line()
-    //     .x((datum: ICoord): number => {
-    //       return this.xScale(datum.x.toJSNumber());
-    //     })
-    //     .y((datum: ICoord): number => {
-    //       return this.yScale(datum.y.toJSNumber());
-    //     }),
-    // );
+    function lineCoordsAsJSNumbers(coords: ICoord[]): Array<[number, number]> {
+      return coords.map((coord: ICoord) => [
+        xScale(coord.x.toJSNumber()),
+        yScale(coord.y.toJSNumber()),
+      ]) as Array<[number, number]>;
+    }
+
+    svg.append("path")
+      .attr("class", "matched-data-line")
+      .attr("d", line()(lineCoordsAsJSNumbers(this.decryptedData.coords)));
   }
 
 }
