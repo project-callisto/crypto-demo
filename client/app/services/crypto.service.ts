@@ -59,7 +59,7 @@ export interface IRecord {
 /**
  * SODIUM INITIALIZATION
  */
-const sodiumPromise = sodium.ready;
+const sodiumPromise: any = sodium.ready;
 
 /**
  * Key-Pair Generation
@@ -113,6 +113,35 @@ export class CryptoService {
       cX: plainText.hashedX.toString(),
       kId: plainText.kId,
     };
+  }
+
+  /**
+   * Submits inputted information to be processed and encrypted
+   * @param perpInput - inputted perpetrator name
+   * @param userName - inputted user name
+   * @returns {IEncryptedData}
+   */
+  public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
+    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
+    const encryptedData: IEncryptedData = this.encryptData(plainText);
+    this.postData(encryptedData);
+    return encryptedData;
+  }
+
+  /**
+   * Returns all coordinates for displaying on graph
+   * @returns {Array<ICoord>}
+   */
+  public retrieveCoords(): ICoord[] {
+    const coords: ICoord[] = [];
+    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
+
+    for (let i: number = 0; i < this.dataSubmissions.length; i++) {
+      coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
+    }
+
+    return coords;
+
   }
 
   /**
@@ -327,7 +356,7 @@ export class CryptoService {
    */
   private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
     const yValues: bigInt.BigInteger[] = [];
-    for (let i: number = 0; i < 2; i++) {
+    for (const i in data) {
       const split: string[] = data[i].cY.split("$");
 
       // All values are UInt8Array

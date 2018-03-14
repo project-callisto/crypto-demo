@@ -1,6 +1,6 @@
-import { AfterContentChecked, AfterViewInit, Component, Input } from "@angular/core";
+import { AfterContentChecked, Component, Input } from "@angular/core";
 import * as bigInt from "big-integer";
-import { extent } from "d3-array";
+import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
@@ -17,79 +17,77 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent implements AfterViewInit, AfterContentChecked {
+export class GraphComponent implements AfterContentChecked {
   @Input() public decryptedData: IDecryptedData;
-  private svg: any;
-  private xScale: any;
-  private yScale: any;
-
-  public ngAfterViewInit(): void {
-    // this.generateGraph();
-  }
+  @Input() public coords: ICoord[];
+  private graphGenerated: boolean = false;
 
   public ngAfterContentChecked(): void {
-    // if (this.decryptedData) {
-    //   this.populateGraph();
-    // }
+    if (this.decryptedData && this.coords && !this.graphGenerated) {
+      this.populateGraph();
+      this.graphGenerated = true;
+    }
   }
 
-  private generateGraph(): void {
+  private populateGraph(): void {
     const margin: number = 30;
     const width: number = 400 - margin * 2;
     const height: number = 400 - margin * 2;
 
-    this.svg = select(`.${templateSelector}`)
+    const svg: any = select(`.${templateSelector}`)
       .append("svg")
       .attr("width", width + margin * 2)
       .attr("height", height + margin * 2)
       .append("g")
       .attr("transform", `translate(${margin},${margin})`);
 
-    this.xScale = scaleLinear()
-      .range([0, width]);
+    const graphBufferFactor: number = 4;
 
-    this.yScale = scaleLinear()
-      .range([height, 0]);
+    const xMin: number = min(this.coords, (datum: ICoord) => datum.x.toJSNumber());
+    const xMax: number = max(this.coords, (datum: ICoord) => datum.x.toJSNumber());
+    const xAxisBuffer: number = (xMax - xMin) / graphBufferFactor;
 
-    this.svg.append("g")
-      .call(axisBottom(this.xScale))
+    const yMin: number = min(this.coords, (datum: ICoord) => datum.y.toJSNumber());
+    const yMax: number = max(this.coords, (datum: ICoord) => datum.y.toJSNumber());
+    const yAxisBuffer: number = (yMax - yMin) / graphBufferFactor;
+
+    const xScale: any = scaleLinear()
+      .range([0, width])
+      .domain([
+        xMin - xAxisBuffer,
+        xMax + xAxisBuffer,
+      ]);
+
+    const yScale: any = scaleLinear()
+      .range([height, 0])
+      .domain([
+        yMin - yAxisBuffer,
+        yMax + yAxisBuffer,
+      ]);
+
+    svg.append("g")
+      .call(axisBottom(xScale))
       .attr("transform", `translate(0,${height})`)
       .append("text")
       .text("X-Value");
 
-    this.svg.append("g")
-      .call(axisLeft(this.yScale))
+    svg.append("g")
+      .call(axisLeft(yScale))
       .append("text")
       .attr("transform", "rotate(-90)")
       .text("Y-Value");
-  }
 
-  private populateGraph(): void {
-    this.xScale.domain(extent(
-      this.decryptedData.coords,
-      (datum: ICoord) => {
-        return datum.x.toJSNumber();
-      },
-    ));
-
-    this.yScale.domain(extent(
-      this.decryptedData.coords,
-      (datum: ICoord) => {
-        return datum.y.toJSNumber();
-      },
-    ));
-
-    this.svg.selectAll(".dot")
-      .data(this.decryptedData.coords)
+    svg.selectAll(".dot")
+      .data(this.coords)
       .enter()
       .append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
       .attr("cx", (datum: ICoord): number => {
-        return this.xScale(datum.x.toJSNumber());
+        return xScale(datum.x.toJSNumber());
       })
       .attr("cy", (datum: ICoord): number => {
-        return this.yScale(datum.y.toJSNumber());
+        return yScale(datum.y.toJSNumber());
       });
 
     // this.svg.append("path")
