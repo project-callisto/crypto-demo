@@ -33,3 +33,10 @@ npm run start:prod
 npm run test:unit -- --single-run
 npm run test:e2e -- --single-run
 ```
+
+## running storybook
+
+```
+npm run storybook
+# open http://localhost:9001/
+```

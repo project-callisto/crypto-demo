@@ -22,7 +22,7 @@ export class FifthStepComponent implements AfterContentChecked {
   @ViewChild(GraphComponent) public graph: GraphComponent;
 
   public ngAfterContentChecked(): void {
-    if (this.graph && this.decryptedData) {
+    if (this.graph && this.decryptedData && this.coords) {
       this.graph.decryptedData = this.decryptedData;
       this.graph.coords = this.coords;
     }
