@@ -17,6 +17,9 @@ storiesOf("Valkyrie Demo", module)
   .add("first step", () => ({
     component: FirstStepComponent,
     props: { shown: true },
+    moduleMetadata: {
+      declarations: [NavComponent],
+    },
   }))
 
   .add("graph", () => ({
