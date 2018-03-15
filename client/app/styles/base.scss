@@ -15,6 +15,10 @@
   display: block;
 }
 
+input.ng-dirty.ng-invalid {
+  box-shadow: 0 0 1px 1px red;
+}
+
 .sr-only-focusable {
   position: absolute;
   clip: rect(0,0,0,0);
