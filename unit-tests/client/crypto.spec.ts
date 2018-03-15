@@ -1,7 +1,25 @@
 import { CryptoService, IEncryptedData, IPlainTextData } from "../../client/app/services/crypto.service";
 
+
 describe("Crypto service", () => {
   const crypto: CryptoService = new CryptoService();
+
+  const sampleEncrypted = {
+    hashedRid: 'rid',
+    encryptedRecord: 'record',
+    encryptedRecordKey: 'key',
+    userPubKey: 'pub',
+    cY: 'y',
+    cX: 'x',
+    kId: 'kid'
+  }
+
+  it('Correct storage and retrieval', () =>  {
+    crypto.postData(sampleEncrypted);
+  });
+
+
+  it('')
 
   it("has a public submission api", () => {
     expect(crypto.createDataSubmission).toBeDefined();
@@ -12,14 +30,14 @@ describe("Crypto service", () => {
   });
 
   it("takes string input on the submission api", () => {
-    // setTimeout(() => {
-    //   crypto.createDataSubmission("perpId", "user").then(
-    //     (plainText: IPlainTextData) => {
-    //       const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-    //       expect(encryptedData).toBeTruthy();
-    //     },
-    //   );
-    // }, 10000);
+      const pT = crypto.createDataSubmission("perpId", "user");
+      console.log('t',pT);
+      //   (plainText: IPlainTextData) => {
+      //     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+      //     expect(encryptedData).toBeTruthy();
+      //   },
+      // );
+
   });
 
   it("has an RID", () => {

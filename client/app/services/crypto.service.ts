@@ -384,7 +384,7 @@ export class CryptoService {
     const top: bigInt.BigInteger = c2.y.minus(c1.y);
     const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
 
-    return top.divide(bottom);
+    return top.multiply(bottom.modInv(this.PRIME));
   }
 
   /**
