@@ -73,7 +73,7 @@ export class GraphComponent implements AfterContentChecked {
       .text("hashedUserID")
       .attr("x", size / 2)
       .attr("y", size)
-      .attr("dx", "-2em")
+      .attr("dx", "-3.5em")
       .attr("dy", "2.4em");
 
     svg.append("g")
