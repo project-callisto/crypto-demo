@@ -18,7 +18,9 @@ storiesOf("Valkyrie Demo", module)
     component: FirstStepComponent,
     props: { shown: true },
     moduleMetadata: {
-      declarations: [NavComponent],
+      declarations: [
+        NavComponent,
+      ],
     },
   }))
 
