@@ -8,6 +8,18 @@ import {
   IPlainTextData,
 } from "../../client/app/services/crypto.service";
 
+/*
+ * NAMING CONVENTIONS
+ *
+ * [SPEC]
+ * these tests define the specifications for CryptoService
+ * they should be kept simple, and except that values / attributes exist / are in a certain form
+ *
+ * [REGRESSION]
+ * these tests gaurd against previously known bugs in CryptoService
+ * they fail when the relevant bug is present in CryptoService
+ */
+
 describe("Crypto service", () => {
 
   const sampleEncrypted: IEncryptedData = {
@@ -45,26 +57,20 @@ describe("Crypto service", () => {
     });
   });
 
-  it("[SPEC] takes string input on the submission api", () => {
-    // const pT = crypto.createDataSubmission("perpId", "user");
-    // console.log('t',pT);
-    //   (plainText: IPlainTextData) => {
-    //     const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-    //     expect(encryptedData).toBeTruthy();
-    //   },
-    // );
-
+  it("[SPEC] takes string input on the submission api", async () => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      const encryptedData: IEncryptedData = crypto.submitAndEncrypt("XXXXXXX", "Alice");
+      expect(encryptedData).toBeTruthy();
+    });
   });
 
-  it("[SPEC] has an RID", () => {
-    // setTimeout(() => {
-    //   crypto.createDataSubmission("perpId", "user").then(
-    //     (plainText: IPlainTextData) => {
-    //       const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-    //       expect(encryptedData.hashedRid).toBeTruthy();
-    //     },
-    //   );
-    // }, 10000);
+  it("[SPEC] has an RID", async () => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      const encryptedData: IEncryptedData = crypto.submitAndEncrypt("XXXXXXX", "Alice");
+      expect(encryptedData.hashedRid).toBeTruthy();
+    });
   });
 
   it("[REGRESSION] returns non-zero slopes", async () => {
