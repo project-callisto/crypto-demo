@@ -135,16 +135,16 @@ export class StepComponent {
   }
 
   private async generateGraphData(): Promise<void> {
-    // matched perpInput, diff username
-    let encryptedData: IEncryptedData = this.crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+    // unmatched perpInput
+    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
     this.fifthStep.RID2 = encryptedData.hashedRid;
 
     // unmatched perpInput
-    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + "1", "Bob");
     this.fifthStep.RID3 = encryptedData.hashedRid;
 
-    // unmatched perpInput
-    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + "1", "Bob");
+    // matched perpInput, diff username
+    let encryptedData: IEncryptedData = this.crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
     this.fifthStep.RID4 = encryptedData.hashedRid;
 
     // input is matched, trigger decryption
