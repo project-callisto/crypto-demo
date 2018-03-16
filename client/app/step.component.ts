@@ -64,7 +64,6 @@ export class StepComponent {
    */
 
   public advanceIntro(): void {
-    this.crypto.init();
     this.firstStep.shown = true;
     this.scrollTo("first-step");
   }

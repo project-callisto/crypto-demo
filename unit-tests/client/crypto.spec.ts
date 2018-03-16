@@ -1,4 +1,5 @@
 import * as faker from "faker";
+import "jasmine-expect-count";
 import * as _sodium from "libsodium-wrappers";
 import {
   CryptoService,
@@ -30,23 +31,35 @@ describe("Crypto service", () => {
     // }, 30000);
   });
 
-  it("[SPEC] has a public submission api", () => {
-    cryptoPromise().then((crypto: CryptoService): void => {
+  it("[SPEC] has a public submission api", async() => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
       expect(crypto.submitAndEncrypt).toBeDefined();
     });
   });
 
-  it("[SPEC] has a public decryption api", () => {
-    // expect(crypto.decryptData).toBeDefined();
+  it("[SPEC] has a public decryption api", async() => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      expect(crypto.decryptData).toBeDefined();
+    });
   });
 
-  it("[REGRESSION] returns non-zero slopes", () => {
-    // generateMultiplePerpInput();
-    // const decryptedData: IDecryptedData = crypto.decryptData();
-    // expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
+  it("[REGRESSION] returns non-zero slopes", async() => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      const userName: string = faker.name.findName();
+      const perpInput: string = faker.name.findName();
+      crypto.submitAndEncrypt(perpInput, userName); // self
+      crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
+      crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
+      crypto.submitAndEncrypt(perpInput, userName + "a"); // match
+      const decryptedData: IDecryptedData = crypto.decryptData();
+      expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
+    });
   });
 
-  it("takes string input on the submission api", () => {
+  it("[SPEC] takes string input on the submission api", () => {
     // const pT = crypto.createDataSubmission("perpId", "user");
     // console.log('t',pT);
     //   (plainText: IPlainTextData) => {
@@ -57,7 +70,7 @@ describe("Crypto service", () => {
 
   });
 
-  it("has an RID", () => {
+  it("[SPEC] has an RID", () => {
     // setTimeout(() => {
     //   crypto.createDataSubmission("perpId", "user").then(
     //     (plainText: IPlainTextData) => {
@@ -68,7 +81,7 @@ describe("Crypto service", () => {
     // }, 10000);
   });
 
-  it("returns RID for perpIDs starting with A-Z", () => {
+  it("[REGRESSION] returns RID for perpIDs starting with A-Z", () => {
     // let perpID: number = 65;
     // const maxPerpID: number = 90;
 
@@ -90,14 +103,5 @@ describe("Crypto service", () => {
     await _sodium.ready;
     return new CryptoService(_sodium);
   }
-
-  // function generateMultiplePerpInput(): void {
-  //   const userName: string = faker.name.findName();
-  //   const perpInput: string = faker.name.findName();
-  //   crypto.submitAndEncrypt(perpInput, userName); // match
-  //   crypto.submitAndEncrypt(perpInput, userName + "a"); // unmatched
-  //   crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
-  //   crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
-  // }
 
 });
