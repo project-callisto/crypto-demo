@@ -1,9 +1,8 @@
+import * as _sodium from "libsodium-wrappers";
 import { CryptoService, IEncryptedData, IPlainTextData } from "../../client/app/services/crypto.service";
 
 // wait for sodium to load
 describe("Crypto service", () => {
-
-  const crypto: CryptoService = new CryptoService();
 
   const sampleEncrypted = {
     hashedRid: "rid",
@@ -16,10 +15,6 @@ describe("Crypto service", () => {
   };
 
   it("Correct storage and retrieval", () => {
-    // crypto.init();
-
-    crypto.test();
-    // console.log('meow')
     // setTimeout(() => {
     //   console.log('hello??')
     //   crypto.submitAndEncrypt('hello', 'world');
@@ -31,11 +26,13 @@ describe("Crypto service", () => {
   });
 
   it("has a public submission api", () => {
-    expect(crypto.createDataSubmission).toBeDefined();
+    cryptoPromise().then((crypto: CryptoService): void => {
+      expect(crypto.createDataSubmission).toBeDefined();
+    });
   });
 
   it("has a public decryption api", () => {
-    expect(crypto.decryptData).toBeDefined();
+    // expect(crypto.decryptData).toBeDefined();
   });
 
   it("takes string input on the submission api", () => {
@@ -77,4 +74,10 @@ describe("Crypto service", () => {
     // }
 
   });
+
+  async function cryptoPromise(): Promise<CryptoService> {
+    await _sodium.ready;
+    return new CryptoService(_sodium);
+  }
+
 });
