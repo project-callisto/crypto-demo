@@ -62,9 +62,6 @@ export interface IRecord {
 @Injectable()
 export class CryptoService {
 
-  // the libsodium library, with the sodium.ready promise already resolved
-  private sodium: any;
-
   /**
    * Key-Pair Generation
    * @param {IKeyPair} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
@@ -82,8 +79,10 @@ export class CryptoService {
   private HEX: number = 16;
   private PRIME: string = "340282366920938463463374607431768211297";
 
-  constructor(libsodiumWithResolvedPromise: any) {
-    this.sodium = libsodiumWithResolvedPromise;
+  constructor(
+    // the libsodium library, with the sodium.ready promise already resolved
+    private sodium: any,
+  ) {
     this.ocKeys = this.sodium.crypto_box_keypair();
     this.userKeys = this.sodium.crypto_box_keypair();
   }

@@ -10,6 +10,7 @@ import { SixthStepComponent } from "./sixth-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 import * as $ from "jquery";
+import * as _sodium from "libsodium-wrappers";
 
 @Component({
   selector: "step-root",
@@ -42,6 +43,7 @@ import * as $ from "jquery";
   ],
 })
 export class StepComponent {
+  public crypto: Promise<CryptoService>;
   private perpInput: string;
   private userName: string;
 
@@ -54,9 +56,12 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
   @ViewChild(LastStepComponent) private lastStep: LastStepComponent;
 
-  constructor(
-    public crypto: CryptoService,
-  ) { }
+  constructor() {
+    this.crypto = (async (): Promise<CryptoService> => {
+      await _sodium.ready;
+      return new CryptoService(_sodium);
+    })();
+  }
 
   /*
    * advancer functions handle display logic for children
