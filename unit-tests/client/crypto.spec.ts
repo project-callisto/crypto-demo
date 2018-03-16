@@ -73,6 +73,19 @@ describe("Crypto service", () => {
     });
   });
 
+  it("[REGRESSION] returns RID for perpIDs starting with A-Z", async () => {
+    let perpID: number = 65;
+    const maxPerpID: number = 90;
+    (jasmine as any).expectCount(maxPerpID - perpID + 1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      while (perpID <= maxPerpID) {
+        const encryptedData: IEncryptedData = crypto.submitAndEncrypt(String.fromCharCode(perpID), "Alice");
+        expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+        perpID++;
+      }
+    });
+  });
+
   it("[REGRESSION] returns non-zero slopes", async () => {
     (jasmine as any).expectCount(1);
     await cryptoPromise().then((crypto: CryptoService): void => {
@@ -87,14 +100,20 @@ describe("Crypto service", () => {
     });
   });
 
-  it("[REGRESSION] returns RID for perpIDs starting with A-Z", async () => {
+  it("[REGRESSION] returns non-zero slopes for perpIDs starting A-Z", async () => {
     let perpID: number = 65;
     const maxPerpID: number = 90;
     (jasmine as any).expectCount(maxPerpID - perpID + 1);
     await cryptoPromise().then((crypto: CryptoService): void => {
       while (perpID <= maxPerpID) {
-        const encryptedData: IEncryptedData = crypto.submitAndEncrypt(String.fromCharCode(perpID), "Alice");
-        expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+        const userName: string = faker.name.findName();
+        const perpInput: string = String.fromCharCode(perpID) + faker.name.findName();
+        crypto.submitAndEncrypt(perpInput, userName); // self
+        crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
+        crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
+        crypto.submitAndEncrypt(perpInput, userName + "a"); // match
+        const decryptedData: IDecryptedData = crypto.decryptData();
+        expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
         perpID++;
       }
     });
