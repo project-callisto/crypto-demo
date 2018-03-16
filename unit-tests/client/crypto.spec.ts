@@ -1,10 +1,15 @@
+import * as faker from "faker";
 import * as _sodium from "libsodium-wrappers";
-import { CryptoService, IEncryptedData, IPlainTextData } from "../../client/app/services/crypto.service";
+import {
+  CryptoService,
+  IDecryptedData,
+  IEncryptedData,
+  IPlainTextData,
+} from "../../client/app/services/crypto.service";
 
-// wait for sodium to load
 describe("Crypto service", () => {
 
-  const sampleEncrypted = {
+  const sampleEncrypted: IEncryptedData = {
     hashedRid: "rid",
     encryptedRecord: "record",
     encryptedRecordKey: "key",
@@ -25,14 +30,20 @@ describe("Crypto service", () => {
     // }, 30000);
   });
 
-  it("has a public submission api", () => {
+  it("[SPEC] has a public submission api", () => {
     cryptoPromise().then((crypto: CryptoService): void => {
-      expect(crypto.createDataSubmission).toBeDefined();
+      expect(crypto.submitAndEncrypt).toBeDefined();
     });
   });
 
-  it("has a public decryption api", () => {
+  it("[SPEC] has a public decryption api", () => {
     // expect(crypto.decryptData).toBeDefined();
+  });
+
+  it("[REGRESSION] returns non-zero slopes", () => {
+    // generateMultiplePerpInput();
+    // const decryptedData: IDecryptedData = crypto.decryptData();
+    // expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
   });
 
   it("takes string input on the submission api", () => {
@@ -79,5 +90,14 @@ describe("Crypto service", () => {
     await _sodium.ready;
     return new CryptoService(_sodium);
   }
+
+  // function generateMultiplePerpInput(): void {
+  //   const userName: string = faker.name.findName();
+  //   const perpInput: string = faker.name.findName();
+  //   crypto.submitAndEncrypt(perpInput, userName); // match
+  //   crypto.submitAndEncrypt(perpInput, userName + "a"); // unmatched
+  //   crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
+  //   crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
+  // }
 
 });
