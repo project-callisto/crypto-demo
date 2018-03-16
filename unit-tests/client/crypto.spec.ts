@@ -31,31 +31,17 @@ describe("Crypto service", () => {
     // }, 30000);
   });
 
-  it("[SPEC] has a public submission api", async() => {
+  it("[SPEC] has a public submission api", async () => {
     (jasmine as any).expectCount(1);
     await cryptoPromise().then((crypto: CryptoService): void => {
       expect(crypto.submitAndEncrypt).toBeDefined();
     });
   });
 
-  it("[SPEC] has a public decryption api", async() => {
+  it("[SPEC] has a public decryption api", async () => {
     (jasmine as any).expectCount(1);
     await cryptoPromise().then((crypto: CryptoService): void => {
       expect(crypto.decryptData).toBeDefined();
-    });
-  });
-
-  it("[REGRESSION] returns non-zero slopes", async() => {
-    (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
-      const userName: string = faker.name.findName();
-      const perpInput: string = faker.name.findName();
-      crypto.submitAndEncrypt(perpInput, userName); // self
-      crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
-      crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
-      crypto.submitAndEncrypt(perpInput, userName + "a"); // match
-      const decryptedData: IDecryptedData = crypto.decryptData();
-      expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
     });
   });
 
@@ -81,22 +67,31 @@ describe("Crypto service", () => {
     // }, 10000);
   });
 
-  it("[REGRESSION] returns RID for perpIDs starting with A-Z", () => {
-    // let perpID: number = 65;
-    // const maxPerpID: number = 90;
+  it("[REGRESSION] returns non-zero slopes", async () => {
+    (jasmine as any).expectCount(1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      const userName: string = faker.name.findName();
+      const perpInput: string = faker.name.findName();
+      crypto.submitAndEncrypt(perpInput, userName); // self
+      crypto.submitAndEncrypt(perpInput + "1", userName + "b"); // unmatched
+      crypto.submitAndEncrypt(perpInput + "2", userName + "c"); // unmatched
+      crypto.submitAndEncrypt(perpInput, userName + "a"); // match
+      const decryptedData: IDecryptedData = crypto.decryptData();
+      expect(decryptedData.slope.toJSNumber()).not.toEqual(0);
+    });
+  });
 
-    // while (perpID <= maxPerpID) {
-    //   setTimeout(() => {
-    //     crypto.createDataSubmission(String.fromCharCode(perpID), "Alice").then(
-    //       (plainText: IPlainTextData) => {
-    //         const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
-    //         expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
-    //       },
-    //     );
-    //   }, 10000);
-    //   perpID++;
-    // }
-
+  it("[REGRESSION] returns RID for perpIDs starting with A-Z", async () => {
+    let perpID: number = 65;
+    const maxPerpID: number = 90;
+    (jasmine as any).expectCount(maxPerpID - perpID + 1);
+    await cryptoPromise().then((crypto: CryptoService): void => {
+      while (perpID <= maxPerpID) {
+        const encryptedData: IEncryptedData = crypto.submitAndEncrypt(String.fromCharCode(perpID), "Alice");
+        expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+        perpID++;
+      }
+    });
   });
 
   async function cryptoPromise(): Promise<CryptoService> {
