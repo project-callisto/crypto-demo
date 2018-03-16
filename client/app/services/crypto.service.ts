@@ -215,10 +215,8 @@ export class CryptoService {
    * @returns {string} randomized perp id
    */
   private randomizePerpId(perpId: string): string {
-
     const sK: string = "Project Callisto Super Secret Key";
     return sodium.to_base64(sodium.crypto_hash(perpId + sK));
-
   }
 
   /**
@@ -348,6 +346,10 @@ export class CryptoService {
   private symmetricDecrypt(key: Uint8Array, cipherText: string): Uint8Array {
     const split: string[] = cipherText.split("$");
 
+    if (key.length != sodium.crypto_box_SECRETKEYBYTES) {
+      return undefined;
+    }
+
     // Uint8Arrays
     const cT: Uint8Array = sodium.from_base64(split[0]);
     const nonce: Uint8Array = sodium.from_base64(split[1]);
@@ -403,4 +405,18 @@ export class CryptoService {
 
     return y.minus(slope.times(x));
   }
+
+
+  public test() {
+    this.sodiumPromise.then(() => {
+      this.ocKeys = sodium.crypto_box_keypair();
+      this.userKeys = sodium.crypto_box_keypair();
+
+      this.submitAndEncrypt('hello', 'w0rld');
+      this.submitAndEncrypt('hello', 'world');
+      var coords = this.retrieveCoords();
+      console.log('cor', coords);
+    });
+  }
+
 }
