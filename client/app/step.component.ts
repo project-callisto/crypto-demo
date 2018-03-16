@@ -127,7 +127,7 @@ export class StepComponent {
       this.perpInput + this.perpInput, this.userName + "Alice");
     this.fifthStep.RID2 = encryptedData.hashedRid;
     // unmatched perpInput
-    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + "1", this.userName + "Bob");
+    encryptedData = this.crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
     this.fifthStep.RID3 = encryptedData.hashedRid;
     // matched perpInput, diff username
     encryptedData = this.crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
