@@ -5,21 +5,20 @@
   <p>To begin, enter a user name and a perpetrator name.</p>  
 
   <form class="perp-name-form" action="#" #userInputForm="ngForm">
-    <div class='input-row'>
+    <div class="input-row">
       <div>
-        <span class="subtext">ENTER USER NAME</span>
-        <input #userInput required type="text" id="userInput" name="userInput" ngModel />
+        <span class="subtext">ENTER USER NAME<span [hidden]="userInput.valid || userInput.pristine" class="alert-danger"> (required)</span></span>
+        <input #userInput="ngModel" required type="text" id="userInput" name="userInput" ngModel />
       </div>
       <div>
-        <span class="subtext">ENTER PERP NAME</span>
-        <input #perpInput required type="text" id="perpInput" name="perpInput" ngModel />
+        <span class="subtext">ENTER PERP NAME<span [hidden]="perpInput.valid || perpInput.pristine" class="alert-danger"> (required)</span></span>
+        <input #perpInput="ngModel" required type="text" id="perpInput" name="perpInput" ngModel />
       </div>
-    </div>  
-    TODO: remove this: {{perpInput.className}}
+    </div>
     <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
     <code class='calc-display-value text-centered' id="calc-rid">{{ recordKey }}</code>
     <div class="align-right-on-large">
-      <input class="btn advance-button" value="next" type="submit" (click)="perpSubmit($event, perpInput.value, userInput.value);" />
+      <input class="btn advance-button" value="next" type="submit" (click)="perpSubmit($event, perpInput.value, userInput.value);" [disabled]="!userInputForm.form.valid" />
     </div>  
   </form>
 

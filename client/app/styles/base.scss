@@ -16,7 +16,12 @@
 }
 
 input.ng-dirty.ng-invalid {
-  box-shadow: 0 0 1px 1px red;
+  box-shadow: 0 0 1px 1px darkred;
+}
+
+.alert-danger {
+  font-weight: bolder;
+  color: darkred;
 }
 
 .sr-only-focusable {
@@ -78,6 +83,11 @@ a.btn {
   &:focus {
     color: $palette-white;
     background-color: $palette-dark-gray;
+  }
+
+  &:disabled {
+    background-color: $color-button-disabled;
+    border-color: transparent;
   }
 }
 
