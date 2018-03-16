@@ -57,13 +57,11 @@ export interface IRecord {
   readonly userName: string;
 }
 
-
 /**
  * CRYPTO SERVICE
  */
 @Injectable()
 export class CryptoService {
-
 
   /**
    * SODIUM INITIALIZATION
@@ -77,7 +75,6 @@ export class CryptoService {
    */
   private ocKeys: IKeyPair;
   private userKeys: IKeyPair;
-
 
   /**
    * CONSTANTS
@@ -103,9 +100,9 @@ export class CryptoService {
   public encryptData(plainText: IPlainTextData): IEncryptedData {
 
     const encryptedRecord: string = this.symmetricEncrypt(sodium.from_base64(plainText.recordKey),
-                                                          JSON.stringify(plainText.record));
+      JSON.stringify(plainText.record));
     const encryptedRecordKey: string = this.symmetricEncrypt(sodium.from_base64(plainText.kId),
-                                                            plainText.recordKey);
+      plainText.recordKey);
 
     // base64 encoding
     const cY: string = this.encryptSecretValue(plainText.y);
@@ -255,7 +252,7 @@ export class CryptoService {
     const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
 
     const kId: Uint8Array = sodium.crypto_generichash(sodium.crypto_generichash_BYTES,
-                                                      hexRid.substr(ridLen / 2, ridLen));
+      hexRid.substr(ridLen / 2, ridLen));
     return { slope, kId };
   }
 
@@ -327,10 +324,10 @@ export class CryptoService {
     for (const i in data) {
       const encryptedRecord: string = data[i].encryptedRecord;
       const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(sodium.from_base64(data[i].kId),
-                                              data[i].encryptedRecordKey);
+        data[i].encryptedRecordKey);
 
       const decryptedRecord: Uint8Array = this.symmetricDecrypt(sodium.from_base64(decryptedRecordKey),
-                                                                encryptedRecord);
+        encryptedRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
@@ -406,16 +403,15 @@ export class CryptoService {
     return y.minus(slope.times(x));
   }
 
-
   public test() {
     this.sodiumPromise.then(() => {
       this.ocKeys = sodium.crypto_box_keypair();
       this.userKeys = sodium.crypto_box_keypair();
 
-      this.submitAndEncrypt('hello', 'w0rld');
-      this.submitAndEncrypt('hello', 'world');
-      var coords = this.retrieveCoords();
-      console.log('cor', coords);
+      this.submitAndEncrypt("hello", "w0rld");
+      this.submitAndEncrypt("hello", "world");
+      const coords = this.retrieveCoords();
+      console.log("cor", coords);
     });
   }
 
