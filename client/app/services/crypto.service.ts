@@ -245,7 +245,7 @@ export class CryptoService {
   }
 
   /**
-   * Takes RID partitions the first 128 bits for the slope and the second 128 bits for kId
+   * Takes RID partitions the first 256 bits for the slope and the second 256 bits for kId
    * @param {string} hexRid - RID in hex string form
    * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
    */
