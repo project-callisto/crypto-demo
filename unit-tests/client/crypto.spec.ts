@@ -1,7 +1,7 @@
 import * as faker from "faker";
 import "jasmine-expect-count";
-import * as _sodium from "libsodium-wrappers";
 import {
+  asyncCryptoServiceFactory,
   CryptoService,
   IDecryptedData,
   IEncryptedData,
@@ -45,21 +45,21 @@ describe("Crypto service", () => {
 
   it("[SPEC] has a public submission api", async () => {
     (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       expect(crypto.submitAndEncrypt).toBeDefined();
     });
   });
 
   it("[SPEC] has a public decryption api", async () => {
     (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       expect(crypto.decryptData).toBeDefined();
     });
   });
 
   it("[SPEC] takes string input on the submission api", async () => {
     (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const encryptedData: IEncryptedData = crypto.submitAndEncrypt("XXXXXXX", "Alice");
       expect(encryptedData).toBeTruthy();
     });
@@ -67,7 +67,7 @@ describe("Crypto service", () => {
 
   it("[SPEC] has an RID", async () => {
     (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const encryptedData: IEncryptedData = crypto.submitAndEncrypt("XXXXXXX", "Alice");
       expect(encryptedData.hashedRid).toBeTruthy();
     });
@@ -77,7 +77,7 @@ describe("Crypto service", () => {
     let perpID: number = 65;
     const maxPerpID: number = 90;
     (jasmine as any).expectCount(maxPerpID - perpID + 1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       while (perpID <= maxPerpID) {
         const encryptedData: IEncryptedData = crypto.submitAndEncrypt(String.fromCharCode(perpID), "Alice");
         expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
@@ -88,7 +88,7 @@ describe("Crypto service", () => {
 
   it("[REGRESSION] returns non-zero slopes", async () => {
     (jasmine as any).expectCount(1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const userName: string = faker.name.findName();
       const perpInput: string = faker.name.findName();
       crypto.submitAndEncrypt(perpInput, userName); // self
@@ -104,7 +104,7 @@ describe("Crypto service", () => {
     let perpID: number = 65;
     const maxPerpID: number = 90;
     (jasmine as any).expectCount(maxPerpID - perpID + 1);
-    await cryptoPromise().then((crypto: CryptoService): void => {
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       while (perpID <= maxPerpID) {
         const userName: string = faker.name.findName();
         const perpInput: string = String.fromCharCode(perpID) + faker.name.findName();
@@ -118,10 +118,5 @@ describe("Crypto service", () => {
       }
     });
   });
-
-  async function cryptoPromise(): Promise<CryptoService> {
-    await _sodium.ready;
-    return new CryptoService(_sodium);
-  }
 
 });

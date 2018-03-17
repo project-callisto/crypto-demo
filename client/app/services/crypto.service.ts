@@ -2,6 +2,7 @@
 import { Injectable } from "@angular/core";
 import bigInt = require("big-integer");
 import * as $ from "jquery";
+import * as _uninitalizedSodiumDoNotUse from "libsodium-wrappers";
 import * as encoding from "text-encoding";
 
 /**
@@ -54,6 +55,11 @@ export interface IRIDComponents {
 export interface IRecord {
   readonly perpId: string;
   readonly userName: string;
+}
+
+export async function asyncCryptoServiceFactory(): Promise<CryptoService> {
+  await _uninitalizedSodiumDoNotUse.ready;
+  return new CryptoService(_uninitalizedSodiumDoNotUse);
 }
 
 /**
