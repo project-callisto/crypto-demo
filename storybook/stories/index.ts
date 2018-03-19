@@ -1,12 +1,30 @@
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/angular";
 import bigInt = require("big-integer");
+import { FirstStepComponent } from "./../../client/app/first-step.component";
 import { GraphComponent } from "./../../client/app/graph.component";
+import { NavComponent } from "./../../client/app/nav.component";
 
 /* tslint:disable */
 
-storiesOf("Graph Component", module)
-  .add("basic data case", () => ({
+storiesOf("Valkyrie Demo", module)
+
+  .add("nav", () => ({
+    component: NavComponent,
+    props: { sectionStep: 3 },
+  }))
+
+  .add("first step", () => ({
+    component: FirstStepComponent,
+    props: { shown: true },
+    moduleMetadata: {
+      declarations: [
+        NavComponent,
+      ],
+    },
+  }))
+
+  .add("graph", () => ({
     component: GraphComponent,
     props: {
       coords: [
@@ -64,4 +82,5 @@ storiesOf("Graph Component", module)
         ],
       },
     },
-  }));
+  }))
+  ;
