@@ -407,18 +407,4 @@ export class CryptoService {
 
     return y.minus(slope.times(x));
   }
-
-
-  public test() {
-    this.sodiumPromise.then(() => {
-      this.ocKeys = sodium.crypto_box_keypair();
-      this.userKeys = sodium.crypto_box_keypair();
-
-      this.submitAndEncrypt('hello', 'w0rld');
-      this.submitAndEncrypt('hello', 'world');
-      var coords = this.retrieveCoords();
-      console.log('cor', coords);
-    });
-  }
-
 }
