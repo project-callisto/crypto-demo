@@ -183,9 +183,8 @@ export class CryptoService {
    */
   public decryptData(): IDecryptedData {
     const data: IEncryptedData[] = this.getMatchedData();
-    console.log('data', data);
     if (data.length < 2) {
-      return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
+      return { decryptedRecords: [], slope: bigInt(0), rid: "no matches found", coords: [] };
     }
 
     const yValues: bigInt.BigInteger[] = this.decryptSecretValues(data);
