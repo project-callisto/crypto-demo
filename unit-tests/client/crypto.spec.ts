@@ -1,4 +1,5 @@
 import * as faker from "faker";
+import bigInt = require("big-integer");
 import "jasmine-expect-count";
 import {
   asyncCryptoServiceFactory,
@@ -23,7 +24,7 @@ import {
 describe("Crypto service", () => {
 
   const sampleEncrypted: IEncryptedData = {
-    hashedRid: "rid",
+    doublyHashedRid: bigInt('rid'),
     encryptedRecord: "record",
     encryptedRecordKey: "key",
     userPubKey: "pub",
@@ -69,7 +70,7 @@ describe("Crypto service", () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const encryptedData: IEncryptedData = crypto.submitAndEncrypt("XXXXXXX", "Alice");
-      expect(encryptedData.hashedRid).toBeTruthy();
+      expect(encryptedData.doublyHashedRid).toBeTruthy();
     });
   });
 
@@ -80,7 +81,7 @@ describe("Crypto service", () => {
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       while (perpID <= maxPerpID) {
         const encryptedData: IEncryptedData = crypto.submitAndEncrypt(String.fromCharCode(perpID), "Alice");
-        expect(encryptedData.hashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
+        expect(encryptedData.doublyHashedRid).toBeTruthy('Using perpID "' + String.fromCharCode(perpID) + '"');
         perpID++;
       }
     });

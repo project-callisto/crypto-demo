@@ -93,6 +93,22 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
+<<<<<<< HEAD
+    // matched perpInput, diff username
+
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName + this.userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    const decryptedData: IDecryptedData = this.crypto.decryptData();
+    this.fifthStep.RID = encryptedData.doublyHashedRid.toString();
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords);
+
+    // unmatched perpInput
+    this.crypto.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    this.crypto.submitAndEncrypt(this.perpInput + "1", "Bob");
+
+=======
+>>>>>>> dc433dc9013c36c063bcce1d57ba0320156d04be
     this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
@@ -116,6 +132,36 @@ export class StepComponent {
   }
 
   private async submitUserEntry(): Promise<void> {
+<<<<<<< HEAD
+    const plainText: IPlainTextData = this.crypto.createDataSubmission(this.perpInput, this.userName);
+    const encryptedData: IEncryptedData = this.crypto.encryptData(plainText);
+    this.crypto.postData(encryptedData);
+    this.firstStep.recordKey = plainText.recordKey;
+    this.secondStep.plainTextData = plainText;
+    this.thirdStep.plainTextData = plainText;
+    this.fourthStep.encryptedData = encryptedData;
+    this.fifthStep.RID = encryptedData.doublyHashedRid.toString();
+  }
+
+  private async generateGraphData(): Promise<void> {
+    // unmatched perpInput
+    let encryptedData: IEncryptedData = this.crypto.submitAndEncrypt(this.perpInput + this.perpInput, "Alice");
+    this.fifthStep.RID2 = encryptedData.doublyHashedRid.toString();
+
+    // unmatched perpInput
+    encryptedData = this.crypto.submitAndEncrypt(this.perpInput + "1", "Bob");
+    this.fifthStep.RID3 = encryptedData.doublyHashedRid.toString();
+
+    // matched perpInput, diff username
+    encryptedData = this.crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+    this.fifthStep.RID4 = encryptedData.doublyHashedRid.toString();
+
+    // input is matched, trigger decryption
+    const decryptedData: IDecryptedData = this.crypto.decryptData();
+    this.fifthStep.decryptedData = decryptedData;
+    this.fifthStep.coords = this.crypto.retrieveCoords();
+    this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
+=======
     await this.cryptoPromise.then((crypto: CryptoService): void => {
       const plainText: IPlainTextData = crypto.createDataSubmission(this.perpInput, this.userName);
       const encryptedData: IEncryptedData = crypto.encryptData(plainText);
@@ -148,6 +194,7 @@ export class StepComponent {
       console.log(this.fifthStep.coords);
       this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
     });
+>>>>>>> dc433dc9013c36c063bcce1d57ba0320156d04be
   }
 
 }
