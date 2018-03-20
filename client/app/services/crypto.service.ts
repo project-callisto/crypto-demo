@@ -15,7 +15,7 @@ export interface IKeyPair {
 }
 
 export interface IEncryptedData {
-  readonly hashedRid: string;
+  readonly doublyHashedRid: bigInt.BigInteger;
   readonly encryptedRecord: string;
   readonly encryptedRecordKey: string;
   readonly userPubKey: string;
@@ -109,9 +109,10 @@ export class CryptoService {
 
     // base64 encoding
     const cY: string = this.encryptSecretValue(plainText.y);
+    const hhRid = bigInt(sodium.to_hex(sodium.crypto_hash(plainText.rid.toString())), this.HEX);
 
     return {
-      hashedRid: sodium.to_base64(sodium.crypto_hash(plainText.rid.toString())),
+      doublyHashedRid: hhRid,
       encryptedRecord,
       encryptedRecordKey,
       userPubKey: sodium.to_base64(this.userKeys.publicKey),
@@ -182,6 +183,7 @@ export class CryptoService {
    */
   public decryptData(): IDecryptedData {
     const data: IEncryptedData[] = this.getMatchedData();
+    console.log('data', data);
     if (data.length < 2) {
       return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
     }
@@ -225,7 +227,7 @@ export class CryptoService {
    */
   private getMatchedData(): IEncryptedData[] {
     for (let i: number = 1; i < this.dataSubmissions.length; i++) {
-      if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
+      if (this.dataSubmissions[0].doublyHashedRid.equals(this.dataSubmissions[i].doublyHashedRid)) {
         return [this.dataSubmissions[0], this.dataSubmissions[i]];
       }
     }
@@ -245,7 +247,7 @@ export class CryptoService {
   }
 
   /**
-   * Takes RID partitions the first 256 bits for the slope and the second 256 bits for kId
+   * Takes RID partitions the first 128 bits for the slope and the second 128 bits for kId
    * @param {string} hexRid - RID in hex string form
    * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
    */
