@@ -15,10 +15,7 @@
     "forin": false,
     "no-consecutive-blank-lines": true,
     "object-literal-sort-keys": false,
-    "space-before-function-paren": [
-      true,
-      "never"
-    ],
+    "space-before-function-paren": false,
     "typedef": [
       true,
       "call-signature",
