@@ -18,18 +18,7 @@ describe("Crypto service", () => {
 
   
   it('Correct storage and retrieval', () =>  {
-    // crypto.init();
 
-    crypto.test();
-    // console.log('meow')
-    // setTimeout(() => {
-    //   console.log('hello??')
-    //   crypto.submitAndEncrypt('hello', 'world');
-    //   crypto.submitAndEncrypt('hello', 'w0rld');
-    //   const coords = crypto.retrieveCoords();
-
-    //   console.log('c', coords);
-    // }, 30000);
   });
 
   
