@@ -14,7 +14,6 @@ export class AsyncCryptoService {
   public cryptoPromise: Promise<CryptoService>;
 
   constructor() {
-    console.log("starting async crypto service");
     this.cryptoPromise = (async (): Promise<CryptoService> => {
       await _uninitalizedSodiumDoNotUse.ready;
       return new CryptoService(_uninitalizedSodiumDoNotUse);
