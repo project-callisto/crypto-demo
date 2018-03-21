@@ -5,6 +5,7 @@ import { FourthStepComponent } from "./fourth-step.component";
 import { IntroComponent } from "./intro.component";
 import { LastStepComponent } from "./last-step.component";
 import { SecondStepComponent } from "./second-step.component";
+import { AsyncCryptoService } from "./services/async-crypto.service";
 import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { ThirdStepComponent } from "./third-step.component";
@@ -38,12 +39,8 @@ import * as _sodium from "libsodium-wrappers";
     ></sixth-step>
     <last-step></last-step>
     `,
-  providers: [
-    CryptoService,
-  ],
 })
 export class StepComponent {
-  public cryptoPromise: Promise<CryptoService>;
   private perpInput: string;
   private userName: string;
 
@@ -56,11 +53,10 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
   @ViewChild(LastStepComponent) private lastStep: LastStepComponent;
 
-  constructor() {
-    this.cryptoPromise = (async (): Promise<CryptoService> => {
-      await _sodium.ready;
-      return new CryptoService(_sodium);
-    })();
+  constructor(
+    private asyncCryptoService: AsyncCryptoService,
+  ) {
+    //
   }
 
   /*
@@ -116,7 +112,7 @@ export class StepComponent {
   }
 
   private async submitUserEntry(): Promise<void> {
-    await this.cryptoPromise.then((crypto: CryptoService): void => {
+    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       const plainText: IPlainTextData = crypto.createDataSubmission(this.perpInput, this.userName);
       const encryptedData: IEncryptedData = crypto.encryptData(plainText);
       crypto.postData(encryptedData);
@@ -129,7 +125,7 @@ export class StepComponent {
   }
 
   private async generateGraphData(): Promise<void> {
-    await this.cryptoPromise.then((crypto: CryptoService): void => {
+    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       // unmatched perpInput
       let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
         this.perpInput + this.perpInput, this.userName + "Alice");
