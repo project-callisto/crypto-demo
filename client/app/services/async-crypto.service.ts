@@ -10,7 +10,8 @@ import { CryptoService } from "./crypto.service";
  */
 export async function asyncCryptoServiceFactory(): Promise<CryptoService> {
   await _uninitalizedSodiumDoNotUse.ready;
-  return new CryptoService(_uninitalizedSodiumDoNotUse);
+  const sodium: any = _uninitalizedSodiumDoNotUse;
+  return new CryptoService(sodium);
 }
 
 /*
