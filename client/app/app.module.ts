@@ -18,6 +18,9 @@ import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
+import * as _sodium from "libsodium-wrappers";
+import { AsyncCryptoService } from "./services/async-crypto.service";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,7 +43,7 @@ import { ThirdStepComponent } from "./third-step.component";
     FormsModule,
   ],
   providers: [
-    CryptoService,
+    AsyncCryptoService,
   ],
   bootstrap: [AppComponent],
 })

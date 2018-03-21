@@ -1,7 +1,7 @@
 import * as faker from "faker";
 import "jasmine-expect-count";
+import { asyncCryptoServiceFactory } from "../../client/app/services/async-crypto.service";
 import {
-  asyncCryptoServiceFactory,
   CryptoService,
   IDecryptedData,
   IEncryptedData,
