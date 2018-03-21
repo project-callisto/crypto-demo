@@ -19,6 +19,9 @@ export async function asyncCryptoServiceFactory(): Promise<CryptoService> {
  * At time of writing, this is only useful in angular components.
  * It is instanced once, to provide a single CryptoService instance
  * for all controllers.
+ *
+ * The @Injectable() decorator is for angular's dependency injection
+ * https://angular.io/guide/architecture-services
  */
 @Injectable()
 export class AsyncCryptoService {
