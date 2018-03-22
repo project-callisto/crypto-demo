@@ -117,7 +117,7 @@ export class StepComponent {
 
   private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      crypto.randomizePerpInput(this.perpInput, this.userName);
+      crypto.submitData(this.perpInput, this.userName);
       // const plainText: IPlainTextData = crypto.createDataSubmission(
       //   this.perpInput, this.userName, this.firstStep.recordKey);
       // const encryptedData: IEncryptedData = crypto.encryptData(plainText);

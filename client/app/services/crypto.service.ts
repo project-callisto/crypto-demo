@@ -170,7 +170,7 @@ export class CryptoService {
    * @param {string} userName - inputted user name
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public randomizePerpInput(perpId: string, userName: string): void {
+  public submitData(perpId: string, userName: string): void {
     
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const p_hat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
