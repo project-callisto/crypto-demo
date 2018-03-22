@@ -117,11 +117,31 @@ export class StepComponent {
 
   private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const derivedPromise = crypto.randomizePerpInput(this.perpInput);
-      const userName = this.userName;
-      const perpId = this.perpInput;
-      const prime = this.PRIME;
-      console.log(derivedPromise);
+      crypto.randomizePerpInput(this.perpInput, this.userName);
+      // const plainText: IPlainTextData = crypto.createDataSubmission(
+      //   this.perpInput, this.userName, this.firstStep.recordKey);
+      // const encryptedData: IEncryptedData = crypto.encryptData(plainText);
+      // crypto.postData(encryptedData);
+      // this.firstStep.recordKey = plainText.recordKey;
+      // this.secondStep.plainTextData = plainText;
+      // this.thirdStep.plainTextData = plainText;
+      // this.fourthStep.encryptedData = encryptedData;
+      // this.fifthStep.RID = encryptedData.hashedRid;
+    });
+  }
+
+
+  // private async submitUserEntry(): void {
+    
+  // }
+  // private async submitUserEntry(): Promise<void> {
+  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+  //     crypto.randomizePerpInput(this.perpInput);
+  //   }
+  
+}
+
+
       // derivedPromise.then(function(res) {
       //   console.log(res);
       // });
@@ -154,8 +174,6 @@ export class StepComponent {
       // this.thirdStep.plainTextData = plainText;
       // this.fourthStep.encryptedData = encryptedData;
       // this.fifthStep.RID = encryptedData.hashedRid;
-    }
-  }
 
   // private async generateGraphData(): Promise<void> {
   //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {

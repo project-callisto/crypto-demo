@@ -170,7 +170,7 @@ export class CryptoService {
    * @param {string} userName - inputted user name
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public randomizePerpInput(perpId: string): void {
+  public randomizePerpInput(perpId: string, userName: string): void {
     
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const p_hat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
@@ -185,7 +185,7 @@ export class CryptoService {
       const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
       // const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
       const pi = sodium.to_base64(values[2].toString());
-      const U = bigInt(sodium.to_hex(sodium.crypto_hash('[TODO]')), 16);
+      const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16);
 
       const pT: IPlainTextData = {
         U,
