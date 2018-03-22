@@ -4,6 +4,9 @@
   <p>Our encryption method uses four key techniques: client-side encryption, oblivious pseudorandom function over an elliptic curve, secure multi-cloud key federation, and linear secret sharing. Our white paper explains these techniques in more detail. This demo focuses on highlighting client-side encryption and linear secret sharing. Data inputs will not be stored.</p>
   <p>To begin, enter a user name and a perpetrator name.</p>  
 
+  <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
+  <code class='calc-display-value text-centered' id="calc-rid">{{ recordKey }}</code>
+
   <form class="perp-name-form" action="#" #userInputForm="ngForm">
     <div class="input-row">
       <div>
@@ -15,8 +18,6 @@
         <input #perpInput="ngModel" required type="text" id="perpInput" name="perpInput" ngModel />
       </div>
     </div>
-    <p class="subtext">K<sub>RECORD</sub>, a randomly generated key to encrypt user name and perp name</p>
-    <code class='calc-display-value text-centered' id="calc-rid">{{ recordKey }}</code>
     <div class="align-right-on-large">
       <input class="btn advance-button" value="next" type="submit" (click)="perpSubmit($event, perpInput.value, userInput.value);" [disabled]="!userInputForm.form.valid" />
     </div>  
