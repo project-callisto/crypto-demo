@@ -15,24 +15,17 @@ export interface IKeyPair {
 }
 
 export interface IEncryptedData {
-  readonly hashedRid: string;
-  readonly encryptedRecord: string;
-  readonly encryptedRecordKey: string;
-  readonly userPubKey: string;
-  readonly cY: string;
-  readonly cX: string;
-  readonly kId: string;
+  readonly pi: string;
+  readonly c: string; // ciphertext
 }
 
 export interface IPlainTextData {
-  readonly rid: bigInt.BigInteger;
-  readonly hRid: bigInt.BigInteger;
-  readonly slope: bigInt.BigInteger;
-  readonly kId: string;
+  readonly U: bigInt.BigInteger; // x-coordinate
+  readonly s: bigInt.BigInteger; // y-coordinate
+  readonly a: bigInt.BigInteger; // slope
+  readonly k: string;
+  readonly pi: string;
   readonly record: IRecord;
-  readonly recordKey: string;
-  readonly hashedX: bigInt.BigInteger;
-  readonly y: bigInt.BigInteger;
 }
 
 export interface ICoord {
@@ -86,41 +79,48 @@ export class CryptoService {
   ) {
     this.ocKeys = this.sodium.crypto_box_keypair();
     this.userKeys = this.sodium.crypto_box_keypair();
-
-    var p = this.hkdf('helllo', 'meoooow', 'salt', 9);
-
-    p.then(function(result){
-      console.log('res',result);
-    });
-    
-    
   }
+
+  
+  // public deriveValues(perpId) {
+
+  //   prom.then 
+  //   return prom;
+  // }
 
   /**
    * Main function for encrypting values
    * @param {IPlainTextData} plainText - all plaintext values needed to be encrypted
    * @returns {IEncryptedData} object containing all encrypted values to be stored
    */
-  public encryptData(plainText: IPlainTextData): IEncryptedData {
 
-    const encryptedRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.recordKey),
-      JSON.stringify(plainText.record));
-    const encryptedRecordKey: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.kId),
-      plainText.recordKey);
+  public encryptData(plainText: IPlainTextData): void {
+    console.log('sod',this.sodium);
+    console.log('pt',this.sodium.from_base64(plainText.k));
 
-    // base64 encoding
-    const cY: string = this.encryptSecretValue(plainText.y);
+    const eRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.k), JSON.stringify(plainText.record));
+    // console.log('errr', eRecord)
+    return {};
 
-    return {
-      hashedRid: this.sodium.to_base64(this.sodium.crypto_hash(plainText.rid.toString())),
-      encryptedRecord,
-      encryptedRecordKey,
-      userPubKey: this.sodium.to_base64(this.userKeys.publicKey),
-      cY,
-      cX: plainText.hashedX.toString(),
-      kId: plainText.kId,
-    };
   }
+  //   const encryptedRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.recordKey),
+  //     JSON.stringify(plainText.record));
+  //   const encryptedRecordKey: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.kId),
+  //     plainText.recordKey);
+
+  //   // base64 encoding
+  //   const cY: string = this.encryptSecretValue(plainText.y);
+
+  //   return {
+  //     hashedRid: this.sodium.to_base64(this.sodium.crypto_hash(plainText.rid.toString())),
+  //     encryptedRecord,
+  //     encryptedRecordKey,
+  //     userPubKey: this.sodium.to_base64(this.userKeys.publicKey),
+  //     cY,
+  //     cX: plainText.hashedX.toString(),
+  //     kId: plainText.kId,
+  //   };
+  // }
 
   /**
    * Submits inputted information to be processed and encrypted
@@ -129,10 +129,14 @@ export class CryptoService {
    * @returns {IEncryptedData}
    */
   public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
-    const encryptedData: IEncryptedData = this.encryptData(plainText);
-    this.postData(encryptedData);
-    return encryptedData;
+    const plainText: IPlainTextData = this.createDataSubmission(perpInput);
+   
+    console.log('t',plainText);
+    
+    // const encryptedData: IEncryptedData = this.encryptData(plainText);
+    // this.postData(encryptedData);
+    // return encryptedData;
+    return {};
   }
 
   /**
@@ -157,15 +161,34 @@ export class CryptoService {
    * @param {string} userName - inputted user name
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public createDataSubmission(perpId: string, userName: string): IPlainTextData {
+  public randomizePerpInput(perpId: string): void {
+    
+    const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
+    const p_hat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
-    const record: IRecord = {
-      perpId,
-      userName,
-    };
+    const derivedPromise = this.hkdf(p_hat, p_hat, 'salt', 9);
 
-    const rid: string = this.randomizePerpId(perpId);
-    return this.generateDataValues(rid, userName, record);
+    const sodium = this.sodium;
+    const crypto = this;
+
+    derivedPromise.then(function(values) {
+      const a = bigInt(values[0]);
+      const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
+      const pi = sodium.to_base64(values[2].toString());
+      const U = bigInt(sodium.to_hex(sodium.crypto_hash('[TODO]')), 16);
+
+      console.log('k', k)
+      const pT: IPlainTextData = {
+        U,
+        s: a.times(U).mod(17),
+        a,
+        k,
+        pi,
+        record: {perpId, userName: '[TODO]'}
+      }
+      console.log('pt', pT);
+      // crypto.encryptData(pT);
+    });
   }
 
   /**
@@ -209,16 +232,15 @@ export class CryptoService {
     };
   }
 
-  /**
-   * Randomizing perp Id
-   *
-   * @param {string} perpId - inputted perpetrator name
-   * @returns {string} randomized perp id
-   */
-  private randomizePerpId(perpId: string): string {
-    const sK: string = "Project Callisto Super Secret Key";
-    return this.sodium.to_base64(this.sodium.crypto_hash(perpId + sK));
-  }
+  // /**
+  //  * Randomizing perp Id
+  //  *
+  //  * @param {string} perpId - inputted perpetrator name
+  //  * @returns {string} randomized perp id
+  //  */
+  // private randomizePerpId(perpId: string): string {
+
+  // }
 
   /**
    * Searches for and returns entries with the same RID
@@ -275,31 +297,16 @@ export class CryptoService {
     return encrypted;
   }
 
-  /**
-   * Generates and formats all values needed to for linear secret sharing
-   * @param {string} rid - randomized perpetrator ID in base 64 encoding
-   * @param {string} userId - inputted user name
-   * @param {IRecord} record - object containing the perpetrator ID and user name
-   * @returns {IPlainTextData} all values needed to be encrypted
-   */
-  private generateDataValues(rid: string, userId: string, record: IRecord): IPlainTextData {
-
-    const prgRid: string = this.sodium.to_hex(this.sodium.crypto_hash(this.sodium.from_base64(rid)));
-    const derived: IRIDComponents = this.deriveFromRid(prgRid);
-    const hashedUserId: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userId)), this.HEX);
-    const bigIntRid: bigInt.BigInteger = bigInt(prgRid, this.HEX);
-
-    return {
-      rid: bigInt(this.sodium.to_hex(this.sodium.from_base64(rid)), this.HEX),
-      hRid: bigInt(prgRid, this.HEX),
-      slope: derived.slope,
-      recordKey: this.sodium.to_base64(this.sodium.crypto_secretbox_keygen()), // base64 encoding
-      kId: this.sodium.to_base64(derived.kId),
-      record,
-      hashedX: hashedUserId,
-      y: derived.slope.times(hashedUserId).plus(bigIntRid).mod(bigInt(this.PRIME)),
-    };
-  }
+  // /**
+  //  * Generates and formats all values needed to for linear secret sharing
+  //  * @param {string} rid - randomized perpetrator ID in base 64 encoding
+  //  * @param {IRecord} record - object containing the perpetrator ID and user name
+  //  * @returns {IPlainTextData} all values needed to be encrypted
+  //  */
+  // private generateDataValues(p_hat: string, record: IRecord): IPlainTextData {
+  
+  
+  // }
 
   /**
    * Symmetric encryption using given key

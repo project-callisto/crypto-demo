@@ -12,6 +12,7 @@ import { ThirdStepComponent } from "./third-step.component";
 
 import * as $ from "jquery";
 import * as _sodium from "libsodium-wrappers";
+import bigInt = require("big-integer");
 
 @Component({
   selector: "step-root",
@@ -43,6 +44,9 @@ import * as _sodium from "libsodium-wrappers";
 export class StepComponent {
   private perpInput: string;
   private userName: string;
+  private HEX: number = 16;
+  private PRIME: string = "340282366920938463463374607431768211297";
+
 
   @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
@@ -89,10 +93,10 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
-    this.generateGraphData().then(() => {
+    // this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
-    });
+    // });
   }
 
   public advanceFifthStep(): void {
@@ -113,37 +117,66 @@ export class StepComponent {
 
   private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const plainText: IPlainTextData = crypto.createDataSubmission(this.perpInput, this.userName);
-      const encryptedData: IEncryptedData = crypto.encryptData(plainText);
-      crypto.postData(encryptedData);
-      this.firstStep.recordKey = plainText.recordKey;
-      this.secondStep.plainTextData = plainText;
-      this.thirdStep.plainTextData = plainText;
-      this.fourthStep.encryptedData = encryptedData;
-      this.fifthStep.RID = encryptedData.hashedRid;
-    });
+      const derivedPromise = crypto.randomizePerpInput(this.perpInput);
+      const userName = this.userName;
+      const perpId = this.perpInput;
+      const prime = this.PRIME;
+      console.log(derivedPromise);
+      // derivedPromise.then(function(res) {
+      //   console.log(res);
+      // });
+
+      // derivedPromise.then(function(values) {
+      //   console.log(values);
+      //     const a = bigInt(values[0]);
+      //     const k = _sodium.to_base64(values[1].toString());
+      //     const pi = _sodium.to_base64(values[2].toString());
+      //     const U = bigInt(_sodium.to_hex(_sodium.crypto_hash(userName)), 16);
+
+      //     const pT = {
+      //       U,
+      //       s: a.times(U).mod(prime),
+      //       a,
+      //       k,
+      //       pi,
+      //       record: {perpId, userName}
+      //     }
+
+      //     const encryptedData: IEncryptedData = crypto.encryptData(pT);
+      //   });
+      // });
+
+
+      // const encryptedData: IEncryptedData = crypto.encryptData(plainText);
+      // crypto.postData(encryptedData);
+      // this.firstStep.recordKey = plainText.recordKey;
+      // this.secondStep.plainTextData = plainText;
+      // this.thirdStep.plainTextData = plainText;
+      // this.fourthStep.encryptedData = encryptedData;
+      // this.fifthStep.RID = encryptedData.hashedRid;
+    }
   }
 
-  private async generateGraphData(): Promise<void> {
-    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      // unmatched perpInput
-      let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
-        this.perpInput + this.perpInput, this.userName + "Alice");
-      this.fifthStep.RID2 = encryptedData.hashedRid;
-      // unmatched perpInput
-      encryptedData = crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
-      this.fifthStep.RID3 = encryptedData.hashedRid;
-      // matched perpInput, diff username
-      encryptedData = crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
-      this.fifthStep.RID4 = encryptedData.hashedRid;
-      // input is matched, trigger decryption
-      const decryptedData: IDecryptedData = crypto.decryptData();
-      console.log(decryptedData);
-      this.fifthStep.decryptedData = decryptedData;
-      this.fifthStep.coords = crypto.retrieveCoords();
-      console.log(this.fifthStep.coords);
-      this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
-    });
-  }
+  // private async generateGraphData(): Promise<void> {
+  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+  //     // unmatched perpInput
+  //     let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
+  //       this.perpInput + this.perpInput, this.userName + "Alice");
+  //     this.fifthStep.RID2 = encryptedData.hashedRid;
+  //     // unmatched perpInput
+  //     encryptedData = crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
+  //     this.fifthStep.RID3 = encryptedData.hashedRid;
+  //     // matched perpInput, diff username
+  //     encryptedData = crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+  //     this.fifthStep.RID4 = encryptedData.hashedRid;
+  //     // input is matched, trigger decryption
+  //     const decryptedData: IDecryptedData = crypto.decryptData();
+  //     console.log(decryptedData);
+  //     this.fifthStep.decryptedData = decryptedData;
+  //     this.fifthStep.coords = crypto.retrieveCoords();
+  //     console.log(this.fifthStep.coords);
+  //     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
+  //   });
+  // }
 
-}
+// }
