@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AsyncCryptoService } from "./services/async-crypto.service";
+import { CryptoService } from "./services/crypto.service";
 
 import * as $ from "jquery";
 
@@ -15,10 +17,16 @@ export interface IUserInput {
     "./styles/step.scss",
   ],
 })
-export class FirstStepComponent {
+export class FirstStepComponent implements OnInit {
   @Input() public shown: boolean = false;
-  @Input() public recordKey: string = "[[ Randomly Generated Key ]]";
+  @Input() public recordKey: string = "[[ Awaiting Randomly Generated Key ]]";
   @Output() public advanceStep: EventEmitter<IUserInput> = new EventEmitter<IUserInput>();
+
+  constructor(
+    private asyncCryptoService: AsyncCryptoService,
+  ) {
+    //
+  }
 
   public perpSubmit(event: Event, perpInput: string, userInput: string): void {
     event.preventDefault();
@@ -27,4 +35,15 @@ export class FirstStepComponent {
       this.advanceStep.emit(data);
     }
   }
+
+  public ngOnInit(): void {
+    this.createRecordKey();
+  }
+
+  private async createRecordKey(): Promise<void> {
+    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+      this.recordKey = crypto.createRecordKey();
+    });
+  }
+
 }

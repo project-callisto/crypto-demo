@@ -72,12 +72,18 @@ export class CryptoService {
 
   /**
    * CONSTANTS
-   * @param {Array<IEncryptedData>} dataSubmissions - storage for user inputted and generated data
    * @param {number} HEX - constant for conversions to hexadecimal
    */
-  private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
   private PRIME: string = "340282366920938463463374607431768211297";
+
+  /**
+   * USER DATA
+   * @param {number} recordKey - the key used for encrypting the user's copy of the record
+   * @param {Array<IEncryptedData>} dataSubmissions - storage for user inputted and generated data
+   */
+  private recordKey: string;
+  private dataSubmissions: IEncryptedData[] = [];
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -120,7 +126,8 @@ export class CryptoService {
    * @returns {IEncryptedData}
    */
   public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName);
+    const recordKey: string = this.createRecordKey();
+    const plainText: IPlainTextData = this.createDataSubmission(perpInput, userName, recordKey);
     const encryptedData: IEncryptedData = this.encryptData(plainText);
     this.postData(encryptedData);
     return encryptedData;
@@ -148,7 +155,7 @@ export class CryptoService {
    * @param {string} userName - inputted user name
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public createDataSubmission(perpId: string, userName: string): IPlainTextData {
+  public createDataSubmission(perpId: string, userName: string, recordKey: string): IPlainTextData {
 
     const record: IRecord = {
       perpId,
@@ -156,7 +163,7 @@ export class CryptoService {
     };
 
     const rid: string = this.randomizePerpId(perpId);
-    return this.generateDataValues(rid, userName, record);
+    return this.generateDataValues(rid, userName, record, recordKey);
   }
 
   /**
@@ -198,6 +205,11 @@ export class CryptoService {
       rid: rid.toString(),
       coords: [coordA, coordB],
     };
+  }
+
+  public createRecordKey(): string {
+    this.recordKey = this.sodium.to_base64(this.sodium.crypto_secretbox_keygen());
+    return this.recordKey;
   }
 
   /**
@@ -273,7 +285,7 @@ export class CryptoService {
    * @param {IRecord} record - object containing the perpetrator ID and user name
    * @returns {IPlainTextData} all values needed to be encrypted
    */
-  private generateDataValues(rid: string, userId: string, record: IRecord): IPlainTextData {
+  private generateDataValues(rid: string, userId: string, record: IRecord, recordKey: string): IPlainTextData {
 
     const prgRid: string = this.sodium.to_hex(this.sodium.crypto_hash(this.sodium.from_base64(rid)));
     const derived: IRIDComponents = this.deriveFromRid(prgRid);
@@ -284,7 +296,7 @@ export class CryptoService {
       rid: bigInt(this.sodium.to_hex(this.sodium.from_base64(rid)), this.HEX),
       hRid: bigInt(prgRid, this.HEX),
       slope: derived.slope,
-      recordKey: this.sodium.to_base64(this.sodium.crypto_secretbox_keygen()), // base64 encoding
+      recordKey,
       kId: this.sodium.to_base64(derived.kId),
       record,
       hashedX: hashedUserId,
