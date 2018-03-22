@@ -23,9 +23,15 @@ export interface IPlainTextData {
   readonly U: bigInt.BigInteger; // x-coordinate
   readonly s: bigInt.BigInteger; // y-coordinate
   readonly a: bigInt.BigInteger; // slope
-  readonly k: string;
+  readonly k: Uint8Array;
   readonly pi: string;
   readonly record: IRecord;
+}
+
+export interface IMessage {
+  readonly U: bigInt.BigInteger;
+  readonly s: bigInt.BigInteger;
+  readonly eRecord: string;
 }
 
 export interface ICoord {
@@ -94,14 +100,17 @@ export class CryptoService {
    * @returns {IEncryptedData} object containing all encrypted values to be stored
    */
 
-  public encryptData(plainText: IPlainTextData): void {
-    console.log('sod',this.sodium);
-    console.log('pt',this.sodium.from_base64(plainText.k));
+  public encryptData(plainText: IPlainTextData): string {
 
-    const eRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.k), JSON.stringify(plainText.record));
-    // console.log('errr', eRecord)
-    return {};
+    const eRecord: string = this.symmetricEncrypt(plainText.k, JSON.stringify(plainText.record));
+    const msg = {
+      U: plainText.U, // TODO: hash?!
+      s: plainText.s,
+      eRecord
+    }
+    const c: string = this.asymmetricEncrypt(msg);
 
+    return c;
   }
   //   const encryptedRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.recordKey),
   //     JSON.stringify(plainText.record));
@@ -129,9 +138,9 @@ export class CryptoService {
    * @returns {IEncryptedData}
    */
   public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-    const plainText: IPlainTextData = this.createDataSubmission(perpInput);
+    // const plainText: IPlainTextData = this.createDataSubmission(perpInput);
    
-    console.log('t',plainText);
+    // console.log('t',plainText);
     
     // const encryptedData: IEncryptedData = this.encryptData(plainText);
     // this.postData(encryptedData);
@@ -173,11 +182,11 @@ export class CryptoService {
 
     derivedPromise.then(function(values) {
       const a = bigInt(values[0]);
-      const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
+      const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
+      // const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
       const pi = sodium.to_base64(values[2].toString());
       const U = bigInt(sodium.to_hex(sodium.crypto_hash('[TODO]')), 16);
 
-      console.log('k', k)
       const pT: IPlainTextData = {
         U,
         s: a.times(U).mod(17),
@@ -186,8 +195,9 @@ export class CryptoService {
         pi,
         record: {perpId, userName: '[TODO]'}
       }
-      console.log('pt', pT);
-      // crypto.encryptData(pT);
+      
+      const encryptedData = crypto.encryptData(pT);
+      crypto.postData({c: encryptedData, pi});
     });
   }
 
@@ -232,23 +242,13 @@ export class CryptoService {
     };
   }
 
-  // /**
-  //  * Randomizing perp Id
-  //  *
-  //  * @param {string} perpId - inputted perpetrator name
-  //  * @returns {string} randomized perp id
-  //  */
-  // private randomizePerpId(perpId: string): string {
-
-  // }
-
   /**
    * Searches for and returns entries with the same RID
    * @returns {Array<IEncryptedData} matched entries
    */
   private getMatchedData(): IEncryptedData[] {
     for (let i: number = 1; i < this.dataSubmissions.length; i++) {
-      if (this.dataSubmissions[0].hashedRid === this.dataSubmissions[i].hashedRid) {
+      if (this.dataSubmissions[0].pi === this.dataSubmissions[i].pi) {
         return [this.dataSubmissions[0], this.dataSubmissions[i]];
       }
     }
@@ -287,11 +287,11 @@ export class CryptoService {
    * @param {bigInt.BigInteger} y - value derived from mx + RID
    * @returns {string} the encrypted value in base 64 encoding
    */
-  private encryptSecretValue(y: bigInt.BigInteger): string {
+  private asymmetricEncrypt(message: IMessage): string {
 
     const nonce: Uint8Array = this.sodium.randombytes_buf(this.sodium.crypto_box_NONCEBYTES);
     const cY: Uint8Array = this.sodium.crypto_box_easy(
-      y.toString(), nonce, this.ocKeys.publicKey, this.userKeys.privateKey);
+      JSON.stringify(message), nonce, this.ocKeys.publicKey, this.userKeys.privateKey);
     const encrypted: string = this.sodium.to_base64(cY) + "$" + this.sodium.to_base64(nonce);
 
     return encrypted;
