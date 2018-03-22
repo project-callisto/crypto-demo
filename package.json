@@ -52,6 +52,7 @@
         "libsodium-wrappers": "^0.7.3",
         "npm": "^5.7.1",
         "rxjs": "^5.5.7",
+        "sjcl": "^1.0.7",
         "text-encoding": "^0.6.4",
         "typescript": "<2.7",
         "webpack": "~3",

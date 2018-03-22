@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import bigInt = require("big-integer");
 import * as $ from "jquery";
 import * as encoding from "text-encoding";
+import sjcl = require('sjcl');
 
 /**
  * Data Objects
@@ -85,6 +86,14 @@ export class CryptoService {
   ) {
     this.ocKeys = this.sodium.crypto_box_keypair();
     this.userKeys = this.sodium.crypto_box_keypair();
+
+    var p = this.hkdf('helllo', 'meoooow', 'salt', 9);
+
+    p.then(function(result){
+      console.log('res',result);
+    });
+    
+    
   }
 
   /**
@@ -400,4 +409,52 @@ export class CryptoService {
     return y.minus(slope.times(x));
   }
 
+
+
+
+
+
+ 
+  /**
+   * hkdf - The HMAC-based Key Derivation Function
+   * http://mozilla.github.io/fxa-js-client/files/client_lib_hkdf.js.html
+   *
+   * @param {bitArray} ikm Initial keying material
+   * @param {bitArray} info Key derivation data
+   * @param {bitArray} salt Salt
+   * @param {integer} length Length of the derived key in bytes
+   * @return promise object- It will resolve with `output` data
+   */
+  private hkdf(ikm, info, salt, length) {
+
+    var mac = new sjcl.misc.hmac(salt, sjcl.hash.sha256);
+    mac.update(ikm);
+
+    // compute the PRK
+    var prk = mac.digest();
+
+    // hash length is 32 because only sjcl.hash.sha256 is used at this moment
+    var hashLength = 32;
+    var num_blocks = Math.ceil(length / hashLength);
+    var prev = sjcl.codec.hex.toBits('');
+    var output = '';
+
+    for (var i = 0; i < num_blocks; i++) {
+      var hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
+
+      var input = sjcl.bitArray.concat(
+        sjcl.bitArray.concat(prev, info),
+        sjcl.codec.utf8String.toBits((String.fromCharCode(i + 1)))
+      );
+
+      hmac.update(input);
+
+      prev = hmac.digest();
+      output += sjcl.codec.hex.fromBits(prev);
+    }
+
+    var truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
+
+    return Promise.resolve(truncated);
+  }
 }
