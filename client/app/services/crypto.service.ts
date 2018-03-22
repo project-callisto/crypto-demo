@@ -42,7 +42,7 @@ export interface ICoord {
 export interface IDecryptedData {
   readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
-  readonly rid: string;
+  readonly p: string;
   readonly coords: ICoord[];
 }
 
@@ -216,30 +216,32 @@ export class CryptoService {
    */
   public decryptData(): IDecryptedData {
     const data: IEncryptedData[] = this.getMatchedData();
-    if (data.length < 2) {
-      return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
-    }
+    // TODO:
+    // if (data.length < 2) {
+    //   return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
+    // }
 
-    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(data);
+    console.log('data',data);
+    const yValues: bigInt.BigInteger[] = this.asymmetricDecrypt(data);
 
-    let coordA: ICoord = this.createCoord(data[0], yValues[0]);
-    let coordB: ICoord = this.createCoord(data[1], yValues[1]);
+    // let coordA: ICoord = this.createCoord(data[0], yValues[0]);
+    // let coordB: ICoord = this.createCoord(data[1], yValues[1]);
 
-    if (coordA.x.geq(coordB.x)) {
-      const temp: ICoord = coordA;
-      coordA = coordB;
-      coordB = temp;
-    }
+    // if (coordA.x.geq(coordB.x)) {
+    //   const temp: ICoord = coordA;
+    //   coordA = coordB;
+    //   coordB = temp;
+    // }
 
-    const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    const rid: bigInt.BigInteger = this.getIntercept(coordA, slope);
+    // const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
+    // const rid: bigInt.BigInteger = this.getIntercept(coordA, slope);
 
-    return {
-      decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
-      slope,
-      rid: rid.toString(),
-      coords: [coordA, coordB],
-    };
+    // return {
+    //   decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
+    //   slope,
+    //   rid: rid.toString(),
+    //   coords: [coordA, coordB],
+    // };
   }
 
   /**

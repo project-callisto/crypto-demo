@@ -93,6 +93,7 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
+      this.decryption();
     // this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
@@ -115,18 +116,19 @@ export class StepComponent {
     }, 400);
   }
 
+  private async decryption(): Promise<void> {
+    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+      crypto.decryptData();
+
+    });
+  }
+
   private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       crypto.submitData(this.perpInput, this.userName);
-      // const plainText: IPlainTextData = crypto.createDataSubmission(
-      //   this.perpInput, this.userName, this.firstStep.recordKey);
-      // const encryptedData: IEncryptedData = crypto.encryptData(plainText);
-      // crypto.postData(encryptedData);
-      // this.firstStep.recordKey = plainText.recordKey;
-      // this.secondStep.plainTextData = plainText;
-      // this.thirdStep.plainTextData = plainText;
-      // this.fourthStep.encryptedData = encryptedData;
-      // this.fifthStep.RID = encryptedData.hashedRid;
+      crypto.submitData(this.perpInput + this.perpInput, this.userName + "Alice");
+      crypto.submitData("1234" + this.perpInput, this.userName + "Bob");
+      crypto.submitData(this.perpInput, this.userName + this.userName);
     });
   }
 
