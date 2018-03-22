@@ -216,13 +216,9 @@ export class CryptoService {
    */
   public decryptData(): IDecryptedData {
     const data: IEncryptedData[] = this.getMatchedData();
-    // TODO:
-    // if (data.length < 2) {
-    //   return { decryptedRecords: [], slope: bigInt(0), rid: "0", coords: [] };
-    // }
 
-    console.log('data',data);
-    const yValues: bigInt.BigInteger[] = this.asymmetricDecrypt(data);
+    const messages: IMessage[] = this.asymmetricDecrypt(data);
+    console.log('msg', messages)
 
     // let coordA: ICoord = this.createCoord(data[0], yValues[0]);
     // let coordB: ICoord = this.createCoord(data[1], yValues[1]);
@@ -374,24 +370,41 @@ export class CryptoService {
    * @param {Array<IEncryptedData>} data - array of matched IEncryptedData values
    * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
-  private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
-    const yValues: bigInt.BigInteger[] = [];
+  private asymmetricDecrypt(data: IEncryptedData[]): IMessage[] {
+    const messages = [];
     for (const i in data) {
-      const split: string[] = data[i].cY.split("$");
+      const split: string[] = data[i].c.split("$");
 
-      // All values are UInt8Array
-      const cY: Uint8Array = this.sodium.from_base64(split[0]);
+      const c: Uint8Array = this.sodium.from_base64(split[0]);
       const nonce: Uint8Array = this.sodium.from_base64(split[1]);
-      const userPK: Uint8Array = this.sodium.from_base64(data[i].userPubKey);
-      const y: Uint8Array = this.sodium.crypto_box_open_easy(
-        cY, nonce, this.userKeys.publicKey, this.ocKeys.privateKey);
 
-      // Convert back to bigInt
-      const yStr: string = new encoding.TextDecoder("utf-8").decode(y);
-      yValues.push(bigInt(yStr));
+      const msg: Uint8Array = this.sodium.crypto_box_open_easy(
+        c, nonce, this.userKeys.publicKey, this.ocKeys.privateKey);
+
+      const msgObj: IMessage = JSON.parse(new encoding.TextDecoder("utf-8").decode(msg));
+      messages.push(msgObj)
     }
-    return yValues;
+    return messages;
   }
+
+  // private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
+  //   const yValues: bigInt.BigInteger[] = [];
+  //   for (const i in data) {
+  //     const split: string[] = data[i].cY.split("$");
+
+  //     // All values are UInt8Array
+  //     const cY: Uint8Array = this.sodium.from_base64(split[0]);
+  //     const nonce: Uint8Array = this.sodium.from_base64(split[1]);
+  //     const userPK: Uint8Array = this.sodium.from_base64(data[i].userPubKey);
+  //     const y: Uint8Array = this.sodium.crypto_box_open_easy(
+  //       cY, nonce, this.userKeys.publicKey, this.ocKeys.privateKey);
+
+  //     // Convert back to bigInt
+  //     const yStr: string = new encoding.TextDecoder("utf-8").decode(y);
+  //     yValues.push(bigInt(yStr));
+  //   }
+  //   return yValues;
+  // }
 
   /**
    * Computes a slope based on the slope formula
