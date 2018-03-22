@@ -185,15 +185,18 @@ export class CryptoService {
       const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
       // const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
       const pi = sodium.to_base64(values[2].toString());
-      const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16);
+      const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
+
+      const bigK = bigInt(sodium.to_hex(k), crypto.HEX);
+      console.log('original slope', a, 'bigk', bigK);
 
       const pT: IPlainTextData = {
         U,
-        s: a.times(U).mod(17),
+        s: a.times(U).plus(bigK).mod(crypto.PRIME),
         a,
         k,
         pi,
-        record: {perpId, userName: '[TODO]'}
+        record: {perpId, userName}
       }
       
       const encryptedData = crypto.encryptData(pT);
@@ -220,20 +223,21 @@ export class CryptoService {
     const messages: IMessage[] = this.asymmetricDecrypt(data);
     console.log('msg', messages)
 
-    // let coordA: ICoord = this.createCoord(data[0], yValues[0]);
-    // let coordB: ICoord = this.createCoord(data[1], yValues[1]);
+    let coordA: ICoord = this.createCoord(messages[0]);
+    let coordB: ICoord = this.createCoord(messages[1]);
 
-    // if (coordA.x.geq(coordB.x)) {
-    //   const temp: ICoord = coordA;
-    //   coordA = coordB;
-    //   coordB = temp;
-    // }
+    if (coordA.x.geq(coordB.x)) {
+      const temp: ICoord = coordA;
+      coordA = coordB;
+      coordB = temp;
+    }
 
-    // const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    // const rid: bigInt.BigInteger = this.getIntercept(coordA, slope);
-
+    const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
+    const k: bigInt.BigInteger = this.getIntercept(coordA, slope);
     // return {
-    //   decryptedRecords: this.decryptRecords(data, rid.toString(this.HEX)),
+    const decryptedRecords = this.decryptRecords(data, k.toString(this.HEX));
+
+    console.log('slope', slope);
     //   slope,
     //   rid: rid.toString(),
     //   coords: [coordA, coordB],
@@ -258,10 +262,10 @@ export class CryptoService {
    * @param {bigInt.BigInteger} y
    * @returns {ICoord} coordinate used for computations
    */
-  private createCoord(data: IEncryptedData, y: bigInt.BigInteger): ICoord {
+  private createCoord(msg: IMessage): ICoord {
     return {
-      x: bigInt(data.cX),
-      y,
+      x: bigInt(msg.U),
+      y: bigInt(msg.s)
     };
   }
 
@@ -329,19 +333,19 @@ export class CryptoService {
   private decryptRecords(data: IEncryptedData[], rid: string): IRecord[] {
 
     const decryptedRecords: IRecord[] = [];
-    const derived: IRIDComponents = this.deriveFromRid(rid);
+    // const derived: IRIDComponents = this.deriveFromRid(rid);
 
-    for (const i in data) {
-      const encryptedRecord: string = data[i].encryptedRecord;
-      const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(data[i].kId),
-        data[i].encryptedRecordKey);
+    // for (const i in data) {
+    //   const encryptedRecord: string = data[i].encryptedRecord;
+    //   const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(data[i].kId),
+    //     data[i].encryptedRecordKey);
 
-      const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(decryptedRecordKey),
-        encryptedRecord);
-      const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
-      decryptedRecords.push(JSON.parse(dStr));
-    }
-    return decryptedRecords;
+    //   const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(decryptedRecordKey),
+    //     encryptedRecord);
+    //   const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+    //   decryptedRecords.push(JSON.parse(dStr));
+    // }
+    // return decryptedRecords;
   }
 
   /**
@@ -415,8 +419,10 @@ export class CryptoService {
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
     const top: bigInt.BigInteger = c2.y.minus(c1.y);
     const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
+    console.log('top', top, bottom)
 
-    return top.multiply(bottom.modInv(this.PRIME));
+    return top.divide(bottom);
+    // return top.multiply(bottom.modInv(this.PRIME));
   }
 
   /**
