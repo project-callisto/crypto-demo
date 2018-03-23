@@ -123,6 +123,7 @@ export class StepComponent {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       const userPT = crypto.getPlainText();
       this.secondStep.plainTextData = userPT;
+      this.thirdStep.plainTextData = userPT;
     });  
   }
 
