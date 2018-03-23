@@ -419,10 +419,10 @@ export class CryptoService {
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
     const top: bigInt.BigInteger = c2.y.minus(c1.y);
     const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
-    console.log('top', top, bottom)
 
-    return top.divide(bottom);
-    // return top.multiply(bottom.modInv(this.PRIME));
+    return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
+
+    // return top.multiply(modInv(bottom, PRIME)).mod(PRIME)".
   }
 
   /**
