@@ -20,6 +20,7 @@ export interface IEncryptedData {
 }
 
 export interface IPlainTextData {
+  readonly pHat: string; // randomized perp id
   readonly U: bigInt.BigInteger; // x-coordinate
   readonly s: bigInt.BigInteger; // y-coordinate
   readonly a: bigInt.BigInteger; // slope
@@ -69,6 +70,7 @@ export class CryptoService {
    */
   private ocKeys: IKeyPair;
   private userKeys: IKeyPair;
+  private plainText: IPlainTextData = null;
 
   /**
    * CONSTANTS
@@ -152,17 +154,17 @@ export class CryptoService {
    * Returns all coordinates for displaying on graph
    * @returns {Array<ICoord>}
    */
-  public retrieveCoords(): ICoord[] {
-    const coords: ICoord[] = [];
-    const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
+  // public retrieveCoords(): ICoord[] {
+  //   const coords: ICoord[] = [];
+  //   const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
 
-    for (let i: number = 0; i < this.dataSubmissions.length; i++) {
-      coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
-    }
+  //   for (let i: number = 0; i < this.dataSubmissions.length; i++) {
+  //     coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
+  //   }
 
-    return coords;
+  //   return coords;
 
-  }
+  // }
 
   /**
    * Function for taking user inputs and returning values to be encrypted
@@ -173,9 +175,9 @@ export class CryptoService {
   public submitData(perpId: string, userName: string): void {
     
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
-    const p_hat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
+    const pHat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
-    const derivedPromise = this.hkdf(p_hat, p_hat, 'salt', 9);
+    const derivedPromise = this.hkdf(pHat, pHat, 'salt', 9);
 
     const sodium = this.sodium;
     const crypto = this;
@@ -183,14 +185,12 @@ export class CryptoService {
     derivedPromise.then(function(values) {
       const a = bigInt(values[0]);
       const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
-      // const k = sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(values[1].toString()));
       const pi = sodium.to_base64(values[2].toString());
       const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
-
       const bigK = bigInt(sodium.to_hex(k), crypto.HEX);
 
-      console.log('big',bigK);
       const pT: IPlainTextData = {
+        pHat,
         U,
         s: a.times(U).plus(bigK).mod(crypto.PRIME),
         a,
@@ -198,12 +198,20 @@ export class CryptoService {
         pi,
         record: {perpId, userName}
       }
+      // TODO: this is a hack
+      if (crypto.plainText === null) {
+        crypto.plainText = pT;
+      }
       
       const encryptedData = crypto.encryptData(pT);
       crypto.postData({c: encryptedData, pi});
     });
   }
 
+  // for display purposes
+  public getPlainText(): IPlainTextData {
+    return this.plainText;
+  }
   /**
    * Stores encrypted data
    * @param {IEncryptedData} encryptedData

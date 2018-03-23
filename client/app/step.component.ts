@@ -79,7 +79,10 @@ export class StepComponent {
     this.submitUserEntry().then(() => {
       this.secondStep.shown = true;
       this.scrollTo("second-step");
+      this.populateValues();
     });
+
+
   }
 
   public advanceSecondStep(): void {
@@ -116,6 +119,13 @@ export class StepComponent {
     }, 400);
   }
 
+  private async populateValues(): Promise<void>{
+    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+      const userPT = crypto.getPlainText();
+      this.secondStep.plainTextData = userPT;
+    });  
+  }
+
   private async decryption(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       crypto.decryptData();
@@ -131,7 +141,6 @@ export class StepComponent {
       crypto.submitData(this.perpInput, this.userName + this.userName);
     });
   }
-
 
   // private async submitUserEntry(): void {
     
