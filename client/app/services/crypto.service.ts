@@ -133,38 +133,41 @@ export class CryptoService {
   //   };
   // }
 
-  /**
-   * Submits inputted information to be processed and encrypted
-   * @param perpInput - inputted perpetrator name
-   * @param userName - inputted user name
-   * @returns {IEncryptedData}
-   */
-  public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-    // const plainText: IPlainTextData = this.createDataSubmission(perpInput);
+  // /**
+  //  * Submits inputted information to be processed and encrypted
+  //  * @param perpInput - inputted perpetrator name
+  //  * @param userName - inputted user name
+  //  * @returns {IEncryptedData}
+  //  */
+  // public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
+  //   // const plainText: IPlainTextData = this.createDataSubmission(perpInput);
    
-    // console.log('t',plainText);
+  //   // console.log('t',plainText);
     
-    // const encryptedData: IEncryptedData = this.encryptData(plainText);
-    // this.postData(encryptedData);
-    // return encryptedData;
-    return {};
-  }
+  //   // const encryptedData: IEncryptedData = this.encryptData(plainText);
+  //   // this.postData(encryptedData);
+  //   // return encryptedData;
+  //   return {};
+  // }
 
   /**
    * Returns all coordinates for displaying on graph
    * @returns {Array<ICoord>}
    */
-  // public retrieveCoords(): ICoord[] {
-  //   const coords: ICoord[] = [];
-  //   const yValues: bigInt.BigInteger[] = this.decryptSecretValues(this.dataSubmissions);
+  public getCoords(): ICoord[] {
+    const coords: ICoord[] = [];
+    const messages = this.asymmetricDecrypt(this.dataSubmissions);
 
-  //   for (let i: number = 0; i < this.dataSubmissions.length; i++) {
-  //     coords.push(this.createCoord(this.dataSubmissions[i], yValues[i]));
-  //   }
+    for (let i: number = 0; i < messages.length; i++) {
+      coords.push(this.createCoord(messages[i]));
+    }
+    console.log('coords', coords);
+    return coords;
+  }
 
-  //   return coords;
-
-  // }
+  public getDataSubmissions(): Array<IEncryptedData> {
+    return this.dataSubmissions;
+  }
 
   /**
    * Function for taking user inputs and returning values to be encrypted
@@ -226,6 +229,7 @@ export class CryptoService {
    * @returns {IDecryptedData}
    */
   public decryptData(): IDecryptedData {
+    this.getCoords();
     const data: IEncryptedData[] = this.getMatchedData();
 
     const messages: IMessage[] = this.asymmetricDecrypt(data);

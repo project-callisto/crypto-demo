@@ -124,6 +124,19 @@ export class StepComponent {
       const userPT = crypto.getPlainText();
       this.secondStep.plainTextData = userPT;
       this.thirdStep.plainTextData = userPT;
+      const dataSubs = crypto.getDataSubmissions();
+      this.fourthStep.encryptedData = dataSubs[0];
+    
+      // const decryptedData: IDecryptedData = crypto.decryptData();
+      // console.log(decryptedData);
+      // this.fifthStep.decryptedData = decryptedData;
+      // this.fifthStep.coords = crypto.retrieveCoords();
+      // console.log(this.fifthStep.coords);
+      // this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
+      
+      // for (let i in dataSubs) {
+      //   this.fifthStep.pi[i] = dataSubs[i].pi;
+      // }   
     });  
   }
 
@@ -142,6 +155,24 @@ export class StepComponent {
       crypto.submitData(this.perpInput, this.userName + this.userName);
     });
   }
+
+
+  // private async generateGraphData(): Promise<void> {
+  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+  //     // unmatched perpInput
+  //     // let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
+  //     //   this.perpInput + this.perpInput, this.userName + "Alice");
+  //     // this.fifthStep.RID2 = encryptedData.hashedRid;
+  //     // unmatched perpInput
+  //     // encryptedData = crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
+  //     // this.fifthStep.RID3 = encryptedData.hashedRid;
+  //     // matched perpInput, diff username
+  //     // encryptedData = crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
+  //     // this.fifthStep.RID4 = encryptedData.hashedRid;
+  //     // input is matched, trigger decryption
+
+  //   });
+  // }
 
   // private async submitUserEntry(): void {
     
@@ -187,26 +218,5 @@ export class StepComponent {
       // this.fourthStep.encryptedData = encryptedData;
       // this.fifthStep.RID = encryptedData.hashedRid;
 
-  // private async generateGraphData(): Promise<void> {
-  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-  //     // unmatched perpInput
-  //     let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
-  //       this.perpInput + this.perpInput, this.userName + "Alice");
-  //     this.fifthStep.RID2 = encryptedData.hashedRid;
-  //     // unmatched perpInput
-  //     encryptedData = crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
-  //     this.fifthStep.RID3 = encryptedData.hashedRid;
-  //     // matched perpInput, diff username
-  //     encryptedData = crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
-  //     this.fifthStep.RID4 = encryptedData.hashedRid;
-  //     // input is matched, trigger decryption
-  //     const decryptedData: IDecryptedData = crypto.decryptData();
-  //     console.log(decryptedData);
-  //     this.fifthStep.decryptedData = decryptedData;
-  //     this.fifthStep.coords = crypto.retrieveCoords();
-  //     console.log(this.fifthStep.coords);
-  //     this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
-  //   });
-  // }
 
 // }
