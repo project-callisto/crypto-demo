@@ -188,8 +188,8 @@ export class CryptoService {
       const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
 
       const bigK = bigInt(sodium.to_hex(k), crypto.HEX);
-      console.log('original slope', a, 'bigk', bigK);
 
+      console.log('big',bigK);
       const pT: IPlainTextData = {
         U,
         s: a.times(U).plus(bigK).mod(crypto.PRIME),
@@ -234,10 +234,14 @@ export class CryptoService {
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const k: bigInt.BigInteger = this.getIntercept(coordA, slope);
-    // return {
-    const decryptedRecords = this.decryptRecords(data, k.toString(this.HEX));
+    
+    // console.log(this.sodium.from_hex(k.toString(this.HEX)));
 
-    console.log('slope', slope);
+    // const decryptedRecords = this.decryptRecords(data, k.toString(this.HEX));
+
+
+    console.log('slope', slope, 'k', k);
+
     //   slope,
     //   rid: rid.toString(),
     //   coords: [coordA, coordB],
