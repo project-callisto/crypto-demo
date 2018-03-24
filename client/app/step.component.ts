@@ -119,6 +119,10 @@ export class StepComponent {
     }, 400);
   }
 
+  private bytesToString(UInt8Array): string {
+    return '1000';
+  }
+
   private async populateValues(): Promise<void>{
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       const userPT = crypto.getPlainText();

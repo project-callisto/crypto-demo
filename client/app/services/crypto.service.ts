@@ -25,6 +25,7 @@ export interface IPlainTextData {
   readonly s: bigInt.BigInteger; // y-coordinate
   readonly a: bigInt.BigInteger; // slope
   readonly k: Uint8Array;
+  readonly kStr: string;
   readonly pi: string;
   readonly record: IRecord;
 }
@@ -161,12 +162,27 @@ export class CryptoService {
     for (let i: number = 0; i < messages.length; i++) {
       coords.push(this.createCoord(messages[i]));
     }
-    console.log('coords', coords);
     return coords;
   }
 
   public getDataSubmissions(): Array<IEncryptedData> {
     return this.dataSubmissions;
+  }
+
+  private bytesToString(k: Uint8Array): string {
+    var numStr = '';
+
+    for (let i in k) {
+      let str = k[i].toString();
+
+      if (str.length === 2) {
+        str = '0' + str;
+      } else if (str.length === 1) {
+        str = '00' + str;
+      }
+      numStr += str;
+    }
+    return numStr;
   }
 
   /**
@@ -180,7 +196,7 @@ export class CryptoService {
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
-    const derivedPromise = this.hkdf(pHat, pHat, 'salt', 9);
+    const derivedPromise = this.hkdf(pHat, pHat, 'salt', 9); // TODO: pick a better salt
 
     const sodium = this.sodium;
     const crypto = this;
@@ -190,20 +206,23 @@ export class CryptoService {
       const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
       const pi = sodium.to_base64(values[2].toString());
       const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
-      const bigK = bigInt(sodium.to_hex(k), crypto.HEX);
+      const kStr = crypto.bytesToString(k);
 
       const pT: IPlainTextData = {
         pHat,
         U,
-        s: a.times(U).plus(bigK).mod(crypto.PRIME),
+        s: (a.times(U).plus(bigInt(kStr))).mod(crypto.PRIME),
         a,
         k,
+        kStr,
         pi,
         record: {perpId, userName}
       }
       // TODO: this is a hack
       if (crypto.plainText === null) {
         crypto.plainText = pT;
+        console.log('orig slope:',pT.a.toString());
+        // console.log('orig k', bigK)
       }
       
       const encryptedData = crypto.encryptData(pT);
@@ -229,11 +248,8 @@ export class CryptoService {
    * @returns {IDecryptedData}
    */
   public decryptData(): IDecryptedData {
-    this.getCoords();
     const data: IEncryptedData[] = this.getMatchedData();
-
     const messages: IMessage[] = this.asymmetricDecrypt(data);
-    console.log('msg', messages)
 
     let coordA: ICoord = this.createCoord(messages[0]);
     let coordB: ICoord = this.createCoord(messages[1]);
@@ -245,19 +261,20 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    const k: bigInt.BigInteger = this.getIntercept(coordA, slope);
+    console.log('dSlope: ', slope.toString());
+    const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
+
+    this.bigIntToBytes(intercept);
+    // const k: Uint8Array = this.sodium.from_hex(this.getIntercept(coordA, slope).toString(this.HEX));
     
-    // console.log(this.sodium.from_hex(k.toString(this.HEX)));
+    // const decryptedRecords = this.decryptRecords(messages, k);
 
-    // const decryptedRecords = this.decryptRecords(data, k.toString(this.HEX));
+    var records: IDecryptedData;
+    return records;
+  }
 
-
-    console.log('slope', slope, 'k', k);
-
-    //   slope,
-    //   rid: rid.toString(),
-    //   coords: [coordA, coordB],
-    // };
+  private bigIntToBytes(intercept) {
+    console.log('inter', intercept.toString());
   }
 
   /**
@@ -285,20 +302,20 @@ export class CryptoService {
     };
   }
 
-  /**
-   * Takes RID partitions the first 256 bits for the slope and the second 256 bits for kId
-   * @param {string} hexRid - RID in hex string form
-   * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
-   */
-  private deriveFromRid(hexRid: string): IRIDComponents {
+  // /**
+  //  * Takes RID partitions the first 256 bits for the slope and the second 256 bits for kId
+  //  * @param {string} hexRid - RID in hex string form
+  //  * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
+  //  */
+  // private deriveFromRid(hexRid: string): IRIDComponents {
 
-    const ridLen: number = hexRid.length;
-    const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
+  //   const ridLen: number = hexRid.length;
+  //   const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
 
-    const kId: Uint8Array = this.sodium.crypto_generichash(this.sodium.crypto_generichash_BYTES,
-      hexRid.substr(ridLen / 2, ridLen));
-    return { slope, kId };
-  }
+  //   const kId: Uint8Array = this.sodium.crypto_generichash(this.sodium.crypto_generichash_BYTES,
+  //     hexRid.substr(ridLen / 2, ridLen));
+  //   return { slope, kId };
+  // }
 
   /**
    * Encrypts y using public-key encryption with the OC's public key
@@ -346,22 +363,18 @@ export class CryptoService {
    * @param {string} rid - randomized perpetrator ID
    * @returns {Array<IRecord>} array of decrypted records
    */
-  private decryptRecords(data: IEncryptedData[], rid: string): IRecord[] {
+  private decryptRecords(data: IMessage[], k: Uint8Array): IRecord[] {
 
     const decryptedRecords: IRecord[] = [];
-    // const derived: IRIDComponents = this.deriveFromRid(rid);
-
-    // for (const i in data) {
-    //   const encryptedRecord: string = data[i].encryptedRecord;
-    //   const decryptedRecordKey: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(data[i].kId),
-    //     data[i].encryptedRecordKey);
-
-    //   const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(decryptedRecordKey),
-    //     encryptedRecord);
-    //   const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+    
+    for (let i in data) {
+      const decryptedRecord = this.symmetricDecrypt(k, data[i].eRecord);
+      // console.log('decrypted', decryptedRecord);
+      //   const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
     //   decryptedRecords.push(JSON.parse(dStr));
     // }
-    // return decryptedRecords;
+    }
+    return decryptedRecords;
   }
 
   /**
@@ -407,25 +420,6 @@ export class CryptoService {
     return messages;
   }
 
-  // private decryptSecretValues(data: IEncryptedData[]): bigInt.BigInteger[] {
-  //   const yValues: bigInt.BigInteger[] = [];
-  //   for (const i in data) {
-  //     const split: string[] = data[i].cY.split("$");
-
-  //     // All values are UInt8Array
-  //     const cY: Uint8Array = this.sodium.from_base64(split[0]);
-  //     const nonce: Uint8Array = this.sodium.from_base64(split[1]);
-  //     const userPK: Uint8Array = this.sodium.from_base64(data[i].userPubKey);
-  //     const y: Uint8Array = this.sodium.crypto_box_open_easy(
-  //       cY, nonce, this.userKeys.publicKey, this.ocKeys.privateKey);
-
-  //     // Convert back to bigInt
-  //     const yStr: string = new encoding.TextDecoder("utf-8").decode(y);
-  //     yValues.push(bigInt(yStr));
-  //   }
-  //   return yValues;
-  // }
-
   /**
    * Computes a slope based on the slope formula
    * @param {Coord} c1 - 1st coordinate
@@ -450,7 +444,7 @@ export class CryptoService {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
 
-    return y.minus(slope.times(x));
+    return (y.minus(slope.times(x))).mod(this.PRIME);
   }
 
 
