@@ -44,13 +44,7 @@ export interface ICoord {
 export interface IDecryptedData {
   readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
-  readonly p: string;
   readonly coords: ICoord[];
-}
-
-export interface IRIDComponents {
-  readonly slope: bigInt.BigInteger;
-  readonly kId: Uint8Array;
 }
 
 export interface IRecord {
@@ -227,8 +221,6 @@ export class CryptoService {
       // TODO: this is a hack
       if (crypto.plainText === null) {
         crypto.plainText = pT;
-        console.log('orig slope:',pT.a.toString());
-        // console.log('orig k', bigK)
       }
       
       const encryptedData = crypto.encryptData(pT);
@@ -271,12 +263,13 @@ export class CryptoService {
     const intercept: string = this.getIntercept(coordA, slope).toString();
 
     const k = this.stringToBytes(this.plainText.kStr);
-    // const k: Uint8Array = this.sodium.from_hex(this.getIntercept(coordA, slope).toString(this.HEX));
-    
     const decryptedRecords = this.decryptRecords(messages, k);
-
-    var records: IDecryptedData;
-    return records;
+    
+    return {
+      decryptedRecords,
+      slope,
+      coords: this.getCoords()
+    }
   }
 
   private stringToBytes(intercept) {

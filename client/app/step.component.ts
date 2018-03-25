@@ -146,8 +146,9 @@ export class StepComponent {
 
   private async decryption(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      crypto.decryptData();
-
+      const decryptedData = crypto.decryptData();
+      this.fifthStep.decryptedData = decryptedData;
+      this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
     });
   }
 
