@@ -31,7 +31,6 @@ describe("Crypto service", () => {
         let pT = null;
         while (pT === null) {
           pT = crypto.getPlainText();
-          
         }
         console.log('plain', pT);
 

@@ -196,6 +196,12 @@ export class CryptoService {
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
+    const salt = this.sodium.randombytes_buf(16);
+
+    // console.log(this.sodium.crypto_pwhash(16, pHat, salt, 
+    //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
+    //   this.sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+    //   this.sodium.crypto_pwhash_ALG_DEFAULT))
     const derivedPromise = this.hkdf(pHat, pHat, 'salt', 9); // TODO: pick a better salt
 
     const sodium = this.sodium;
@@ -262,19 +268,29 @@ export class CryptoService {
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     console.log('dSlope: ', slope.toString());
-    const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
+    const intercept: string = this.getIntercept(coordA, slope).toString();
 
-    this.bigIntToBytes(intercept);
+    const k = this.stringToBytes(this.plainText.kStr);
     // const k: Uint8Array = this.sodium.from_hex(this.getIntercept(coordA, slope).toString(this.HEX));
     
-    // const decryptedRecords = this.decryptRecords(messages, k);
+    const decryptedRecords = this.decryptRecords(messages, k);
 
     var records: IDecryptedData;
     return records;
   }
 
-  private bigIntToBytes(intercept) {
-    console.log('inter', intercept.toString());
+  private stringToBytes(intercept) {
+    console.log(intercept);
+    const diff = 96 - intercept.length;
+    for (var i = 0; i < diff; i++) {
+      intercept = '0' + intercept;
+    }
+
+    let arr = [];
+    for (let i = 0; i < 96; i += 3) {
+      arr.push(intercept.slice(i, i+3));
+    }
+    return Uint8Array.from(arr);
   }
 
   /**
@@ -302,21 +318,6 @@ export class CryptoService {
     };
   }
 
-  // /**
-  //  * Takes RID partitions the first 256 bits for the slope and the second 256 bits for kId
-  //  * @param {string} hexRid - RID in hex string form
-  //  * @returns {IRidComponents} slope (bigInt.BigInteger), kId (Uint8Array[32])
-  //  */
-  // private deriveFromRid(hexRid: string): IRIDComponents {
-
-  //   const ridLen: number = hexRid.length;
-  //   const slope: bigInt.BigInteger = bigInt(hexRid.substr(0, ridLen / 2), this.HEX);
-
-  //   const kId: Uint8Array = this.sodium.crypto_generichash(this.sodium.crypto_generichash_BYTES,
-  //     hexRid.substr(ridLen / 2, ridLen));
-  //   return { slope, kId };
-  // }
-
   /**
    * Encrypts y using public-key encryption with the OC's public key
    * @param {bigInt.BigInteger} y - value derived from mx + RID
@@ -332,16 +333,7 @@ export class CryptoService {
     return encrypted;
   }
 
-  // /**
-  //  * Generates and formats all values needed to for linear secret sharing
-  //  * @param {string} rid - randomized perpetrator ID in base 64 encoding
-  //  * @param {IRecord} record - object containing the perpetrator ID and user name
-  //  * @returns {IPlainTextData} all values needed to be encrypted
-  //  */
-  // private generateDataValues(p_hat: string, record: IRecord): IPlainTextData {
-  
-  
-  // }
+
 
   /**
    * Symmetric encryption using given key
@@ -369,10 +361,8 @@ export class CryptoService {
     
     for (let i in data) {
       const decryptedRecord = this.symmetricDecrypt(k, data[i].eRecord);
-      // console.log('decrypted', decryptedRecord);
-      //   const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
-    //   decryptedRecords.push(JSON.parse(dStr));
-    // }
+      const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
+      decryptedRecords.push(JSON.parse(dStr));
     }
     return decryptedRecords;
   }
@@ -443,8 +433,10 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
+    console.log('i',slope.times(x).toString(), y.toString());
+    // y = mx + b
 
-    return (y.minus(slope.times(x))).mod(this.PRIME);
+    return (y.minus(slope.times(x))).modInv(this.PRIME);
   }
 
 
