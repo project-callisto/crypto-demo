@@ -2,8 +2,8 @@
 import { Injectable } from "@angular/core";
 import bigInt = require("big-integer");
 import * as $ from "jquery";
+import sjcl = require("sjcl");
 import * as encoding from "text-encoding";
-import sjcl = require('sjcl');
 
 /**
  * Data Objects
@@ -84,13 +84,6 @@ export class CryptoService {
     this.userKeys = this.sodium.crypto_box_keypair();
   }
 
-  
-  // public deriveValues(perpId) {
-
-  //   prom.then 
-  //   return prom;
-  // }
-
   /**
    * Main function for encrypting values
    * @param {IPlainTextData} plainText - all plaintext values needed to be encrypted
@@ -100,50 +93,15 @@ export class CryptoService {
   public encryptData(plainText: IPlainTextData): string {
 
     const eRecord: string = this.symmetricEncrypt(plainText.k, JSON.stringify(plainText.record));
-    const msg = {
+    const msg: IMessage = {
       U: plainText.U, // TODO: hash?!
       s: plainText.s,
-      eRecord
-    }
+      eRecord,
+    };
     const c: string = this.asymmetricEncrypt(msg);
 
     return c;
   }
-  //   const encryptedRecord: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.recordKey),
-  //     JSON.stringify(plainText.record));
-  //   const encryptedRecordKey: string = this.symmetricEncrypt(this.sodium.from_base64(plainText.kId),
-  //     plainText.recordKey);
-
-  //   // base64 encoding
-  //   const cY: string = this.encryptSecretValue(plainText.y);
-
-  //   return {
-  //     hashedRid: this.sodium.to_base64(this.sodium.crypto_hash(plainText.rid.toString())),
-  //     encryptedRecord,
-  //     encryptedRecordKey,
-  //     userPubKey: this.sodium.to_base64(this.userKeys.publicKey),
-  //     cY,
-  //     cX: plainText.hashedX.toString(),
-  //     kId: plainText.kId,
-  //   };
-  // }
-
-  // /**
-  //  * Submits inputted information to be processed and encrypted
-  //  * @param perpInput - inputted perpetrator name
-  //  * @param userName - inputted user name
-  //  * @returns {IEncryptedData}
-  //  */
-  // public submitAndEncrypt(perpInput: string, userName: string): IEncryptedData {
-  //   // const plainText: IPlainTextData = this.createDataSubmission(perpInput);
-   
-  //   // console.log('t',plainText);
-    
-  //   // const encryptedData: IEncryptedData = this.encryptData(plainText);
-  //   // this.postData(encryptedData);
-  //   // return encryptedData;
-  //   return {};
-  // }
 
   /**
    * Returns all coordinates for displaying on graph
@@ -151,28 +109,28 @@ export class CryptoService {
    */
   public getCoords(): ICoord[] {
     const coords: ICoord[] = [];
-    const messages = this.asymmetricDecrypt(this.dataSubmissions);
+    const messages: IMessage[] = this.asymmetricDecrypt(this.dataSubmissions);
 
-    for (let i: number = 0; i < messages.length; i++) {
+    for (const i in messages) {
       coords.push(this.createCoord(messages[i]));
     }
     return coords;
   }
 
-  public getDataSubmissions(): Array<IEncryptedData> {
+  public getDataSubmissions(): IEncryptedData[] {
     return this.dataSubmissions;
   }
 
   private bytesToString(k: Uint8Array): string {
-    var numStr = '';
+    let numStr: string = "";
 
-    for (let i in k) {
-      let str = k[i].toString();
+    for (const i in k) {
+      let str: string = k[i].toString();
 
       if (str.length === 2) {
-        str = '0' + str;
+        str = "0" + str;
       } else if (str.length === 1) {
-        str = '00' + str;
+        str = "00" + str;
       }
       numStr += str;
     }
@@ -186,27 +144,25 @@ export class CryptoService {
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
   public submitData(perpId: string, userName: string): void {
-    
+
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
-    const pHat = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
+    const pHat: string = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
-    const salt = this.sodium.randombytes_buf(16);
+    // const salt = this.sodium.randombytes_buf(16);
 
-    // console.log(this.sodium.crypto_pwhash(16, pHat, salt, 
-    //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
+    // console.log(this.sodium.crypto_pwhash(16, pHat, salt,
+    //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
     //   this.sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
     //   this.sodium.crypto_pwhash_ALG_DEFAULT))
-    const derivedPromise = this.hkdf(pHat, pHat, 'salt', 9); // TODO: pick a better salt
-
-    const sodium = this.sodium;
-    const crypto = this;
+    const derivedPromise: Promise<any> = this.hkdf(pHat, pHat, "salt", 9); // TODO: pick a better salt
+    const crypto: CryptoService = this;
 
     derivedPromise.then(function(values) {
-      const a = bigInt(values[0]);
-      const k = sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
-      const pi = sodium.to_base64(values[2].toString());
-      const U = bigInt(sodium.to_hex(sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
-      const kStr = crypto.bytesToString(k);
+      const a: bigInt.BigInteger = bigInt(values[0]);
+      const k: Uint8Array = crypto.sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
+      const pi: string = crypto.sodium.to_base64(values[2].toString());
+      const U: bigInt.BigInteger = bigInt(crypto.sodium.to_hex(crypto.sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
+      const kStr: string = crypto.bytesToString(k);
 
       const pT: IPlainTextData = {
         pHat,
@@ -216,13 +172,13 @@ export class CryptoService {
         k,
         kStr,
         pi,
-        record: {perpId, userName}
-      }
+        record: {perpId, userName},
+      };
       // TODO: this is a hack
       if (crypto.plainText === null) {
         crypto.plainText = pT;
       }
-      
+
       const encryptedData = crypto.encryptData(pT);
       crypto.postData({c: encryptedData, pi});
     });
@@ -259,29 +215,29 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    console.log('dSlope: ', slope.toString());
+    // console.log("dSlope: ", slope.toString());
     const intercept: string = this.getIntercept(coordA, slope).toString();
 
-    const k = this.stringToBytes(this.plainText.kStr);
-    const decryptedRecords = this.decryptRecords(messages, k);
-    
+    const k: Uint8Array = this.stringToBytes(this.plainText.kStr);
+    const decryptedRecords: IRecord[] = this.decryptRecords(messages, k);
+
     return {
       decryptedRecords,
       slope,
-      coords: this.getCoords()
-    }
+      coords: this.getCoords(),
+    };
   }
 
   private stringToBytes(intercept) {
     console.log(intercept);
     const diff = 96 - intercept.length;
-    for (var i = 0; i < diff; i++) {
-      intercept = '0' + intercept;
+    for (let i = 0; i < diff; i++) {
+      intercept = "0" + intercept;
     }
 
-    let arr = [];
+    const arr = [];
     for (let i = 0; i < 96; i += 3) {
-      arr.push(intercept.slice(i, i+3));
+      arr.push(intercept.slice(i, i + 3));
     }
     return Uint8Array.from(arr);
   }
@@ -307,7 +263,7 @@ export class CryptoService {
   private createCoord(msg: IMessage): ICoord {
     return {
       x: bigInt(msg.U),
-      y: bigInt(msg.s)
+      y: bigInt(msg.s),
     };
   }
 
@@ -325,8 +281,6 @@ export class CryptoService {
 
     return encrypted;
   }
-
-
 
   /**
    * Symmetric encryption using given key
@@ -351,8 +305,8 @@ export class CryptoService {
   private decryptRecords(data: IMessage[], k: Uint8Array): IRecord[] {
 
     const decryptedRecords: IRecord[] = [];
-    
-    for (let i in data) {
+
+    for (const i in data) {
       const decryptedRecord = this.symmetricDecrypt(k, data[i].eRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
@@ -398,7 +352,7 @@ export class CryptoService {
         c, nonce, this.userKeys.publicKey, this.ocKeys.privateKey);
 
       const msgObj: IMessage = JSON.parse(new encoding.TextDecoder("utf-8").decode(msg));
-      messages.push(msgObj)
+      messages.push(msgObj);
     }
     return messages;
   }
@@ -426,18 +380,12 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    console.log('i',slope.times(x).toString(), y.toString());
+    console.log("i", slope.times(x).toString(), y.toString());
     // y = mx + b
 
     return (y.minus(slope.times(x))).modInv(this.PRIME);
   }
 
-
-
-
-
-
- 
   /**
    * hkdf - The HMAC-based Key Derivation Function
    * http://mozilla.github.io/fxa-js-client/files/client_lib_hkdf.js.html
@@ -450,24 +398,24 @@ export class CryptoService {
    */
   private hkdf(ikm, info, salt, length) {
 
-    var mac = new sjcl.misc.hmac(salt, sjcl.hash.sha256);
+    const mac = new sjcl.misc.hmac(salt, sjcl.hash.sha256);
     mac.update(ikm);
 
     // compute the PRK
-    var prk = mac.digest();
+    const prk = mac.digest();
 
     // hash length is 32 because only sjcl.hash.sha256 is used at this moment
-    var hashLength = 32;
-    var num_blocks = Math.ceil(length / hashLength);
-    var prev = sjcl.codec.hex.toBits('');
-    var output = '';
+    const hashLength = 32;
+    const num_blocks = Math.ceil(length / hashLength);
+    let prev = sjcl.codec.hex.toBits("");
+    let output = "";
 
-    for (var i = 0; i < num_blocks; i++) {
-      var hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
+    for (let i = 0; i < num_blocks; i++) {
+      const hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
 
-      var input = sjcl.bitArray.concat(
+      const input = sjcl.bitArray.concat(
         sjcl.bitArray.concat(prev, info),
-        sjcl.codec.utf8String.toBits((String.fromCharCode(i + 1)))
+        sjcl.codec.utf8String.toBits((String.fromCharCode(i + 1))),
       );
 
       hmac.update(input);
@@ -476,7 +424,7 @@ export class CryptoService {
       output += sjcl.codec.hex.fromBits(prev);
     }
 
-    var truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
+    const truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
 
     return Promise.resolve(truncated);
   }

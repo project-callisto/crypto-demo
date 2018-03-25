@@ -10,9 +10,9 @@ import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from ".
 import { SixthStepComponent } from "./sixth-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
+import bigInt = require("big-integer");
 import * as $ from "jquery";
 import * as _sodium from "libsodium-wrappers";
-import bigInt = require("big-integer");
 
 @Component({
   selector: "step-root",
@@ -46,7 +46,6 @@ export class StepComponent {
   private userName: string;
   private HEX: number = 16;
   private PRIME: string = "340282366920938463463374607431768211297";
-
 
   @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
@@ -82,7 +81,6 @@ export class StepComponent {
       this.populateValues();
     });
 
-
   }
 
   public advanceSecondStep(): void {
@@ -96,7 +94,7 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
-      this.decryption();
+      // this.decryption();
     // this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
@@ -120,34 +118,20 @@ export class StepComponent {
   }
 
   private bytesToString(UInt8Array): string {
-    return '1000';
+    return "1000";
   }
 
-  private async populateValues(): Promise<void>{
+  private async populateValues(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
       const userPT = crypto.getPlainText();
       this.secondStep.plainTextData = userPT;
       this.thirdStep.plainTextData = userPT;
       const dataSubs = crypto.getDataSubmissions();
       this.fourthStep.encryptedData = dataSubs[0];
-    
-      // const decryptedData: IDecryptedData = crypto.decryptData();
-      // console.log(decryptedData);
-      // this.fifthStep.decryptedData = decryptedData;
-      // this.fifthStep.coords = crypto.retrieveCoords();
-      // console.log(this.fifthStep.coords);
-      // this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
-      
-      // for (let i in dataSubs) {
-      //   this.fifthStep.pi[i] = dataSubs[i].pi;
-      // }   
-    });  
-  }
 
-  private async decryption(): Promise<void> {
-    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const decryptedData = crypto.decryptData();
+      const decryptedData: IDecryptedData = crypto.decryptData();
       this.fifthStep.decryptedData = decryptedData;
+      this.fifthStep.coords = crypto.getCoords();
       this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
     });
   }
@@ -160,7 +144,6 @@ export class StepComponent {
       crypto.submitData(this.perpInput, this.userName + this.userName);
     });
   }
-
 
   // private async generateGraphData(): Promise<void> {
   //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
@@ -178,50 +161,4 @@ export class StepComponent {
 
   //   });
   // }
-
-  // private async submitUserEntry(): void {
-    
-  // }
-  // private async submitUserEntry(): Promise<void> {
-  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-  //     crypto.randomizePerpInput(this.perpInput);
-  //   }
-  
 }
-
-
-      // derivedPromise.then(function(res) {
-      //   console.log(res);
-      // });
-
-      // derivedPromise.then(function(values) {
-      //   console.log(values);
-      //     const a = bigInt(values[0]);
-      //     const k = _sodium.to_base64(values[1].toString());
-      //     const pi = _sodium.to_base64(values[2].toString());
-      //     const U = bigInt(_sodium.to_hex(_sodium.crypto_hash(userName)), 16);
-
-      //     const pT = {
-      //       U,
-      //       s: a.times(U).mod(prime),
-      //       a,
-      //       k,
-      //       pi,
-      //       record: {perpId, userName}
-      //     }
-
-      //     const encryptedData: IEncryptedData = crypto.encryptData(pT);
-      //   });
-      // });
-
-
-      // const encryptedData: IEncryptedData = crypto.encryptData(plainText);
-      // crypto.postData(encryptedData);
-      // this.firstStep.recordKey = plainText.recordKey;
-      // this.secondStep.plainTextData = plainText;
-      // this.thirdStep.plainTextData = plainText;
-      // this.fourthStep.encryptedData = encryptedData;
-      // this.fifthStep.RID = encryptedData.hashedRid;
-
-
-// }

@@ -32,17 +32,13 @@ describe("Crypto service", () => {
         while (pT === null) {
           pT = crypto.getPlainText();
         }
-        console.log('plain', pT);
+        console.log("plain", pT);
 
-        
-      expect(crypto.submitData('hello', '')).toBeDefined();
+        expect(crypto.submitData("hello", "")).toBeDefined();
     });
   });
 
-
   // same slope from encryption to decryption
-
-
 
   // it("[SPEC] has a public submission api", async () => {
   //   (jasmine as any).expectCount(1);
