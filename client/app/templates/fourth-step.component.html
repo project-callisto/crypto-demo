@@ -3,24 +3,24 @@
   <step-nav [sectionStep]=4></step-nav>
   <p>The following values are now encrypted using the corresponding methods.</p>
   <p>
-    <code>H(H(RID))</code>
-    <code class="calc-display-value">{{ encryptedData.hashedRid }}</code>
+    <code>pi</code>
+    <code class="calc-display-value">{{ encryptedData.pi }}</code>
   </p>
   <p>
-    <code>E(pk<sub>OC</sub>, x)</code>
-    <code class="calc-display-value">{{ encryptedData.cX }}</code>
+    <code>ciphertext E(pk, [U, s, eRecord])</code>
+    <code class="calc-display-value">{{ encryptedData.c }}</code>
   </p>
   <p>
-    <code>E(pk<sub>OC</sub>, y)</code>
-    <code class="calc-display-value">{{ encryptedData.cY }}</code>
+    <!-- <code>E(pk<sub>OC</sub>, y)</code>
+    <code class="calc-display-value">{{ encryptedData.cY }}</code> -->
   </p>
   <p>
-    <code>E(k<sub>record</sub>, record)</code>
-    <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code>
+    <!-- <code>E(k<sub>record</sub>, record)</code>
+    <code class="calc-display-value">{{ encryptedData.encryptedRecord }}</code> -->
   </p>
   <p>
-    <code>E(pk<sub>OC</sub>, E(k<sub>ID</sub>, k<sub>record</sub>))</code>
-    <code class="calc-display-value">{{ encryptedData.encryptedRecordKey }}</code>
+    <!-- <code>E(pk<sub>OC</sub>, E(k<sub>ID</sub>, k<sub>record</sub>))</code>
+    <code class="calc-display-value">{{ encryptedData.encryptedRecordKey }}</code> -->
   </p>
 
   <div class="align-right-on-large">

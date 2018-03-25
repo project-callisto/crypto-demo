@@ -11,10 +11,8 @@ import { CryptoService, ICoord, IDecryptedData } from "./services/crypto.service
   ],
 })
 export class FifthStepComponent implements AfterContentChecked {
-  @Input() public RID: string;
-  @Input() public RID2: string;
-  @Input() public RID3: string;
-  @Input() public RID4: string;
+  @Input() public pi: string[];
+  @Input() public rid: string;
   @Input() public shown: boolean = false;
   @Input() public coords: ICoord[];
   @Input() public decryptedData: IDecryptedData;
