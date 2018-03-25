@@ -150,7 +150,7 @@ export class CryptoService {
     const pHat: string = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
     const salt = this.sodium.randombytes_buf(this.sodium.crypto_pwhash_SALTBYTES);
-    console.log("salt", salt);
+    // console.log("salt", salt);
 
     // const keyDerive = this.sodium.crypto_pwhash(16, pHat, salt,
     //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
@@ -388,7 +388,7 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    console.log("i", slope.times(x).toString(), y.toString());
+    // console.log("i", slope.times(x).toString(), y.toString());
     // y = mx + b
 
     return (y.minus(slope.times(x))).modInv(this.PRIME);
