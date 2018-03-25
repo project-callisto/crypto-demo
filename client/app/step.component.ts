@@ -94,11 +94,8 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
-      // this.decryption();
-    // this.generateGraphData().then(() => {
       this.fifthStep.shown = true;
       this.scrollTo("fifth-step");
-    // });
   }
 
   public advanceFifthStep(): void {
@@ -115,10 +112,6 @@ export class StepComponent {
     $("html, body").animate({
       scrollTop: $(element).offset().top,
     }, 400);
-  }
-
-  private bytesToString(UInt8Array): string {
-    return "1000";
   }
 
   private async populateValues(): Promise<void> {

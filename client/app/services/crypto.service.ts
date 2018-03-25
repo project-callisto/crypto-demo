@@ -39,6 +39,7 @@ export interface IMessage {
 export interface ICoord {
   readonly x: bigInt.BigInteger;
   readonly y: bigInt.BigInteger;
+  readonly pi: string;
 }
 
 export interface IDecryptedData {
@@ -112,7 +113,7 @@ export class CryptoService {
     const messages: IMessage[] = this.asymmetricDecrypt(this.dataSubmissions);
 
     for (const i in messages) {
-      coords.push(this.createCoord(messages[i]));
+      coords.push(this.createCoord(messages[i], this.dataSubmissions[i].pi));
     }
     return coords;
   }
@@ -205,8 +206,8 @@ export class CryptoService {
     const data: IEncryptedData[] = this.getMatchedData();
     const messages: IMessage[] = this.asymmetricDecrypt(data);
 
-    let coordA: ICoord = this.createCoord(messages[0]);
-    let coordB: ICoord = this.createCoord(messages[1]);
+    let coordA: ICoord = this.createCoord(messages[0], this.dataSubmissions[0].pi);
+    let coordB: ICoord = this.createCoord(messages[1], this.dataSubmissions[1].pi);
 
     if (coordA.x.geq(coordB.x)) {
       const temp: ICoord = coordA;
@@ -228,7 +229,7 @@ export class CryptoService {
     };
   }
 
-  private stringToBytes(intercept) {
+  private stringToBytes(intercept: string): Uint8Array {
     console.log(intercept);
     const diff = 96 - intercept.length;
     for (let i = 0; i < diff; i++) {
@@ -260,10 +261,11 @@ export class CryptoService {
    * @param {bigInt.BigInteger} y
    * @returns {ICoord} coordinate used for computations
    */
-  private createCoord(msg: IMessage): ICoord {
+  private createCoord(msg: IMessage, pi: string): ICoord {
     return {
       x: bigInt(msg.U),
       y: bigInt(msg.s),
+      pi,
     };
   }
 
@@ -307,7 +309,7 @@ export class CryptoService {
     const decryptedRecords: IRecord[] = [];
 
     for (const i in data) {
-      const decryptedRecord = this.symmetricDecrypt(k, data[i].eRecord);
+      const decryptedRecord: Uint8Array = this.symmetricDecrypt(k, data[i].eRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
