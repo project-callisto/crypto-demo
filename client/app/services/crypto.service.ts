@@ -149,16 +149,22 @@ export class CryptoService {
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: string = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
 
-    // const salt = this.sodium.randombytes_buf(16);
+    const salt = this.sodium.randombytes_buf(this.sodium.crypto_pwhash_SALTBYTES);
+    console.log("salt", salt);
 
-    // console.log(this.sodium.crypto_pwhash(16, pHat, salt,
+    // const keyDerive = this.sodium.crypto_pwhash(16, pHat, salt,
     //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
     //   this.sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-    //   this.sodium.crypto_pwhash_ALG_DEFAULT))
+    //   this.sodium.crypto_pwhash_ALG_DEFAULT);
+
+    // if (keyDerive !== 0) {
+    //   console.log("key", keyDerive);
+    // }
+
     const derivedPromise: Promise<any> = this.hkdf(pHat, pHat, "salt", 9); // TODO: pick a better salt
     const crypto: CryptoService = this;
 
-    derivedPromise.then(function(values) {
+    derivedPromise.then(function(values: any) {
       const a: bigInt.BigInteger = bigInt(values[0]);
       const k: Uint8Array = crypto.sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
       const pi: string = crypto.sodium.to_base64(values[2].toString());
@@ -180,8 +186,8 @@ export class CryptoService {
         crypto.plainText = pT;
       }
 
-      const encryptedData = crypto.encryptData(pT);
-      crypto.postData({c: encryptedData, pi});
+      const cipherText: string = crypto.encryptData(pT);
+      crypto.postData({c: cipherText, pi});
     });
   }
 
@@ -230,16 +236,16 @@ export class CryptoService {
   }
 
   private stringToBytes(intercept: string): Uint8Array {
-    console.log(intercept);
-    const diff = 96 - intercept.length;
-    for (let i = 0; i < diff; i++) {
+    const diff: number = 96 - intercept.length;
+    for (let i: number = 0; i < diff; i++) {
       intercept = "0" + intercept;
     }
 
-    const arr = [];
-    for (let i = 0; i < 96; i += 3) {
-      arr.push(intercept.slice(i, i + 3));
+    const arr: number[] = [];
+    for (let i: number = 0; i < 96; i += 3) {
+      arr.push(parseInt(intercept.slice(i, i + 3)));
     }
+
     return Uint8Array.from(arr);
   }
 
@@ -343,7 +349,7 @@ export class CryptoService {
    * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
   private asymmetricDecrypt(data: IEncryptedData[]): IMessage[] {
-    const messages = [];
+    const messages: IMessage[] = [];
     for (const i in data) {
       const split: string[] = data[i].c.split("$");
 
