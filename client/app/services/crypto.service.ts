@@ -27,6 +27,7 @@ export interface IPlainTextData {
   readonly k: Uint8Array;
   readonly kStr: string;
   readonly pi: string;
+  readonly recordKey: Uint8Array;
   readonly record: IRecord;
 }
 
@@ -99,9 +100,8 @@ export class CryptoService {
       s: plainText.s,
       eRecord,
     };
-    const c: string = this.asymmetricEncrypt(msg);
-
-    return c;
+    
+    return this.asymmetricEncrypt(msg);
   }
 
   /**
@@ -178,9 +178,10 @@ export class CryptoService {
         k,
         kStr,
         pi,
-        record: {perpId, userName},
+        recordKey: crypto.sodium.crypto_secretbox_keygen(),
+        record: {perpId, userName}
       };
-      // TODO: this is a hack
+      // TODO: make this better
       if (crypto.plainText === null) {
         crypto.plainText = pT;
       }
