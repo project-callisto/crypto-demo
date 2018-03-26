@@ -44,8 +44,6 @@ import * as _sodium from "libsodium-wrappers";
 export class StepComponent {
   private perpInput: string;
   private userName: string;
-  private HEX: number = 16;
-  private PRIME: string = "340282366920938463463374607431768211297";
 
   @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
@@ -78,7 +76,6 @@ export class StepComponent {
     this.submitUserEntry().then(() => {
       this.secondStep.shown = true;
       this.scrollTo("second-step");
-      this.populateValues();
     });
 
   }
@@ -114,9 +111,13 @@ export class StepComponent {
     }, 400);
   }
 
-  private async populateValues(): Promise<void> {
+  private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const userPT = crypto.getPlainText();
+      const userPT = crypto.submitData(this.perpInput, this.userName);
+      crypto.submitData(this.perpInput + this.perpInput, this.userName + "Alice");
+      crypto.submitData("1234" + this.perpInput, this.userName + "Bob");
+      crypto.submitData(this.perpInput, this.userName + this.userName);
+
       this.secondStep.plainTextData = userPT;
       this.thirdStep.plainTextData = userPT;
       const dataSubs = crypto.getDataSubmissions();
@@ -126,15 +127,6 @@ export class StepComponent {
       this.fifthStep.decryptedData = decryptedData;
       this.fifthStep.coords = crypto.getCoords();
       this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
-    });
-  }
-
-  private async submitUserEntry(): Promise<void> {
-    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      crypto.submitData(this.perpInput, this.userName);
-      crypto.submitData(this.perpInput + this.perpInput, this.userName + "Alice");
-      crypto.submitData("1234" + this.perpInput, this.userName + "Bob");
-      crypto.submitData(this.perpInput, this.userName + this.userName);
     });
   }
 

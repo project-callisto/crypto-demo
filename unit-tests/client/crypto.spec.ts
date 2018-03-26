@@ -27,13 +27,7 @@ describe("Crypto service", () => {
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
         crypto.submitData("XXXXXXX", "Alice");
         crypto.submitData("XXXXXXX", "Bob");
-
-        let pT = null;
-        while (pT === null) {
-          pT = crypto.getPlainText();
-        }
-        console.log("plain", pT);
-
+        
         expect(crypto.submitData("hello", "")).toBeDefined();
     });
   });
