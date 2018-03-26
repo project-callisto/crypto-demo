@@ -48,6 +48,7 @@
         "@types/text-encoding": "0.0.32",
         "big-integer": "^1.6.26",
         "bigint-typescript-definitions": "^5.5.3-0",
+        "cookie-parser": "^1.4.3",
         "core-js": "^2.5.3",
         "d3": "^4.13.0",
         "decimal": "0.0.2",
