@@ -158,7 +158,7 @@ export class CryptoService {
     const kStr: string = this.bytesToString(k);
 
     const pT: IPlainTextData = {
-      pHat: pHat.toString(),
+      pHat: this.sodium.to_base64(pHat),
       U,
       s: (a.times(U).plus(bigInt(kStr))).mod(this.PRIME),
       a,
