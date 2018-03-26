@@ -1,10 +1,12 @@
 {
   "name": "valkyrie-demo",
-  "scripts": {
-  },
+  "scripts": {},
   "env": {
     "PAPERTRAIL_API_TOKEN": {
       "required": true
+    },
+    "APPEND_STORYBOOK_BUILD": {
+      "value": true
     }
   },
   "formation": {

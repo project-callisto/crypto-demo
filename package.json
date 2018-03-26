@@ -11,11 +11,17 @@
         "clean": "tslint -p . --fix --force",
         "test:unit": "ng test",
         "test:e2e": "ng e2e",
+        "test:all": "npm run test:unit -- --single-run && npm run test:e2e -- --single-run",
         "start": "npm run start:dev",
         "start:dev": "ng server",
         "start:prod": "node server.js",
-        "heroku-postbuild": "ng build --aot -prod --progress --sourcemaps",
-        "storybook": "cp client/index.html storybook/preview-head.html && start-storybook -p 9001 -c storybook"
+        "start:build": "ng build --aot -prod --progress --sourcemaps",
+        "start:mock-prod": "npm run heroku-postbuild && APPEND_STORYBOOK_BUILD=true npm run start:prod",
+        "heroku-postbuild": "npm run start:build && npm run storybook:build",
+        "storybook": "npm run storybook:run",
+        "storybook:prebuild": "cp client/index.html storybook/preview-head.html",
+        "storybook:run": "npm run storybook:prebuild && start-storybook -c storybook -p 9001",
+        "storybook:build": "npm run storybook:prebuild && build-storybook -c storybook -o storybook-dist"
     },
     "repository": {
         "type": "git",

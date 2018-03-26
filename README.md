@@ -23,15 +23,13 @@ NODE_ENV=dev DEBUG=* npm start
 ## running a mock production server locally
 
 ```
-npm run heroku-postbuild
-npm run start:prod
+npm run start:mock-prod
 ```
 
 ## running the tests
 
 ```
-npm run test:unit -- --single-run
-npm run test:e2e -- --single-run
+test:all
 ```
 
 ## running storybook

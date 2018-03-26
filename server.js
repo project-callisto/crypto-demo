@@ -8,11 +8,15 @@ var server = app.listen(PORT, () => {
   console.log('Listening on port %d', server.address().port)
 });
 
-// Point static path to dist
 app.use(express.static(path.join(__dirname, '/dist')));
 
-// Catch all other routes and return the index file
-// IMPORTANT: this route needs to come last
+if (process.env.APPEND_STORYBOOK_BUILD) {
+  app.use(express.static(path.join(__dirname, '/storybook-dist')));
+  app.get('/.stories', (req, res) => {
+    res.sendFile(path.join(__dirname, '/storybook-dist/index.html'));
+  });
+}
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'));
 });
