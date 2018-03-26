@@ -35,6 +35,7 @@ export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
   readonly eRecord: string;
+  readonly eRecordKey: string;
 }
 
 export interface ICoord {
@@ -94,11 +95,13 @@ export class CryptoService {
 
   public encryptData(plainText: IPlainTextData): string {
 
-    const eRecord: string = this.symmetricEncrypt(plainText.k, JSON.stringify(plainText.record));
+    const eRecord: string = this.symmetricEncrypt(plainText.recordKey, JSON.stringify(plainText.record));
+    const eRecordKey: string = this.symmetricEncrypt(plainText.k, this.sodium.to_base64(plainText.recordKey));
     const msg: IMessage = {
       U: plainText.U, // TODO: hash?!
       s: plainText.s,
       eRecord,
+      eRecordKey
     };
 
     return this.asymmetricEncrypt(msg);
@@ -292,10 +295,12 @@ export class CryptoService {
     const decryptedRecords: IRecord[] = [];
 
     for (const i in data) {
-      const decryptedRecord: Uint8Array = this.symmetricDecrypt(k, data[i].eRecord);
+      const recordKey: Uint8Array = this.symmetricDecrypt(k, data[i].eRecordKey);
+      const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(recordKey), data[i].eRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
+
     return decryptedRecords;
   }
 
