@@ -75,7 +75,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  private PRIME: string = "340282366920938463463374607431768211297";
+  private PRIME: string = "2074722246773485207821695222107608587480996474721117292752992589912196684750549658310084416732550077";
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -170,7 +170,6 @@ export class CryptoService {
       const pi: string = crypto.sodium.to_base64(values[2].toString());
       const U: bigInt.BigInteger = bigInt(crypto.sodium.to_hex(crypto.sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
       const kStr: string = crypto.bytesToString(k);
-
       const pT: IPlainTextData = {
         pHat,
         U,
@@ -222,10 +221,10 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    // console.log("dSlope: ", slope.toString());
+    console.log("slope: ", slope.toString());
     const intercept: string = this.getIntercept(coordA, slope).toString();
-
-    const k: Uint8Array = this.stringToBytes(this.plainText.kStr);
+    console.log('intercept', intercept)
+    const k: Uint8Array = this.stringToBytes(intercept);
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, k);
 
     return {
@@ -376,8 +375,6 @@ export class CryptoService {
     const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
-
-    // return top.multiply(modInv(bottom, PRIME)).mod(PRIME)".
   }
 
   /**
@@ -388,10 +385,10 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    // console.log("i", slope.times(x).toString(), y.toString());
+    console.log("i", slope.times(x).toString(), y.toString());
     // y = mx + b
 
-    return (y.minus(slope.times(x))).modInv(this.PRIME);
+    return (y.minus(slope.times(x))).mod(this.PRIME);
   }
 
   /**
