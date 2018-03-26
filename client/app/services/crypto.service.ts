@@ -35,6 +35,7 @@ export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
   readonly eRecord: string;
+  readonly eRecordKey: string;
 }
 
 export interface ICoord {
@@ -94,11 +95,13 @@ export class CryptoService {
 
   public encryptData(plainText: IPlainTextData): string {
 
-    const eRecord: string = this.symmetricEncrypt(plainText.k, JSON.stringify(plainText.record));
+    const eRecord: string = this.symmetricEncrypt(plainText.recordKey, JSON.stringify(plainText.record));
+    const eRecordKey: string = this.symmetricEncrypt(plainText.k, this.sodium.to_base64(plainText.recordKey));
     const msg: IMessage = {
       U: plainText.U, // TODO: hash?!
       s: plainText.s,
       eRecord,
+      eRecordKey,
     };
 
     return this.asymmetricEncrypt(msg);
@@ -122,22 +125,6 @@ export class CryptoService {
     return this.dataSubmissions;
   }
 
-  private bytesToString(k: Uint8Array): string {
-    let numStr: string = "";
-
-    for (const i in k) {
-      let str: string = k[i].toString();
-
-      if (str.length === 2) {
-        str = "0" + str;
-      } else if (str.length === 1) {
-        str = "00" + str;
-      }
-      numStr += str;
-    }
-    return numStr;
-  }
-
   /**
    * Function for taking user inputs and returning values to be encrypted
    * @param {string} perpId - inputted perpetrator name
@@ -147,12 +134,12 @@ export class CryptoService {
   public submitData(perpId: string, userName: string): IPlainTextData {
 
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
-    const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0,32);
+    const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
 
-    // slope is superficially small 
-    const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(8, 1, 'derivation', pHat)));
-    const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, 'derivation', pHat);
-    const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, 'derivation', pHat));
+    // slope is superficially small
+    const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(8, 1, "derivation", pHat)));
+    const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, "derivation", pHat);
+    const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, "derivation", pHat));
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName)), 16).mod(this.PRIME);
 
     const kStr: string = this.bytesToString(k);
@@ -166,7 +153,7 @@ export class CryptoService {
       kStr,
       pi,
       recordKey: this.sodium.crypto_secretbox_keygen(),
-      record: {perpId, userName}
+      record: {perpId, userName},
     };
 
     const cipherText: string = this.encryptData(pT);
@@ -212,6 +199,32 @@ export class CryptoService {
     };
   }
 
+  /**
+   * Converts a Uint8Array to string of numbers
+   * @param {Uint8Array} k - 32 byte key
+   * @returns {string}
+   */
+  private bytesToString(k: Uint8Array): string {
+    let numStr: string = "";
+
+    for (const i in k) {
+      let str: string = k[i].toString();
+
+      if (str.length === 2) {
+        str = "0" + str;
+      } else if (str.length === 1) {
+        str = "00" + str;
+      }
+      numStr += str;
+    }
+    return numStr;
+  }
+
+  /**
+   * Converts string of numbers to a Uint8Array
+   * @param {string} intercept
+   * @returns {Uint8Array} 32-byte key
+   */
   private stringToBytes(intercept: string): Uint8Array {
     const diff: number = 96 - intercept.length;
     for (let i: number = 0; i < diff; i++) {
@@ -292,10 +305,12 @@ export class CryptoService {
     const decryptedRecords: IRecord[] = [];
 
     for (const i in data) {
-      const decryptedRecord: Uint8Array = this.symmetricDecrypt(k, data[i].eRecord);
+      const recordKey: Uint8Array = this.symmetricDecrypt(k, data[i].eRecordKey);
+      const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(recordKey), data[i].eRecord);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
+
     return decryptedRecords;
   }
 

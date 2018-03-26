@@ -113,14 +113,14 @@ export class StepComponent {
 
   private async submitUserEntry(): Promise<void> {
     await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const userPT = crypto.submitData(this.perpInput, this.userName);
+      const userPT: IPlainTextData = crypto.submitData(this.perpInput, this.userName);
       crypto.submitData(this.perpInput + this.perpInput, this.userName + "Alice");
       crypto.submitData("1234" + this.perpInput, this.userName + "Bob");
       crypto.submitData(this.perpInput, this.userName + this.userName);
 
       this.secondStep.plainTextData = userPT;
       this.thirdStep.plainTextData = userPT;
-      const dataSubs = crypto.getDataSubmissions();
+      const dataSubs: IEncryptedData[] = crypto.getDataSubmissions();
       this.fourthStep.encryptedData = dataSubs[0];
 
       const decryptedData: IDecryptedData = crypto.decryptData();
