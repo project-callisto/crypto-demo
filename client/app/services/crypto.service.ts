@@ -20,7 +20,7 @@ export interface IEncryptedData {
 }
 
 export interface IPlainTextData {
-  readonly pHat: string; // randomized perp id
+  readonly pHat: string;
   readonly U: bigInt.BigInteger; // x-coordinate
   readonly s: bigInt.BigInteger; // y-coordinate
   readonly a: bigInt.BigInteger; // slope
@@ -100,7 +100,7 @@ export class CryptoService {
       s: plainText.s,
       eRecord,
     };
-    
+
     return this.asymmetricEncrypt(msg);
   }
 
@@ -147,48 +147,36 @@ export class CryptoService {
   public submitData(perpId: string, userName: string): void {
 
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
-    const pHat: string = this.sodium.to_base64(this.sodium.crypto_hash(perpId + kDemo));
+    const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0,32);
 
-    const salt = this.sodium.randombytes_buf(this.sodium.crypto_pwhash_SALTBYTES);
-    // console.log("salt", salt);
+    // slope is superficially small 
+    const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(8, 1, 'derivation', pHat)));
+    const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, 'derivation', pHat);
+    const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, 'derivation', pHat));
+    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName)), 16).mod(this.PRIME);
 
-    // const keyDerive = this.sodium.crypto_pwhash(16, pHat, salt,
-    //   this.sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-    //   this.sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-    //   this.sodium.crypto_pwhash_ALG_DEFAULT);
+    const kStr: string = this.bytesToString(k);
 
-    // if (keyDerive !== 0) {
-    //   console.log("key", keyDerive);
-    // }
+    const pT: IPlainTextData = {
+      pHat: pHat.toString(),
+      U,
+      s: (a.times(U).plus(bigInt(kStr))).mod(this.PRIME),
+      a,
+      k,
+      kStr,
+      pi,
+      recordKey: this.sodium.crypto_secretbox_keygen(),
+      record: {perpId, userName}
+    };
+    
+    // TODO: make this better
+    if (this.plainText === null) {
+      this.plainText = pT;
+    }
 
-    const derivedPromise: Promise<any> = this.hkdf(pHat, pHat, "salt", 9); // TODO: pick a better salt
-    const crypto: CryptoService = this;
+    const cipherText: string = this.encryptData(pT);
+    this.postData({c: cipherText, pi});
 
-    derivedPromise.then(function(values: any) {
-      const a: bigInt.BigInteger = bigInt(values[0]);
-      const k: Uint8Array = crypto.sodium.crypto_hash(values[1].toString()).slice(32); // TODO: EXTREMELY INSECURE HACK!!! MUST CHANGE LATER
-      const pi: string = crypto.sodium.to_base64(values[2].toString());
-      const U: bigInt.BigInteger = bigInt(crypto.sodium.to_hex(crypto.sodium.crypto_hash(userName)), 16).mod(crypto.PRIME);
-      const kStr: string = crypto.bytesToString(k);
-      const pT: IPlainTextData = {
-        pHat,
-        U,
-        s: (a.times(U).plus(bigInt(kStr))).mod(crypto.PRIME),
-        a,
-        k,
-        kStr,
-        pi,
-        recordKey: crypto.sodium.crypto_secretbox_keygen(),
-        record: {perpId, userName}
-      };
-      // TODO: make this better
-      if (crypto.plainText === null) {
-        crypto.plainText = pT;
-      }
-
-      const cipherText: string = crypto.encryptData(pT);
-      crypto.postData({c: cipherText, pi});
-    });
   }
 
   // for display purposes
@@ -222,9 +210,7 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    console.log("slope: ", slope.toString());
     const intercept: string = this.getIntercept(coordA, slope).toString();
-    console.log('intercept', intercept)
     const k: Uint8Array = this.stringToBytes(intercept);
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, k);
 
@@ -386,52 +372,7 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    console.log("i", slope.times(x).toString(), y.toString());
-    // y = mx + b
 
     return (y.minus(slope.times(x))).mod(this.PRIME);
-  }
-
-  /**
-   * hkdf - The HMAC-based Key Derivation Function
-   * http://mozilla.github.io/fxa-js-client/files/client_lib_hkdf.js.html
-   *
-   * @param {bitArray} ikm Initial keying material
-   * @param {bitArray} info Key derivation data
-   * @param {bitArray} salt Salt
-   * @param {integer} length Length of the derived key in bytes
-   * @return promise object- It will resolve with `output` data
-   */
-  private hkdf(ikm, info, salt, length) {
-
-    const mac = new sjcl.misc.hmac(salt, sjcl.hash.sha256);
-    mac.update(ikm);
-
-    // compute the PRK
-    const prk = mac.digest();
-
-    // hash length is 32 because only sjcl.hash.sha256 is used at this moment
-    const hashLength = 32;
-    const num_blocks = Math.ceil(length / hashLength);
-    let prev = sjcl.codec.hex.toBits("");
-    let output = "";
-
-    for (let i = 0; i < num_blocks; i++) {
-      const hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
-
-      const input = sjcl.bitArray.concat(
-        sjcl.bitArray.concat(prev, info),
-        sjcl.codec.utf8String.toBits((String.fromCharCode(i + 1))),
-      );
-
-      hmac.update(input);
-
-      prev = hmac.digest();
-      output += sjcl.codec.hex.fromBits(prev);
-    }
-
-    const truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
-
-    return Promise.resolve(truncated);
   }
 }
