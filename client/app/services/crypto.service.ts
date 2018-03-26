@@ -144,7 +144,7 @@ export class CryptoService {
    * @param {string} userName - inputted user name
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
-  public submitData(perpId: string, userName: string): void {
+  public submitData(perpId: string, userName: string): IPlainTextData {
 
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0,32);
@@ -168,20 +168,11 @@ export class CryptoService {
       recordKey: this.sodium.crypto_secretbox_keygen(),
       record: {perpId, userName}
     };
-    
-    // TODO: make this better
-    if (this.plainText === null) {
-      this.plainText = pT;
-    }
 
     const cipherText: string = this.encryptData(pT);
     this.postData({c: cipherText, pi});
 
-  }
-
-  // for display purposes
-  public getPlainText(): IPlainTextData {
-    return this.plainText;
+    return pT;
   }
   /**
    * Stores encrypted data
