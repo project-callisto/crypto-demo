@@ -1,8 +1,8 @@
 <article *ngIf="shown" id='first-step'>
   <h2 id='first-step-h2' class="main-header text-centered">User Inputs</h2>
   <step-nav [sectionStep]=1></step-nav>
-  <p>Our encryption method uses four key techniques: client-side encryption, oblivious pseudorandom function over an elliptic curve, secure multi-cloud key federation, and linear secret sharing. Our white paper explains these techniques in more detail. This demo focuses on highlighting client-side encryption and linear secret sharing. Data inputs will not be stored.</p>
-  <p>To begin, enter a user name and a perpetrator name.</p>  
+  <p>Our encryption method focuses on several cryptography techniques (our white paper explains these in more detail.) This demo highlights two techniques: <b>client side encryption</b> and <b>Shamir Secret Sharing</b>.</p>
+  <p>To begin, enter a user name and a perpetrator name. This data will be encrypted with a record key, k’. Data inputs will not be stored.</p>
 
   <form class="perp-name-form" action="#" #userInputForm="ngForm">
     <div class="input-row">
