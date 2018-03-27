@@ -16,7 +16,7 @@ export interface IKeyPair {
 
 export interface IEncryptedData {
   readonly pi: string;
-  readonly c: string; 
+  readonly c: string;
   readonly eRecord: string;
 }
 
@@ -48,6 +48,7 @@ export interface ICoord {
 export interface IDecryptedData {
   readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
+  readonly intercept: bigInt.BigInteger;
   readonly coords: ICoord[];
   readonly k: Uint8Array;
 }
@@ -106,13 +107,13 @@ export class CryptoService {
       eRecordKey,
     };
 
-    const c = this.asymmetricEncrypt(msg)
+    const c = this.asymmetricEncrypt(msg);
 
     return {
       pi: plainText.pi,
       c,
-      eRecord
-    }
+      eRecord,
+    };
   }
 
   /**
@@ -198,14 +199,15 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    const intercept: string = this.getIntercept(coordA, slope).toString();
-    const k: Uint8Array = this.stringToBytes(intercept);
+    const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
+    const k: Uint8Array = this.stringToBytes(intercept.toString());
 
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
     return {
       decryptedRecords,
       slope,
+      intercept,
       k,
       coords: this.getCoords(),
     };

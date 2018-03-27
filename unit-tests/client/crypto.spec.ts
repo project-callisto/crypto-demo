@@ -44,8 +44,8 @@ describe("Crypto service", () => {
   it("[VALUES] correct user values between two users with matching pis", async () => {
     (jasmine as any).expectCount(7);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        let pTAlice = crypto.submitData("XXXXXXX", "Alice");
-        let pTBob = crypto.submitData("XXXXXXX", "Bob");
+        const pTAlice = crypto.submitData("XXXXXXX", "Alice");
+        const pTBob = crypto.submitData("XXXXXXX", "Bob");
 
         expect(pTAlice.pHat).toEqual(pTBob.pHat);
         expect(pTAlice.U === pTBob.U).toEqual(false);
@@ -60,10 +60,10 @@ describe("Crypto service", () => {
   it("[VALUES] correct key value from encryption to decryption", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        let ptAlice = crypto.submitData("XXXXXXX", "Alice");
-        let ptBob = crypto.submitData("XXXXXXX", "Bob");
+        const ptAlice = crypto.submitData("XXXXXXX", "Alice");
+        const ptBob = crypto.submitData("XXXXXXX", "Bob");
 
-        let decrypted = crypto.decryptData();
+        const decrypted = crypto.decryptData();
 
         expect(decrypted.k).toEqual(ptAlice.k);
     });
