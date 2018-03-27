@@ -52,7 +52,7 @@ export class StepComponent {
     this.scrollTo("first-step");
   }
 
-  public advanceFirstStep(userInput: IUserInput): void {
+  public advanceFirstStep(): void {
     this.secondStep.shown = true;
     this.scrollTo("second-step");
   }

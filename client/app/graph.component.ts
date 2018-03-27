@@ -23,7 +23,7 @@ export class GraphComponent implements AfterViewInit {
   @Input() public coords: ICoord[];
   private graphGenerated: boolean = false;
 
-  public ngAfterContentChecked(): void {
+  public ngAfterViewInit(): void {
     if (this.decryptedData && this.coords && !this.graphGenerated) {
       this.populateGraph();
       this.graphGenerated = true;

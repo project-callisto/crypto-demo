@@ -4,7 +4,7 @@ import { Subject } from "rxjs/Subject";
 import { AsyncCryptoService } from "./async-crypto.service";
 import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./crypto.service";
 
-class ClientDataServiceInternals {
+class ClientDataServiceBackend {
 
   public cryptoPlainTextSource: Subject<IPlainTextData> = new Subject<IPlainTextData>();
   public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
@@ -30,7 +30,7 @@ class ClientDataServiceInternals {
 }
 
 @Injectable()
-class ClientDataServiceApi extends ClientDataServiceInternals {
+class ClientDataServiceApi extends ClientDataServiceBackend {
 
   public cryptoPlainText$: Observable<IPlainTextData> = this.cryptoPlainTextSource.asObservable();
   public cryptoEncrypted$: Observable<IEncryptedData> = this.cryptoEncryptedSource.asObservable();

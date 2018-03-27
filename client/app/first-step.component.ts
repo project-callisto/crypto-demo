@@ -1,11 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-
-import * as $ from "jquery";
-
-export interface IUserInput {
-  readonly perpInput: string;
-  readonly userName: string;
-}
+import { ClientDataService } from "./services/client-data.service";
 
 @Component({
   selector: "first-step",
@@ -17,13 +11,19 @@ export interface IUserInput {
 })
 export class FirstStepComponent {
   @Input() public shown: boolean = false;
-  @Output() public advanceStep: EventEmitter<IUserInput> = new EventEmitter<IUserInput>();
+  @Output() public advanceStep: EventEmitter<void> = new EventEmitter<void>();
+
+  constructor(
+    private clientData: ClientDataService,
+  ) {
+    //
+  }
 
   public perpSubmit(event: Event, perpInput: string, userInput: string): void {
     event.preventDefault();
     if (perpInput && userInput) {
-      const data: IUserInput = { perpInput, userName: userInput };
-      this.advanceStep.emit(data);
+      this.clientData.submitUserInput(perpInput, userInput);
+      this.advanceStep.emit();
     }
   }
 }
