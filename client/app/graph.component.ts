@@ -119,7 +119,7 @@ export class GraphComponent {
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
 
     console.log(intercept);
-    console.log(yScale(intercept));
+    console.log(slope);
 
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
