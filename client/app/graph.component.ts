@@ -46,13 +46,16 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
+    const xMax: number = this.xDomainMax(cryptoDecrypted.coords);
+    const yMax: number = this.yDomainMax(cryptoDecrypted.coords);
+
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
-      .domain([0, this.xDomainMax(cryptoDecrypted.coords)]);
+      .domain([0, xMax]);
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([0, this.yDomainMax(cryptoDecrypted.coords)]);
+      .domain([0, yMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -88,24 +91,27 @@ export class GraphComponent {
         return yScale(coord.y.toJSNumber());
       });
 
+    console.log(yMax);
+
     svg.append("path")
       .attr("class", "matched-data-line")
-      .attr("d", line()(this.lineCoordsAsJSNumbers(cryptoDecrypted, xScale, yScale)));
+      .attr("d", line()(this.lineCoordsAsJSNumbers(
+        cryptoDecrypted, xMax, xScale, yScale)));
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData,
-    xScale: any,
-    yScale: any,
+    cryptoDecrypted: IDecryptedData, xMax: number, xScale: any, yScale: any,
   ): Array<[number, number]> {
+    const intercept: number = yScale(cryptoDecrypted.intercept.toJSNumber());
     const lineStart: number[] = [
       0,
-      yScale(cryptoDecrypted.intercept.toJSNumber()),
+      yScale(intercept),
     ];
     const lineEnd: number[] = [
-      xScale(this.xDomainMax(cryptoDecrypted.coords)),
-      yScale(this.xDomainMax(cryptoDecrypted.coords) * cryptoDecrypted.slope.toJSNumber() + cryptoDecrypted.intercept.toJSNumber()),
+      xScale(xMax),
+      yScale(cryptoDecrypted.slope.toJSNumber() * xMax + intercept),
     ];
+    console.log(cryptoDecrypted.slope.toJSNumber() * xMax + intercept);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
