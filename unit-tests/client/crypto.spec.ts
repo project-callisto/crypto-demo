@@ -25,8 +25,8 @@ describe("Crypto service", () => {
   it("[VALUES] correct user values from encryption to decryption", async () => {
     (jasmine as any).expectCount(7);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        var pTAlice = crypto.submitData("XXXXXXX", "Alice");
-        var pTBob = crypto.submitData("XXXXXXX", "Bob");
+        let pTAlice = crypto.submitData("XXXXXXX", "Alice");
+        let pTBob = crypto.submitData("XXXXXXX", "Bob");
 
         expect(pTAlice.pHat).toEqual(pTBob.pHat);
         expect(pTAlice.U === pTBob.U).toEqual(false);
@@ -41,10 +41,10 @@ describe("Crypto service", () => {
   it("[VALUES] correct user values from encryption to decryption", async () => {
     (jasmine as any).expectCount(2);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        var pTAlice = crypto.submitData("XXXXXXX", "Alice");
-        var pTBob = crypto.submitData("XXXXXXX", "Bob");
+        let pTAlice = crypto.submitData("XXXXXXX", "Alice");
+        let pTBob = crypto.submitData("XXXXXXX", "Bob");
 
-        var decrypted = crypto.decryptData();
+        let decrypted = crypto.decryptData();
 
         console.log(decrypted);
         expect(decrypted.slope.equals(pTAlice.a)).toEqual(true);
@@ -67,8 +67,8 @@ describe("Crypto service", () => {
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       expect(crypto.submitData).toBeDefined();
     });
-  }); 
- 
+  });
+
   it("[SPEC] has a public decryption api", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
