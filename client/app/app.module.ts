@@ -7,7 +7,7 @@ import { FifthStepComponent } from "./fifth-step.component";
 import { FirstStepComponent } from "./first-step.component";
 import { FooterComponent } from "./footer.component";
 import { FourthStepComponent } from "./fourth-step.component";
-import { GraphComponent } from "./graph.component";
+import { GraphComponent, SeededGraphComponent } from "./graph.component";
 import { HeaderComponent } from "./header.component";
 import { IntroComponent } from "./intro.component";
 import { LastStepComponent } from "./last-step.component";
@@ -34,6 +34,7 @@ import { ClientDataService } from "./services/client-data.service";
     FifthStepComponent,
     SixthStepComponent,
     GraphComponent,
+    SeededGraphComponent,
     IntroComponent,
     NavComponent,
     LastStepComponent,
