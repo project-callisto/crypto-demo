@@ -29,13 +29,13 @@ export interface IPlainTextData {
   readonly kStr: string;
   readonly pi: string;
   readonly recordKey: Uint8Array;
+  readonly recordKeyStr: string;
   readonly record: IRecord;
 }
 
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
-  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -151,6 +151,7 @@ export class CryptoService {
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
+    const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
@@ -160,7 +161,8 @@ export class CryptoService {
       k,
       kStr,
       pi,
-      recordKey: this.sodium.crypto_secretbox_keygen(),
+      recordKey,
+      recordKeyStr: this.bytesToString(recordKey),
       record: { perpId, userName },
     };
 
