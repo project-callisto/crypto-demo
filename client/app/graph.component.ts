@@ -126,14 +126,3 @@ export class GraphComponent {
   }
 
 }
-
-export class SeededGraphComponent extends GraphComponent {
-
-  constructor(
-    private seededClientData: ClientDataService = new ClientDataService(),
-  ) {
-    super(seededClientData);
-    seededClientData.submitUserInput("example perp", "asdadwad aiuwbd jd");
-  }
-
-}
