@@ -5,7 +5,7 @@ import bigInt = require("big-integer");
 import { FifthStepComponent } from "./../../client/app/fifth-step.component";
 import { FirstStepComponent } from "./../../client/app/first-step.component";
 import { FourthStepComponent } from "./../../client/app/fourth-step.component";
-import { GraphComponent, SeededGraphComponent } from "./../../client/app/graph.component";
+import { SeededGraphComponent } from "./../../client/app/graph.component";
 import { NavComponent } from "./../../client/app/nav.component";
 import { SecondStepComponent } from "./../../client/app/second-step.component";
 import { ClientDataService } from "./../../client/app/services/client-data.service";
@@ -82,7 +82,7 @@ storiesOf("Valkyrie Demo", module)
       ],
       declarations: [
         NavComponent,
-        GraphComponent,
+        SeededGraphComponent,
       ],
     },
   }))
