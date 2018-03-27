@@ -48,6 +48,7 @@ export interface ICoord {
 export interface IDecryptedData {
   readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
+  readonly intercept: bigInt.BigInteger;
   readonly coords: ICoord[];
   readonly k: Uint8Array;
 }
@@ -196,14 +197,15 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    const intercept: string = this.getIntercept(coordA, slope).toString();
-    const k: Uint8Array = this.stringToBytes(intercept);
+    const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
+    const k: Uint8Array = this.stringToBytes(intercept.toString());
 
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
     return {
       decryptedRecords,
       slope,
+      intercept,
       k,
       coords: this.getCoords(),
     };
