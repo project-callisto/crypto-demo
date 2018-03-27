@@ -3,15 +3,15 @@
   <step-nav [sectionStep]=4></step-nav>
   <p>A key (k') is randomly generated to encrypt a user’s Record (the submitted user name and perpetrator name)</p>
   <p>
-    <code>k'</code>
+    <code class="calc-display-label">k'</code>
     <code class="calc-display-value">{{ recordKey }}</code>
   </p>
   <p>
-    <code>c: E(pk, (U, s, E(k,k')))</code>
+    <code class="calc-display-label">c: E(pk, (U, s, E(k,k')))</code>
     <code class="calc-display-value">{{ encryptedData.c }}</code>
   </p>
   <p>
-    <code>eRecord: E(k', Record)</code>
+    <code class="calc-display-label">eRecord: E(k', Record)</code>
     <code class="calc-display-value">{{ encryptedData.eRecord }}</code>
   </p>
   <p>
