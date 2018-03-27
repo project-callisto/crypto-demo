@@ -28,6 +28,8 @@ npm run start:mock-prod
 
 ## running the tests
 
+( duplicated in `.travis.yml`)
+
 data-file validatity tests
 
 ```
@@ -38,7 +40,7 @@ build integrity tests
 
 ```
 npm run heroku-postbuild
-npm run storybook:build -- --smoke-test
+npm run storybook:run -- --smoke-test
 ```
 
 application tests
