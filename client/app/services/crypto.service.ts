@@ -29,13 +29,13 @@ export interface IPlainTextData {
   readonly kStr: string;
   readonly pi: string;
   readonly recordKey: Uint8Array;
+  readonly recordKeyStr: string;
   readonly record: IRecord;
 }
 
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
-  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -80,7 +80,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  // private PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  // public PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
   private PRIME: bigInt.BigInteger = bigInt("2074722246773485207821695222107608587480996474721117292752992589912196684750549658310084416732550077");
 
   constructor(
@@ -152,6 +152,7 @@ export class CryptoService {
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
+    const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
@@ -161,7 +162,8 @@ export class CryptoService {
       k,
       kStr,
       pi,
-      recordKey: this.sodium.crypto_secretbox_keygen(),
+      recordKey,
+      recordKeyStr: this.bytesToString(recordKey),
       record: { perpId, userName },
     };
 
