@@ -22,7 +22,7 @@ import {
 
 describe("Crypto service", () => {
 
-  it("[VALUES] correct user values from encryption to decryption", async () => {
+  it("[VALUES] correct user values between two users with matching pis", async () => {
     (jasmine as any).expectCount(7);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
         let pTAlice = crypto.submitData("XXXXXXX", "Alice");
@@ -38,25 +38,15 @@ describe("Crypto service", () => {
     });
   });
 
-  it("[VALUES] correct user values from encryption to decryption", async () => {
-    (jasmine as any).expectCount(2);
+  it("[VALUES] correct key value from encryption to decryption", async () => {
+    (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        let pTAlice = crypto.submitData("XXXXXXX", "Alice");
-        let pTBob = crypto.submitData("XXXXXXX", "Bob");
+        let ptAlice = crypto.submitData("XXXXXXX", "Alice");
+        let ptBob = crypto.submitData("XXXXXXX", "Bob");
 
         let decrypted = crypto.decryptData();
 
-        console.log(decrypted);
-        expect(decrypted.slope.equals(pTAlice.a)).toEqual(true);
-        expect(decrypted.k).toEqual(pTAlice.k);
-
-        // expect(pTAlice.pHat).toEqual(pTBob.pHat);
-        // expect(pTAlice.U === pTBob.U).toEqual(false);
-        // expect(pTAlice.s === pTBob.s).toEqual(false);
-        // expect(pTAlice.a).toEqual(pTBob.a);
-        // expect(pTAlice.k).toEqual(pTBob.k);
-        // expect(pTAlice.pi).toEqual(pTBob.pi);
-        // expect(pTAlice.recordKey === pTBob.recordKey).toEqual(false);
+        expect(decrypted.k).toEqual(ptAlice.k);
     });
   });
 
