@@ -10,6 +10,7 @@ import { ClientDataService } from "./services/client-data.service";
   ],
 })
 export class FirstStepComponent {
+
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<void> = new EventEmitter<void>();
 
