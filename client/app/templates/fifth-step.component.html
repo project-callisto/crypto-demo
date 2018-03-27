@@ -1,27 +1,35 @@
 <article id='fifth-step' [ngClass]="{'hidden': (shown)===false}">
   <h2 class="main-header text-centered">Matching of Perpetrators</h2>
   <step-nav [sectionStep]=5></step-nav>
-
-  <p>Over time, different victims will enter their information into Callisto. When two &#960;s in the database match, the Options Counselor decrypts the secret values and uses those two shares to interpolate the line and reveal the y-intercept (k).</p>
-  <p>
-    <code>Your &#960;</code>
-    <code class="calc-display-value">{{ decryptedData.coords[0].pi }}</code>
-  </p>
-  <p>
-   <code>User 2's &#960; (no match found)</code>
-   <code class="calc-display-value">{{ decryptedData.coords[1].pi }}</code>
-  </p>
-  <p>
-    <code>User 3's &#960; (no match found)</code>
-    <code class="calc-display-value">{{ decryptedData.coords[2].pi }}</code>
-  </p>
-  <p>
-    <code>User 4's &#960; (match found!)</code>
-    <code class="calc-display-value">{{ decryptedData.coords[3].pi }}</code>
-  </p>
-  <p>Each (U, s) coordinate is plotted on the graph. Two or more coordinates with matching &#960; values can be used to derive the original key, k.</p>
-  
-  <crypto-graph></crypto-graph>
+  <div>
+    <p>Over time, different victims will enter their information into Callisto. When two &#960;s in the database match, the Options Counselor decrypts the secret values and uses those two shares to interpolate the line and reveal the y-intercept (k).</p>
+  </div>
+  <div>
+    <div class="pull-right">
+      <crypto-graph></crypto-graph>
+    </div>
+    <div>
+      <p>
+        <code class="calc-display-label">Your &#960;</code>
+        <code class="calc-display-value">{{ decryptedData.coords[0].pi }}</code>
+      </p>
+      <p>
+        <code class="calc-display-label">User 2's &#960; (no match found)</code>
+        <code class="calc-display-value">{{ decryptedData.coords[1].pi }}</code>
+      </p>
+      <p>
+        <code class="calc-display-label">User 3's &#960; (no match found)</code>
+        <code class="calc-display-value">{{ decryptedData.coords[2].pi }}</code>
+      </p>
+      <p>
+        <code class="calc-display-label">User 4's &#960; (match found!)</code>
+        <code class="calc-display-value">{{ decryptedData.coords[3].pi }}</code>
+      </p>
+    </div>
+  </div>
+  <div>
+    <p>Each (U, s) coordinate is plotted on the graph. Two or more coordinates with matching &#960; values can be used to derive the original key, k.</p>
+  </div>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>
   </div>

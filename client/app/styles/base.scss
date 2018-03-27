@@ -108,6 +108,20 @@ a.btn {
   }
 }
 
+.pull-right {
+  display: inline-block;
+  float: right;
+}
+
+.pull-left {
+  display: inline-block;
+  float: left;
+}
+
+.flex-box {
+  display: flex;
+}
+
 @media (min-width: $breakpoint-lg) {
   .float-left-on-large {
     float: left;
