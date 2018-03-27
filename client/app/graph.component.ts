@@ -26,7 +26,7 @@ export class GraphComponent {
   ) {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
-        select(`.${templateSelector}`).remove();
+        select(`.${templateSelector} svg`).remove();
         this.populateGraph(cryptoDecrypted);
       },
     );
@@ -110,6 +110,17 @@ export class GraphComponent {
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(lineCoordsAsJSNumbers(cryptoDecrypted.coords)));
+  }
+
+}
+
+export class SeededGraphComponent extends GraphComponent {
+
+  constructor(
+    private seededClientData: ClientDataService = new ClientDataService(),
+  ) {
+    super(seededClientData);
+    seededClientData.submitUserInput("example perp", "example user");
   }
 
 }
