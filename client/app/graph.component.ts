@@ -21,70 +21,61 @@ const templateSelector: string = "crypto-graph";
 })
 export class GraphComponent {
 
+  private margin: number = 50;
+  private size: number = 400;
+  private graphBufferFactor: number = 1.25;
+  private tickCount: number = 5;
+
   constructor(
     private clientData: ClientDataService,
   ) {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
-        select(`.${templateSelector}`).remove();
+        select(`.${templateSelector} svg`).remove();
         this.populateGraph(cryptoDecrypted);
       },
     );
   }
 
   private populateGraph(cryptoDecrypted: IDecryptedData): void {
-    const margin: number = 50;
-    const size: number = 400;
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
-      .attr("width", size + margin * 2)
-      .attr("height", size + margin * 2)
+      .attr("width", this.size + this.margin * 2)
+      .attr("height", this.size + this.margin * 2)
       .append("g")
-      .attr("transform", `translate(${margin},${margin})`);
+      .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphBufferFactor: number = 1.25;
-    const xMax: number = max(cryptoDecrypted.coords, (datum: ICoord) => datum.x.toJSNumber());
-    const yMax: number = max(cryptoDecrypted.coords, (datum: ICoord) => datum.y.toJSNumber());
+    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
+    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
 
     const xScale: any = scaleLinear()
-      .rangeRound([0, size])
-      .domain([0, xMax * graphBufferFactor]);
+      .rangeRound([0, this.size])
+      .domain([0, graphXMax]);
 
     const yScale: any = scaleLinear()
-      .rangeRound([size, 0])
-      .domain([0, yMax * graphBufferFactor]);
-
-    const tickCount: number = 5;
-
-    function applyCustomFormat(axis: any): any {
-      return axis
-        .ticks(tickCount)
-        .tickFormat(format(".2g"));
-    }
-
-    const xAxis: any = applyCustomFormat(axisBottom(xScale));
-    const yAxis: any = applyCustomFormat(axisLeft(yScale));
+      .rangeRound([this.size, 0])
+      .domain([0, graphYMax]);
 
     svg.append("g")
-      .call(xAxis)
-      .attr("transform", `translate(0,${size})`);
+      .call(this.applyCustomFormat(axisBottom(xScale)))
+      .attr("transform", `translate(0,${this.size})`);
 
     svg.append("text")
       .attr("class", "axis-label x")
       .text("hashedUserID")
-      .attr("x", size / 2)
-      .attr("y", size)
+      .attr("x", this.size / 2)
+      .attr("y", this.size)
       .attr("dx", "-3.5em")
       .attr("dy", "2.4em");
 
     svg.append("g")
-      .call(yAxis);
+      .call(this.applyCustomFormat(axisLeft(yScale)));
 
     svg.append("text")
       .attr("class", "axis-label y")
       .text("secretValue")
-      .attr("x", 0 - margin)
+      .attr("x", 0 - this.margin)
       .attr("dy", "-.4em");
 
     svg.selectAll(".dot")
@@ -100,16 +91,59 @@ export class GraphComponent {
         return yScale(coord.y.toJSNumber());
       });
 
-    function lineCoordsAsJSNumbers(coords: ICoord[]): Array<[number, number]> {
-      return coords.map((coord: ICoord) => [
-        xScale(coord.x.toJSNumber()),
-        yScale(coord.y.toJSNumber()),
-      ]) as Array<[number, number]>;
-    }
-
     svg.append("path")
       .attr("class", "matched-data-line")
-      .attr("d", line()(lineCoordsAsJSNumbers(cryptoDecrypted.coords)));
+      .attr("d", line()(this.lineCoordsAsJSNumbers(
+        cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
+  }
+
+  private xDomainMax(coords: ICoord[]): number {
+    return max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
+  }
+
+  private yDomainMax(coords: ICoord[]): number {
+    return max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
+  }
+
+  private applyCustomFormat(axis: any): any {
+    return axis
+      .ticks(this.tickCount)
+      .tickFormat(format(".2g"));
+  }
+
+  private lineCoordsAsJSNumbers(
+    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+  ): Array<[number, number]> {
+
+    const slope: number = cryptoDecrypted.slope.toJSNumber();
+    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
+
+    console.log(intercept);
+    console.log(slope);
+
+    const lineStart: number[] = [0, yScale(intercept)];
+    let lineEnd: number[];
+
+    const lineYMax: number = slope * graphXMax + intercept;
+    const lineXMax: number = (graphYMax - intercept) / slope;
+
+    if (lineYMax <= graphYMax) {
+      console.log("x clipped");
+      lineEnd = [
+        xScale((lineYMax - intercept) / slope),
+        yScale(lineYMax),
+      ];
+    } else {
+      console.log("y clipped");
+      console.log(lineXMax);
+      console.log(graphXMax);
+      lineEnd = [
+        xScale(lineXMax),
+        yScale(slope * lineXMax + intercept),
+      ];
+    }
+    console.log(lineEnd);
+    return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
 }

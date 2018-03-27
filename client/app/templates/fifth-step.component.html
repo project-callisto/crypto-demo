@@ -1,4 +1,4 @@
-<article *ngIf="shown" id='fifth-step'>
+<article id='fifth-step' [ngClass]="{'hidden': (shown)===false}">
   <h2 class="main-header text-centered">Matching of Perpetrators</h2>
   <step-nav [sectionStep]=5></step-nav>
 
