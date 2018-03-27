@@ -16,7 +16,7 @@
         "start:dev": "ng server",
         "start:prod": "node server.js",
         "start:build": "ng build --aot -prod --progress --sourcemaps",
-        "start:mock-prod": "npm run heroku-postbuild && APPEND_STORYBOOK_BUILD=true npm run start:prod",
+        "start:mock-prod": "npm run heroku-postbuild && npm run start:prod",
         "heroku-postbuild": "npm run start:build && npm run storybook:build",
         "storybook": "npm run storybook:run",
         "storybook:prebuild": "cp client/index.html storybook/preview-head.html",
@@ -66,6 +66,8 @@
     },
     "devDependencies": {
         "@storybook/angular": "^3.4.0-rc.3",
+        "@storybook/addons": "^3.3.15",
+        "@storybook/addon-actions": "^3.3.15",
         "ajv": "^6.4.0",
         "babel-core": "^6.26.0",
         "faker": "^4.1.0",
