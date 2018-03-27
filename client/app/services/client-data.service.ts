@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
-import { AsyncCryptoService } from "./async-crypto.service";
+import { asyncCryptoServiceFactory } from "./async-crypto.service";
 import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./crypto.service";
 
 class ClientDataServiceBackend {
@@ -10,14 +10,8 @@ class ClientDataServiceBackend {
   public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
   public cryptoDecryptedSource: Subject<IDecryptedData> = new Subject<IDecryptedData>();
 
-  constructor(
-    private asyncCryptoService: AsyncCryptoService,
-  ) {
-    //
-  }
-
   public processUserInput(perp: string, user: string): void {
-    this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
+    asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       this.cryptoPlainTextSource.next(crypto.submitData(perp, user));
       crypto.submitData(perp + perp, user + "Alice");
       crypto.submitData("1234" + perp, user + "Bob");
