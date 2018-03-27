@@ -1,7 +1,6 @@
 {
   "name": "valkyrie-demo",
-  "scripts": {
-  },
+  "scripts": {},
   "env": {
     "PAPERTRAIL_API_TOKEN": {
       "required": true

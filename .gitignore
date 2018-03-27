@@ -4,4 +4,5 @@ out-tsc/
 npm-debug.log
 .DS_Store
 coverage/
+storybook-dist/
 storybook/preview-head.html

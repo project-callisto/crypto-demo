@@ -1,18 +1,14 @@
 import { Component, ViewChild } from "@angular/core";
 import { FifthStepComponent } from "./fifth-step.component";
-import { FirstStepComponent, IUserInput } from "./first-step.component";
+import { FirstStepComponent } from "./first-step.component";
 import { FourthStepComponent } from "./fourth-step.component";
 import { IntroComponent } from "./intro.component";
 import { LastStepComponent } from "./last-step.component";
 import { SecondStepComponent } from "./second-step.component";
-import { AsyncCryptoService } from "./services/async-crypto.service";
-import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from "./services/crypto.service";
 import { SixthStepComponent } from "./sixth-step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
-import bigInt = require("big-integer");
 import * as $ from "jquery";
-import * as _sodium from "libsodium-wrappers";
 
 @Component({
   selector: "step-root",
@@ -21,7 +17,7 @@ import * as _sodium from "libsodium-wrappers";
       (advanceStep)="advanceIntro()"
     ></intro-root>
     <first-step
-      (advanceStep)="advanceFirstStep($event)"
+      (advanceStep)="advanceFirstStep()"
     ></first-step>
     <second-step
       (advanceStep)="advanceSecondStep()"
@@ -42,9 +38,6 @@ import * as _sodium from "libsodium-wrappers";
     `,
 })
 export class StepComponent {
-  private perpInput: string;
-  private userName: string;
-
   @ViewChild(IntroComponent) private introComp: IntroComponent;
   @ViewChild(FirstStepComponent) private firstStep: FirstStepComponent;
   @ViewChild(SecondStepComponent) private secondStep: SecondStepComponent;
@@ -54,30 +47,14 @@ export class StepComponent {
   @ViewChild(SixthStepComponent) private sixthStep: SixthStepComponent;
   @ViewChild(LastStepComponent) private lastStep: LastStepComponent;
 
-  constructor(
-    private asyncCryptoService: AsyncCryptoService,
-  ) {
-    //
-  }
-
-  /*
-   * advancer functions handle display logic for children
-   * and interact with the crypto through promises chained from private functions
-   */
-
   public advanceIntro(): void {
     this.firstStep.shown = true;
     this.scrollTo("first-step");
   }
 
-  public advanceFirstStep(userInput: IUserInput): void {
-    this.perpInput = userInput.perpInput;
-    this.userName = userInput.userName;
-    this.submitUserEntry().then(() => {
-      this.secondStep.shown = true;
-      this.scrollTo("second-step");
-    });
-
+  public advanceFirstStep(): void {
+    this.secondStep.shown = true;
+    this.scrollTo("second-step");
   }
 
   public advanceSecondStep(): void {
@@ -91,8 +68,8 @@ export class StepComponent {
   }
 
   public advanceFourthStep(): void {
-      this.fifthStep.shown = true;
-      this.scrollTo("fifth-step");
+    this.fifthStep.shown = true;
+    this.scrollTo("fifth-step");
   }
 
   public advanceFifthStep(): void {
@@ -111,39 +88,4 @@ export class StepComponent {
     }, 400);
   }
 
-  private async submitUserEntry(): Promise<void> {
-    await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-      const userPT: IPlainTextData = crypto.submitData(this.perpInput, this.userName);
-      crypto.submitData(this.perpInput + this.perpInput, this.userName + "Alice");
-      crypto.submitData("1234" + this.perpInput, this.userName + "Bob");
-      crypto.submitData(this.perpInput, this.userName + this.userName);
-
-      this.secondStep.plainTextData = userPT;
-      this.thirdStep.plainTextData = userPT;
-      const dataSubs: IEncryptedData[] = crypto.getDataSubmissions();
-      this.fourthStep.encryptedData = dataSubs[0];
-
-      const decryptedData: IDecryptedData = crypto.decryptData();
-      this.fifthStep.decryptedData = decryptedData;
-      this.fifthStep.coords = crypto.getCoords();
-      this.sixthStep.record = JSON.stringify(decryptedData.decryptedRecords[0].perpId);
-    });
-  }
-
-  // private async generateGraphData(): Promise<void> {
-  //   await this.asyncCryptoService.cryptoPromise.then((crypto: CryptoService): void => {
-  //     // unmatched perpInput
-  //     // let encryptedData: IEncryptedData = crypto.submitAndEncrypt(
-  //     //   this.perpInput + this.perpInput, this.userName + "Alice");
-  //     // this.fifthStep.RID2 = encryptedData.hashedRid;
-  //     // unmatched perpInput
-  //     // encryptedData = crypto.submitAndEncrypt("1234" + this.perpInput, this.userName + "Bob");
-  //     // this.fifthStep.RID3 = encryptedData.hashedRid;
-  //     // matched perpInput, diff username
-  //     // encryptedData = crypto.submitAndEncrypt(this.perpInput, this.userName + this.userName);
-  //     // this.fifthStep.RID4 = encryptedData.hashedRid;
-  //     // input is matched, trigger decryption
-
-  //   });
-  // }
 }

@@ -19,7 +19,7 @@ import { StepComponent } from "./step.component";
 import { ThirdStepComponent } from "./third-step.component";
 
 import * as _sodium from "libsodium-wrappers";
-import { AsyncCryptoService } from "./services/async-crypto.service";
+import { ClientDataService } from "./services/client-data.service";
 
 @NgModule({
   declarations: [
@@ -43,7 +43,7 @@ import { AsyncCryptoService } from "./services/async-crypto.service";
     FormsModule,
   ],
   providers: [
-    AsyncCryptoService,
+    ClientDataService,
   ],
   bootstrap: [AppComponent],
 })

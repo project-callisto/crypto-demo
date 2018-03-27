@@ -155,11 +155,11 @@ export class CryptoService {
       kStr,
       pi,
       recordKey: this.sodium.crypto_secretbox_keygen(),
-      record: {perpId, userName},
+      record: { perpId, userName },
     };
 
     const cipherText: string = this.encryptData(pT);
-    this.postData({c: cipherText, pi});
+    this.postData({ c: cipherText, pi });
 
     return pT;
   }
@@ -198,7 +198,11 @@ export class CryptoService {
     return {
       decryptedRecords,
       slope,
+<<<<<<< HEAD
       k,
+=======
+      intercept,
+>>>>>>> 7a7d831f82d43670ce80764434334823cf632dad
       coords: this.getCoords(),
     };
   }
