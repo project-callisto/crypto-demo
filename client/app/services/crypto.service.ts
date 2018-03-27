@@ -16,7 +16,7 @@ export interface IKeyPair {
 
 export interface IEncryptedData {
   readonly pi: string;
-  readonly c: string; 
+  readonly c: string;
   readonly eRecord: string;
 }
 
@@ -106,13 +106,13 @@ export class CryptoService {
       eRecordKey,
     };
 
-    const c = this.asymmetricEncrypt(msg)
+    const c = this.asymmetricEncrypt(msg);
 
     return {
       pi: plainText.pi,
       c,
-      eRecord
-    }
+      eRecord,
+    };
   }
 
   /**
