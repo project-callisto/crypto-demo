@@ -10,20 +10,10 @@ import { CryptoService, ICoord, IDecryptedData } from "./services/crypto.service
     "./styles/step.scss",
   ],
 })
-export class FifthStepComponent implements AfterContentChecked {
+export class FifthStepComponent {
   @Input() public pi: string[];
   @Input() public rid: string;
   @Input() public shown: boolean = false;
-  @Input() public coords: ICoord[];
   @Input() public decryptedData: IDecryptedData;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  @ViewChild(GraphComponent) public graph: GraphComponent;
-
-  public ngAfterContentChecked(): void {
-    if (this.graph && this.decryptedData && this.coords) {
-      this.graph.decryptedData = this.decryptedData;
-      this.graph.coords = this.coords;
-    }
-  }
-
 }

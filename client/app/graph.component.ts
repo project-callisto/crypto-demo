@@ -1,4 +1,4 @@
-import { AfterContentChecked, Component, Input } from "@angular/core";
+import { AfterViewInit, Component, Input } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -18,7 +18,7 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent implements AfterContentChecked {
+export class GraphComponent implements AfterViewInit {
   @Input() public decryptedData: IDecryptedData;
   @Input() public coords: ICoord[];
   private graphGenerated: boolean = false;

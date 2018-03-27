@@ -46,6 +46,7 @@ export interface ICoord {
 
 export interface IDecryptedData {
   readonly decryptedRecords: object;
+  readonly intercept: string;
   readonly slope: bigInt.BigInteger;
   readonly coords: ICoord[];
 }
@@ -153,11 +154,11 @@ export class CryptoService {
       kStr,
       pi,
       recordKey: this.sodium.crypto_secretbox_keygen(),
-      record: {perpId, userName},
+      record: { perpId, userName },
     };
 
     const cipherText: string = this.encryptData(pT);
-    this.postData({c: cipherText, pi});
+    this.postData({ c: cipherText, pi });
 
     return pT;
   }
@@ -195,6 +196,7 @@ export class CryptoService {
     return {
       decryptedRecords,
       slope,
+      intercept,
       coords: this.getCoords(),
     };
   }
