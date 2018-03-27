@@ -1,18 +1,18 @@
 <article *ngIf="shown" id='fourth-step'>
   <h2 class="main-header text-centered">Encrypted Values</h2>
   <step-nav [sectionStep]=4></step-nav>
-  <p>The following values are now encrypted using the corresponding methods.</p>
+  <p>A key is randomly generated to encrypt a user’s Record (the submitted user name and perpetrator name)</p>
   <p>
-    <code>pi</code>
-    <code class="calc-display-value">{{ encryptedData.pi }}</code>
+    <code>k'</code>
+    <!-- <code class="calc-display-value">{{ encryptedData.pi }}</code> -->
   </p>
   <p>
-    <code>ciphertext E(pk, [U, s, eRecord])</code>
-    <code class="calc-display-value">{{ encryptedData.c }}</code>
+    <code>c: E(pk, (U, s, E(k,k')))</code>
+    <code class="calc-display-value">{{ recordKey }}</code>
   </p>
   <p>
-    <!-- <code>E(pk<sub>OC</sub>, y)</code>
-    <code class="calc-display-value">{{ encryptedData.cY }}</code> -->
+    <code>eRecord: E(k', Record)</code>
+    <!-- <code class="calc-display-value">{{ encryptedData.cY }}</code> -->
   </p>
   <p>
     <!-- <code>E(k<sub>record</sub>, record)</code>
