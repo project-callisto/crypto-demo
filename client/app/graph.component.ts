@@ -46,16 +46,16 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const xMax: number = this.xDomainMax(cryptoDecrypted.coords);
-    const yMax: number = this.yDomainMax(cryptoDecrypted.coords);
+    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
+    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
-      .domain([0, xMax]);
+      .domain([0, graphXMax]);
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([0, yMax]);
+      .domain([0, graphYMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -94,21 +94,7 @@ export class GraphComponent {
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
-        cryptoDecrypted, xMax, yMax, xScale, yScale)));
-  }
-
-  private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, xMax: number, yMax: number, xScale: any, yScale: any,
-  ): Array<[number, number]> {
-    const lineStart: number[] = [
-      0,
-      yScale(cryptoDecrypted.intercept.toJSNumber()),
-    ];
-    const lineEnd: number[] = [
-      xScale(xMax),
-      yScale(xMax),
-    ];
-    return [lineStart, lineEnd] as Array<[number, number]>;
+        cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
   }
 
   private xDomainMax(coords: ICoord[]): number {
@@ -123,6 +109,34 @@ export class GraphComponent {
     return axis
       .ticks(this.tickCount)
       .tickFormat(format(".2g"));
+  }
+
+  private lineCoordsAsJSNumbers(
+    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+  ): Array<[number, number]> {
+
+    const slope: number = cryptoDecrypted.slope.toJSNumber();
+    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
+
+    const lineStart: number[] = [0, yScale(intercept)];
+    let lineEnd: number[];
+
+    const lineYMax: number = slope * graphXMax + intercept;
+    const lineXMax: number = (graphYMax - intercept) / slope;
+
+    if (lineYMax <= graphYMax) {
+      lineEnd = [
+        xScale((lineYMax - intercept) / slope),
+        yScale(lineYMax),
+      ];
+    } else {
+      lineEnd = [
+        xScale(lineXMax),
+        yScale(slope * lineXMax + intercept),
+      ];
+    }
+
+    return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
 }
