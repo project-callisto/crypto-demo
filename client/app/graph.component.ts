@@ -94,11 +94,11 @@ export class GraphComponent {
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
-        cryptoDecrypted, xMax, xScale, yScale)));
+        cryptoDecrypted, xMax, yMax, xScale, yScale)));
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, xMax: number, xScale: any, yScale: any,
+    cryptoDecrypted: IDecryptedData, xMax: number, yMax: number, xScale: any, yScale: any,
   ): Array<[number, number]> {
     const lineStart: number[] = [
       0,
@@ -106,7 +106,7 @@ export class GraphComponent {
     ];
     const lineEnd: number[] = [
       xScale(xMax),
-      yScale(cryptoDecrypted.slope.toJSNumber() * xMax + intercept),
+      yScale(xMax),
     ];
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
