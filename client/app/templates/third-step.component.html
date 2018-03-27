@@ -1,27 +1,27 @@
 <article *ngIf="shown" id='third-step'>
   <h2 class="main-header text-centered" id="third-step-h2">Linear Secret Sharing</h2>
   <step-nav [sectionStep]=3></step-nav>
-  <!-- <p>First we hash RID using SHA-512 to standardize outputs to 512 bits.</p> -->
+  <p>The user’s browser then creates a secret share. It uses P-hat to derive three 256-bit pseudorandom quantities: a, k, and 𝜋. The first two quantities define a line equation Y = aX + k, whose y-intercept is k. The client evaluates this line at the point X = U to obtain s = aU + k. The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.
+  </p>
   <p>
-    <code>pi</code>
+    <code>Matching index (𝜋)</code>
     <code class="calc-display-value">{{ plainTextData.pi }}</code>
   </p>
-  <!-- <p>From this value, we use the first 256 bits as a slope (m) and the remaining 256 bits as a key, K<sub>ID</sub> to encrypt user data. We also hash your inputted user name to create a value, x</p> -->
   <p>
-    <code>slope (a)</code>
+    <code>Slope (a)</code>
     <code class="calc-display-value">{{ plainTextData.a }}</code>
   </p>
   <p>
-    <code>y-intercept (k)</code>
+    <code>Y-intercept (k)</code>
     <code class="calc-display-value">{{ plainTextData.kStr }}</code>
   </p>
   <p>
-    <code>user ID (U)</code>
+    <code>User name (U)</code>
     <code class="calc-display-value">{{ plainTextData.U }}</code>
   </p>
-  <p>These values are now the inputs for the line <code>s = aU + k</code></p>
+  <!-- <p>These values are now the inputs for the line <code>s = aU + k</code></p> -->
   <p>
-    <code>s = aU + k mod 2<sup>128</sup>-159</code>
+    <code>Secret share (s = aU + k mod p)</code>
     <code class="calc-display-value">{{ plainTextData.s }}</code>
   </p>
   <div class="align-right-on-large">
