@@ -43,8 +43,8 @@ code {
 p {
   font-family: $font-body;
   color: $color-paragraph-text;
-  letter-spacing: 2px;
-  line-height: 30px;
+  letter-spacing: 1px;
+  line-height: 25px;
   margin: 20px 0;
 }
 
@@ -62,7 +62,7 @@ input {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
-  background-color: $color-code-background;
+  background-color: $color-button-background;
   border: 1px solid $color-code-border;
 }
 
