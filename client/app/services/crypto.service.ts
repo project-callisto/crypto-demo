@@ -47,7 +47,7 @@ export interface ICoord {
 
 export interface IDecryptedData {
   readonly decryptedRecords: object;
-  readonly slope: bigInt.BigInteger;
+  slope: bigInt.BigInteger;
   readonly intercept: bigInt.BigInteger;
   readonly coords: ICoord[];
   readonly k: Uint8Array;
@@ -201,6 +201,8 @@ export class CryptoService {
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
     const k: Uint8Array = this.stringToBytes(intercept.toString());
+
+    console.log("decryptData slope", slope.toJSNumber());
 
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
@@ -380,6 +382,10 @@ export class CryptoService {
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
     const top: bigInt.BigInteger = c2.y.minus(c1.y);
     const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
+
+    console.log("top.divide(bottom)", top.divide(bottom).toJSNumber());
+
+    debugger;
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
   }
