@@ -1,6 +1,6 @@
-import { AfterContentChecked, Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
-import { GraphComponent } from "./graph.component";
-import { CryptoService, ICoord, IDecryptedData } from "./services/crypto.service";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { ClientDataService } from "./services/client-data.service";
+import { IDecryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "fifth-step",
@@ -10,20 +10,20 @@ import { CryptoService, ICoord, IDecryptedData } from "./services/crypto.service
     "./styles/step.scss",
   ],
 })
-export class FifthStepComponent implements AfterContentChecked {
-  @Input() public pi: string[];
-  @Input() public rid: string;
-  @Input() public shown: boolean = false;
-  @Input() public coords: ICoord[];
-  @Input() public decryptedData: IDecryptedData;
-  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  @ViewChild(GraphComponent) public graph: GraphComponent;
+export class FifthStepComponent {
 
-  public ngAfterContentChecked(): void {
-    if (this.graph && this.decryptedData && this.coords) {
-      this.graph.decryptedData = this.decryptedData;
-      this.graph.coords = this.coords;
-    }
+  @Input() public shown: boolean = false;
+  @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
+  public decryptedData: IDecryptedData;
+
+  constructor(
+    private clientData: ClientDataService,
+  ) {
+    clientData.cryptoDecrypted$.subscribe(
+      (cryptoDecrypted: IDecryptedData) => {
+        this.decryptedData = cryptoDecrypted;
+      },
+    );
   }
 
 }
