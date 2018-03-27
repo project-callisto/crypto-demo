@@ -46,9 +46,9 @@ export interface ICoord {
 
 export interface IDecryptedData {
   readonly decryptedRecords: object;
-  readonly intercept: string;
   readonly slope: bigInt.BigInteger;
   readonly coords: ICoord[];
+  readonly k: Uint8Array;
 }
 
 export interface IRecord {
@@ -78,7 +78,8 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  private PRIME: string = "2074722246773485207821695222107608587480996474721117292752992589912196684750549658310084416732550077";
+  // private PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  private PRIME: bigInt.BigInteger = bigInt("2074722246773485207821695222107608587480996474721117292752992589912196684750549658310084416732550077");
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -138,10 +139,10 @@ export class CryptoService {
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
 
     // slope is superficially small
-    const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(8, 1, "derivation", pHat)));
+    const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(32, 1, "derivation", pHat)));
     const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, "derivation", pHat);
     const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, "derivation", pHat));
-    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName)), 16).mod(this.PRIME);
+    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0,32)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
 
@@ -191,12 +192,17 @@ export class CryptoService {
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const intercept: string = this.getIntercept(coordA, slope).toString();
     const k: Uint8Array = this.stringToBytes(intercept);
+
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, k);
 
     return {
       decryptedRecords,
       slope,
+<<<<<<< HEAD
+      k,
+=======
       intercept,
+>>>>>>> 7a7d831f82d43670ce80764434334823cf632dad
       coords: this.getCoords(),
     };
   }
@@ -206,7 +212,7 @@ export class CryptoService {
    * @param {Uint8Array} k - 32 byte key
    * @returns {string}
    */
-  private bytesToString(k: Uint8Array): string {
+  public bytesToString(k: Uint8Array): string {
     let numStr: string = "";
 
     for (const i in k) {
@@ -227,7 +233,7 @@ export class CryptoService {
    * @param {string} intercept
    * @returns {Uint8Array} 32-byte key
    */
-  private stringToBytes(intercept: string): Uint8Array {
+  public stringToBytes(intercept: string): Uint8Array {
     const diff: number = 96 - intercept.length;
     for (let i: number = 0; i < diff; i++) {
       intercept = "0" + intercept;
@@ -380,7 +386,8 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
+    const mult: bigInt.BigInteger = (slope.times(x)).mod(this.PRIME);
 
-    return (y.minus(slope.times(x))).mod(this.PRIME);
+    return (y.minus(mult).mod(this.PRIME));
   }
 }
