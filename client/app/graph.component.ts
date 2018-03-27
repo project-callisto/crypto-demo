@@ -91,8 +91,6 @@ export class GraphComponent {
         return yScale(coord.y.toJSNumber());
       });
 
-    console.log(yMax);
-
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
@@ -102,16 +100,14 @@ export class GraphComponent {
   private lineCoordsAsJSNumbers(
     cryptoDecrypted: IDecryptedData, xMax: number, xScale: any, yScale: any,
   ): Array<[number, number]> {
-    const intercept: number = yScale(cryptoDecrypted.intercept.toJSNumber());
     const lineStart: number[] = [
       0,
-      yScale(intercept),
+      yScale(cryptoDecrypted.intercept.toJSNumber()),
     ];
     const lineEnd: number[] = [
       xScale(xMax),
       yScale(cryptoDecrypted.slope.toJSNumber() * xMax + intercept),
     ];
-    console.log(cryptoDecrypted.slope.toJSNumber() * xMax + intercept);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
@@ -137,7 +133,7 @@ export class SeededGraphComponent extends GraphComponent {
     private seededClientData: ClientDataService = new ClientDataService(),
   ) {
     super(seededClientData);
-    seededClientData.submitUserInput("example perp", "example user");
+    seededClientData.submitUserInput("example perp", "asdadwad aiuwbd jd");
   }
 
 }
