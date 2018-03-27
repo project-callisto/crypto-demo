@@ -34,7 +34,6 @@ import { ClientDataService } from "./services/client-data.service";
     FifthStepComponent,
     SixthStepComponent,
     GraphComponent,
-    SeededGraphComponent,
     IntroComponent,
     NavComponent,
     LastStepComponent,
@@ -49,4 +48,17 @@ import { ClientDataService } from "./services/client-data.service";
   bootstrap: [AppComponent],
 })
 export class AppModule {
+}
+
+@NgModule({
+  declarations: [
+    SeededGraphComponent,
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+  ],
+  bootstrap: [AppComponent],
+})
+export class SeedModule {
 }
