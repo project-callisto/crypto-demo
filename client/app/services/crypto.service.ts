@@ -190,7 +190,6 @@ export class CryptoService {
     }
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
-    console.log(slope.toString());
     const intercept: string = this.getIntercept(coordA, slope).toString();
     const k: Uint8Array = this.stringToBytes(intercept);
 
