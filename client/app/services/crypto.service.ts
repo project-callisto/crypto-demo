@@ -16,7 +16,8 @@ export interface IKeyPair {
 
 export interface IEncryptedData {
   readonly pi: string;
-  readonly c: string; // ciphertext
+  readonly c: string; 
+  readonly eRecord: string;
 }
 
 export interface IPlainTextData {
@@ -34,7 +35,7 @@ export interface IPlainTextData {
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
-  readonly eRecord: string;
+  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -95,18 +96,23 @@ export class CryptoService {
    * @returns {IEncryptedData} object containing all encrypted values to be stored
    */
 
-  public encryptData(plainText: IPlainTextData): string {
+  public encryptData(plainText: IPlainTextData): IEncryptedData {
 
     const eRecord: string = this.symmetricEncrypt(plainText.recordKey, JSON.stringify(plainText.record));
     const eRecordKey: string = this.symmetricEncrypt(plainText.k, this.sodium.to_base64(plainText.recordKey));
     const msg: IMessage = {
       U: plainText.U, // TODO: hash?!
       s: plainText.s,
-      eRecord,
       eRecordKey,
     };
 
-    return this.asymmetricEncrypt(msg);
+    const c = this.asymmetricEncrypt(msg)
+
+    return {
+      pi: plainText.pi,
+      c,
+      eRecord
+    }
   }
 
   /**
@@ -158,8 +164,8 @@ export class CryptoService {
       record: { perpId, userName },
     };
 
-    const cipherText: string = this.encryptData(pT);
-    this.postData({ c: cipherText, pi });
+    const encryptedData: IEncryptedData = this.encryptData(pT);
+    this.postData(encryptedData);
 
     return pT;
   }
@@ -193,7 +199,7 @@ export class CryptoService {
     const intercept: string = this.getIntercept(coordA, slope).toString();
     const k: Uint8Array = this.stringToBytes(intercept);
 
-    const decryptedRecords: IRecord[] = this.decryptRecords(messages, k);
+    const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
     return {
       decryptedRecords,
@@ -304,13 +310,13 @@ export class CryptoService {
    * @param {string} rid - randomized perpetrator ID
    * @returns {Array<IRecord>} array of decrypted records
    */
-  private decryptRecords(data: IMessage[], k: Uint8Array): IRecord[] {
+  private decryptRecords(data: IMessage[], eRecords: string[], k: Uint8Array): IRecord[] {
 
     const decryptedRecords: IRecord[] = [];
 
     for (const i in data) {
       const recordKey: Uint8Array = this.symmetricDecrypt(k, data[i].eRecordKey);
-      const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(recordKey), data[i].eRecord);
+      const decryptedRecord: Uint8Array = this.symmetricDecrypt(this.sodium.from_base64(recordKey), eRecords[i]);
       const dStr: string = new encoding.TextDecoder("utf-8").decode(decryptedRecord);
       decryptedRecords.push(JSON.parse(dStr));
     }
