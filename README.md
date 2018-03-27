@@ -28,8 +28,24 @@ npm run start:mock-prod
 
 ## running the tests
 
+data-file validatity tests
+
 ```
-test:all
+bin/json-lint.sh
+```
+
+build integrity tests
+
+```
+npm run heroku-postbuild
+npm run storybook:build -- --smoke-test
+```
+
+application tests
+
+```
+npm run test:unit -- --single-run
+npm run test:e2e -- --single-run
 ```
 
 ## running storybook

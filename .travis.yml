@@ -17,9 +17,9 @@ before_script:
 script:
 - bin/json-lint.sh
 - npm run heroku-postbuild
+- npm run storybook:build -- --smoke-test
 - npm run test:unit -- --single-run
-- npm run test:e2e
-- npm run storybook -- --smoke-test
+- npm run test:e2e -- --single-run
 notifications:
   email: false
   slack:
