@@ -3,10 +3,9 @@
   <step-nav [sectionStep]=3></step-nav>
   <p>The user’s browser then creates a secret share. It uses p&#770; to derive three 256-bit pseudorandom quantities: a, k, and &#960;. The first two quantities define a line equation</p>
   <code>Y = aX + k</code>
-  <p>whose y-intercept is k. The client evaluates this line at the point X = U to obtain
-    <code>s = aU + k.</code>
-    <p>The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.</p>
-  </p>
+  <p>whose y-intercept is k. The client evaluates this line at the point X = U to obtain</p>
+  <code>s = aU + k.</code>
+  <p>The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.</p>
   <p>
     <code>Matching index (&#960;)</code>
     <code class="calc-display-value">{{ plainTextData.pi }}</code>
