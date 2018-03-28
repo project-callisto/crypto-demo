@@ -21,7 +21,6 @@ class ClientDataServiceBackend {
       this.updateCoords(crypto.submitData(perp, user + user));
       this.cryptoEncryptedSource.next(crypto.getDataSubmissions()[0]);
       this.cryptoDecryptedSource.next(crypto.decryptData());
-      console.log(this.coords);
     });
   }
 
