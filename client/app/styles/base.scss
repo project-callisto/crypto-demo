@@ -54,6 +54,11 @@ input.ng-dirty.ng-invalid {
   text-align: center;
 }
 
+.txt-flex-center {
+  justify-content: center;
+  flex-direction: column;
+}
+
 h1,
 h2 {
   font-family: $font-headers;
