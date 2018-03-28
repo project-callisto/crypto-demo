@@ -24,6 +24,7 @@ export interface IPlainTextData {
   readonly pHat: string;
   readonly U: bigInt.BigInteger; // x-coordinate
   readonly s: bigInt.BigInteger; // y-coordinate
+  readonly sU: bigInt.BigInteger; // secret value without mod
   readonly a: bigInt.BigInteger; // slope
   readonly k: Uint8Array;
   readonly kStr: string;
@@ -36,7 +37,6 @@ export interface IPlainTextData {
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
-  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -50,7 +50,6 @@ export interface IDecryptedData {
   readonly decryptedRecords: object;
   readonly slope: bigInt.BigInteger;
   readonly intercept: bigInt.BigInteger;
-  readonly coords: ICoord[];
   readonly k: Uint8Array;
 }
 
@@ -115,19 +114,19 @@ export class CryptoService {
     };
   }
 
-  /**
-   * Returns all coordinates for displaying on graph
-   * @returns {Array<ICoord>}
-   */
-  public getCoords(): ICoord[] {
-    const coords: ICoord[] = [];
-    const messages: IMessage[] = this.asymmetricDecrypt(this.dataSubmissions);
+  // /**
+  //  * Returns all coordinates for displaying on graph
+  //  * @returns {Array<ICoord>}
+  //  */
+  // public getCoords(): ICoord[] {
+  //   const coords: ICoord[] = [];
+  //   const messages: IMessage[] = this.asymmetricDecrypt(this.dataSubmissions);
 
-    for (const i in messages) {
-      coords.push(this.createCoord(messages[i], this.dataSubmissions[i].pi));
-    }
-    return coords;
-  }
+  //   for (const i in messages) {
+  //     coords.push(this.createCoord(messages[i], this.dataSubmissions[i].pi));
+  //   }
+  //   return coords;
+  // }
 
   public getDataSubmissions(): IEncryptedData[] {
     return this.dataSubmissions;
@@ -158,6 +157,7 @@ export class CryptoService {
       pHat: this.sodium.to_base64(pHat),
       U,
       s: (a.times(U).plus(bigInt(kStr))).mod(this.PRIME),
+      sU: (a.times(U).plus(bigInt(kStr))),
       a,
       k,
       kStr,
@@ -209,7 +209,6 @@ export class CryptoService {
       slope,
       intercept,
       k,
-      coords: this.getCoords(),
     };
   }
 
