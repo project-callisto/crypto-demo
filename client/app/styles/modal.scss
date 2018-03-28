@@ -1,0 +1,20 @@
+@import "_meta";
+
+.callisto-modal {
+    display: none;
+    width: 80%;
+    left: 10%;
+    top: 15%;
+    position: fixed;
+
+  .callisto-modal-content {
+      background-color: $color-article-background;
+      border: 1;
+      height: 200px;
+      text-align: center;
+      p {
+          padding-top: 2%;
+      }
+  }
+}
+

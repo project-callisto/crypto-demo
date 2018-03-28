@@ -12,6 +12,7 @@ import { HeaderComponent } from "./header.component";
 import { IntroComponent } from "./intro.component";
 import { LastStepComponent } from "./last-step.component";
 import { NavComponent } from "./nav.component";
+import { PreflightComponent } from "./preflight.component";
 import { SecondStepComponent } from "./second-step.component";
 import { SixthStepComponent } from "./sixth-step.component";
 import { StepComponent } from "./step.component";
@@ -23,6 +24,7 @@ import { CryptoService } from "./services/crypto.service";
 @NgModule({
   declarations: [
     AppComponent,
+    PreflightComponent,
     HeaderComponent,
     StepComponent,
     FirstStepComponent,
