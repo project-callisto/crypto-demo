@@ -2,14 +2,14 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
 import { asyncCryptoServiceFactory } from "./async-crypto.service";
-import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData, ICoord } from "./crypto.service";
+import { CryptoService, ICoord, IDecryptedData, IEncryptedData, IPlainTextData } from "./crypto.service";
 
 class ClientDataServiceBackend {
 
   public cryptoPlainTextSource: Subject<IPlainTextData> = new Subject<IPlainTextData>();
   public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
   public cryptoDecryptedSource: Subject<IDecryptedData> = new Subject<IDecryptedData>();
-  public coords: Array<ICoord> = [];
+  public coords: ICoord[] = [];
 
   public processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
@@ -25,11 +25,11 @@ class ClientDataServiceBackend {
   }
 
   private updateCoords(pT: IPlainTextData): void {
-    var coord = {
+    let coord = {
       x: pT.U,
       y: pT.sU,
-      pi: pT.pi
-    }
+      pi: pT.pi,
+    };
     this.coords.push(coord);
   }
 }

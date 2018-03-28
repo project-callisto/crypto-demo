@@ -10,8 +10,6 @@ import {
 
 import bigInt = require("big-integer");
 
-
-
 /*
  * NAMING CONVENTIONS
  *
@@ -30,10 +28,10 @@ function getRandom(max) {
 }
 
 function createName() {
-  var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-  var name = '';
-    for (var i = 0; i < getRandom(50); i++) {
-      var index = getRandom(alphabet.length);
+  const alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+  let name = "";
+  for (let i = 0; i < getRandom(50); i++) {
+      const index = getRandom(alphabet.length);
       name += alphabet[index];
     }
   return name;
@@ -43,14 +41,14 @@ describe("Crypto service", () => {
   it("[VALUES] Values match E2E", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-      var perp = 'XXXXXX';
-      var user = 'Alice';
-      let ptA = crypto.submitData('XXXXXX', 'Alice');
+      const perp = "XXXXXX";
+      const user = "Alice";
+      const ptA = crypto.submitData("XXXXXX", "Alice");
       crypto.submitData(perp + perp, user + "Alice");
       crypto.submitData("1234" + perp, user + "Bob");
       crypto.submitData(perp, user + user);
 
-      let decrypted = crypto.decryptData();
+      const decrypted = crypto.decryptData();
       expect(decrypted.k).toEqual(ptA.k);
     });
   });
@@ -58,22 +56,20 @@ describe("Crypto service", () => {
   it("[VALUES] stress test", async () => {
     const testNum = 1000;
     (jasmine as any).expectCount(testNum);
-    for (var i = 0; i < testNum; i++) {
+    for (let i = 0; i < testNum; i++) {
       await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        var perpName = createName();
-        var userName = createName();
+        const perpName = createName();
+        const userName = createName();
         console.log(i, perpName);
 
-        let ptA = crypto.submitData(perpName, userName);
-        let ptB = crypto.submitData(perpName, userName + userName);
-        
-        let decrypted = crypto.decryptData();
+        const ptA = crypto.submitData(perpName, userName);
+        const ptB = crypto.submitData(perpName, userName + userName);
+
+        const decrypted = crypto.decryptData();
         expect(decrypted.k).toEqual(ptA.k);
       });
     }
   });
-
-
 
   it("[VALUES] correct user values between two users with matching pis", async () => {
     (jasmine as any).expectCount(7);
@@ -94,9 +90,9 @@ describe("Crypto service", () => {
   it("[VALUES] correct key value from encryption to decryption", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        let ptAlice = crypto.submitData("XXXXXXX", "Alice");
-        let ptBob = crypto.submitData("XXXXXXX", "Bob");
-        let decrypted = crypto.decryptData();
+        const ptAlice = crypto.submitData("XXXXXXX", "Alice");
+        const ptBob = crypto.submitData("XXXXXXX", "Bob");
+        const decrypted = crypto.decryptData();
 
         expect(decrypted.k).toEqual(ptAlice.k);
     });

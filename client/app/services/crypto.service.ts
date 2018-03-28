@@ -198,7 +198,7 @@ export class CryptoService {
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
- 
+
     const k: Uint8Array = this.stringToBytes(intercept.toString());
   //  console.log('slope', slope.toString(),'intercept', intercept.toString(), 'intercept2', this.getIntercept(coordB, slope).toString());
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
@@ -207,7 +207,7 @@ export class CryptoService {
       decryptedRecords,
       slope,
       intercept,
-      k
+      k,
     };
   }
 
@@ -389,7 +389,7 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    const mult: bigInt.BigInteger = (slope.times(x))
+    const mult: bigInt.BigInteger = (slope.times(x));
 
     return this.realMod(y.minus(mult));
   }
