@@ -29,13 +29,13 @@ export interface IPlainTextData {
   readonly kStr: string;
   readonly pi: string;
   readonly recordKey: Uint8Array;
-  readonly recordKeyStr: string;
   readonly record: IRecord;
 }
 
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
+  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -154,7 +154,6 @@ export class CryptoService {
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
-    const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
     console.log("IPlainTextData.a (slope)", a.toJSNumber());
 
@@ -166,8 +165,7 @@ export class CryptoService {
       k,
       kStr,
       pi,
-      recordKey,
-      recordKeyStr: this.bytesToString(recordKey),
+      recordKey: this.sodium.crypto_secretbox_keygen(),
       record: { perpId, userName },
     };
 
@@ -220,35 +218,43 @@ export class CryptoService {
   }
 
   /**
-   * Converts a Uint8Array to a string representation of its integer value
+   * Converts a Uint8Array to string of numbers
    * @param {Uint8Array} k - 32 byte key
    * @returns {string}
    */
   public bytesToString(k: Uint8Array): string {
-    let result: bigInt.BigInteger = bigInt(0);
+    let numStr: string = "";
 
-    for (let i: number = k.length - 1; i >= 0; i--) {
-      result = result.or(bigInt(k[i]).shiftLeft((i * 8)));
+    for (const i in k) {
+      let str: string = k[i].toString();
+
+      if (str.length === 2) {
+        str = "0" + str;
+      } else if (str.length === 1) {
+        str = "00" + str;
+      }
+      numStr += str;
     }
-
-    return result.toString();
+    return numStr;
   }
 
   /**
-   * Converts a string representing an integer to a Uint8Array
+   * Converts string of numbers to a Uint8Array
    * @param {string} intercept
    * @returns {Uint8Array} 32-byte key
    */
   public stringToBytes(intercept: string): Uint8Array {
-    let value: bigInt.BigInteger = bigInt(intercept);
-    const result: number[] = [];
-
-    for (let i: number = 0; i < 32; i++) {
-      result.push(parseInt(value.and(255).toString(), 10));
-      value = value.divide(256);
+    const diff: number = 96 - intercept.length;
+    for (let i: number = 0; i < diff; i++) {
+      intercept = "0" + intercept;
     }
 
-    return Uint8Array.from(result);
+    const arr: number[] = [];
+    for (let i: number = 0; i < 96; i += 3) {
+      arr.push(parseInt(intercept.slice(i, i + 3)));
+    }
+
+    return Uint8Array.from(arr);
   }
 
   /**

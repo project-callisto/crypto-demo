@@ -116,6 +116,10 @@ export class GraphComponent {
   ): Array<[number, number]> {
 
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
+
+    console.log(intercept);
+    console.log(slope);
+
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
 
@@ -135,6 +139,7 @@ export class GraphComponent {
         yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(intercept).toJSNumber()),
       ];
     }
+    console.log(lineEnd);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
