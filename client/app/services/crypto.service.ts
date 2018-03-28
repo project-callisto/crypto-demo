@@ -80,8 +80,8 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  // tslint:disable-next-line
-  public PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  // public PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  private PRIME: bigInt.BigInteger = bigInt("2074722246773485207821695222107608587480996474721117292752992589912196684750549658310084416732550077");
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -214,35 +214,43 @@ export class CryptoService {
   }
 
   /**
-   * Converts a Uint8Array to a string representation of its integer value
+   * Converts a Uint8Array to string of numbers
    * @param {Uint8Array} k - 32 byte key
    * @returns {string}
    */
   public bytesToString(k: Uint8Array): string {
-    let result: bigInt.BigInteger = bigInt(0);
+    let numStr: string = "";
 
-    for (let i: number = k.length - 1; i >= 0; i--) {
-      result = result.or(bigInt(k[i]).shiftLeft((i * 8)));
+    for (const i in k) {
+      let str: string = k[i].toString();
+
+      if (str.length === 2) {
+        str = "0" + str;
+      } else if (str.length === 1) {
+        str = "00" + str;
+      }
+      numStr += str;
     }
-
-    return result.toString();
+    return numStr;
   }
 
   /**
-   * Converts a string representing an integer to a Uint8Array
+   * Converts string of numbers to a Uint8Array
    * @param {string} intercept
    * @returns {Uint8Array} 32-byte key
    */
   public stringToBytes(intercept: string): Uint8Array {
-    let value: bigInt.BigInteger = bigInt(intercept);
-    const result: number[] = [];
-
-    for (let i: number = 0; i < 32; i++) {
-      result.push(parseInt(value.and(255).toString(), 10));
-      value = value.divide(256);
+    const diff: number = 96 - intercept.length;
+    for (let i: number = 0; i < diff; i++) {
+      intercept = "0" + intercept;
     }
 
-    return Uint8Array.from(result);
+    const arr: number[] = [];
+    for (let i: number = 0; i < 96; i += 3) {
+      arr.push(parseInt(intercept.slice(i, i + 3)));
+    }
+
+    return Uint8Array.from(arr);
   }
 
   /**
