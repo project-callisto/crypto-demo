@@ -383,7 +383,9 @@ export class CryptoService {
     console.log("c1.x", c1.x.toJSNumber());
 
     console.log("top.divide(bottom)", top.divide(bottom).toJSNumber());
-    console.log("top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME)", top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME).toJSNumber());
+    console.log(
+      "top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME)",
+      top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME).toJSNumber());
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
   }

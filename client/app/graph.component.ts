@@ -133,9 +133,12 @@ export class GraphComponent {
     const lineStart: number[] = [0, yScale(cryptoDecrypted.intercept.toJSNumber())];
     let lineEnd: number[];
 
+    const slope: bigInt.BigInteger = cryptoDecrypted.slope;
     const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(cryptoDecrypted.intercept);
     const lineXMax: bigInt.BigInteger = graphYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope);
 
+    console.log("PRIME", PRIME.toJSNumber());
+    console.log("slope", slope.toJSNumber());
     console.log("lineXMax", lineXMax.toJSNumber());
     console.log("lineYMax", lineYMax.toJSNumber());
 
