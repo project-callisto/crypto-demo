@@ -1,27 +1,30 @@
 <article *ngIf="shown" id='third-step'>
-  <h2 class="main-header text-centered" id="third-step-h2">Linear Secret Sharing</h2>
+  <h2 class="main-header text-centered" id="third-step-h2">Shamir Secret Sharing</h2>
   <step-nav [sectionStep]=3></step-nav>
-  <p>The user’s browser then creates a secret share. It uses P-hat to derive three 256-bit pseudorandom quantities: a, k, and 𝜋. The first two quantities define a line equation Y = aX + k, whose y-intercept is k. The client evaluates this line at the point X = U to obtain s = aU + k. The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.
-  </p>
+  <p>The user’s browser then creates a secret share. It uses P&#770; to derive three 256-bit pseudorandom quantities: a, k, and &#960;. The first two quantities define a line equation</p>
+   <p class="text-centered"><code class="calc-display-value">y = aX + k</code></p>
+  <p>whose y-intercept is k. The client evaluates this line at the point X = U to obtain</p>
+  <p class="text-centered"><code class="calc-display-value">s = aU + k</code></p>
+  <p>The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.</p>
   <p>
-    <code>Matching index (𝜋)</code>
+    <code class="calc-display-label">Matching index (&#960;)</code>
     <code class="calc-display-value">{{ plainTextData.pi }}</code>
   </p>
   <p>
-    <code>Slope (a)</code>
+    <code class="calc-display-label">Slope (a)</code>
     <code class="calc-display-value">{{ plainTextData.a }}</code>
   </p>
   <p>
-    <code>Y-intercept (k)</code>
+    <code class="calc-display-label">y-intercept (k)</code>
     <code class="calc-display-value">{{ plainTextData.kStr }}</code>
   </p>
   <p>
-    <code>User name (U)</code>
+    <code class="calc-display-label">User name (U)</code>
     <code class="calc-display-value">{{ plainTextData.U }}</code>
   </p>
   <!-- <p>These values are now the inputs for the line <code>s = aU + k</code></p> -->
   <p>
-    <code>Secret share (s = aU + k mod p)</code>
+    <code class="calc-display-label">Secret share (s = aU + k mod p)</code>
     <code class="calc-display-value">{{ plainTextData.s }}</code>
   </p>
   <div class="align-right-on-large">

@@ -57,7 +57,7 @@ input.ng-dirty.ng-invalid {
 h1,
 h2 {
   font-family: $font-headers;
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .align-right-on-large {
@@ -102,6 +102,20 @@ a.btn {
   &:focus {
     border: 2px solid $palette-dark-blue;
   }
+}
+
+.pull-right {
+  display: inline-block;
+  float: right;
+}
+
+.pull-left {
+  display: inline-block;
+  float: left;
+}
+
+.flex-box {
+  display: flex;
 }
 
 @media (min-width: $breakpoint-lg) {
