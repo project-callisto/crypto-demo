@@ -2,12 +2,11 @@ import { AfterViewInit } from "@angular/core";
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/angular";
 import bigInt = require("big-integer");
-import { FifthStepComponent } from "./../../client/app/fifth-step.component";
 import { FirstStepComponent } from "./../../client/app/first-step.component";
 import { FourthStepComponent } from "./../../client/app/fourth-step.component";
 import { NavComponent } from "./../../client/app/nav.component";
 import { SecondStepComponent } from "./../../client/app/second-step.component";
-import { SeededGraphComponent } from "./../../client/app/seed.module";
+import { SeededFifthStepComponent, SeededGraphComponent } from "./../../client/app/seed.module";
 import { ClientDataService } from "./../../client/app/services/client-data.service";
 import { SixthStepComponent } from "./../../client/app/sixth-step.component";
 import { ThirdStepComponent } from "./../../client/app/third-step.component";
@@ -74,7 +73,7 @@ storiesOf("Valkyrie Demo", module)
   }))
 
   .add("fifth step", () => ({
-    component: FifthStepComponent,
+    component: SeededFifthStepComponent,
     props: { shown: true },
     moduleMetadata: {
       providers: [
