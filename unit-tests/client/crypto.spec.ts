@@ -54,32 +54,24 @@ describe("Crypto service", () => {
       expect(decrypted.k).toEqual(ptA.k);
     });
   });
-// 
-  // it("[VALUES] stress test", async () => {
-  //   (jasmine as any).expectCount(1);
-  //   for (var i = 0; i < 2; i++) {
-  //     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-  //       var perpName = createName();
-  //       // console.log(perpName);
-  //       let ptA = crypto.submitData(perpName, createName());
-  //       let ptB = crypto.submitData(perpName, createName());
-        
-        
-  //       let decrypted = crypto.decryptData();
-  //       // console.log(decrypted);
-        
-      
-  //       expect(decrypted.k).toEqual(ptA.k);
 
-  //       // expect(crypto.decryptData).toBeDefined();
-  //       // let ptAlice = crypto.submitData("XXXXXXX", "Alice");
-  //       // let ptBob = crypto.submitData("XXXXXXX", "Bob");
-  //       // let decrypted = crypto.decryptData();
-  //       // expect(decrypted.k).toEqual(ptAlice.k);
-  //     });
-  //   }
+  it("[VALUES] stress test", async () => {
+    const testNum = 1000;
+    (jasmine as any).expectCount(testNum);
+    for (var i = 0; i < testNum; i++) {
+      await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
+        var perpName = createName();
+        var userName = createName();
+        console.log(i, perpName);
 
-  // });
+        let ptA = crypto.submitData(perpName, userName);
+        let ptB = crypto.submitData(perpName, userName + userName);
+        
+        let decrypted = crypto.decryptData();
+        expect(decrypted.k).toEqual(ptA.k);
+      });
+    }
+  });
 
 
 
