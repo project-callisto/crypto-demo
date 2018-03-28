@@ -368,8 +368,8 @@ export class CryptoService {
    * @returns {bigInt.BigInteger} slope value
    */
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
-    const top: bigInt.BigInteger = c2.y.minus(c1.y);
-    const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
+    const top: bigInt.BigInteger = this.realMod(c2.y.minus(c1.y));
+    const bottom: bigInt.BigInteger = this.realMod(c2.x.minus(c1.x));
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
   }
@@ -384,6 +384,16 @@ export class CryptoService {
     const y: bigInt.BigInteger = c1.y;
     const mult: bigInt.BigInteger = (slope.times(x)).mod(this.PRIME);
 
-    return (y.minus(mult).mod(this.PRIME));
+    return this.realMod(y.minus(mult));
+  }
+
+  /**
+   * Get real mod of value, instead of bigInt's mod() which returns the remainder.
+   * Necessary for negative values.
+   * @param {bigInt} val Input value
+   * @returns {bigInt.BigInteger} Value with real mod applied
+   */
+  private realMod(val: bigInt.BigInteger): bigInt.BigInteger {
+    return val.mod(this.PRIME).add(this.PRIME).mod(this.PRIME);
   }
 }
