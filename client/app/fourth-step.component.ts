@@ -14,15 +14,17 @@ export class FourthStepComponent {
 
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  public encryptedData: IEncryptedData;
   public recordKey: string;
+  public c: string;
+  public eRecord: string;
 
   constructor(
     private clientData: ClientDataService,
   ) {
     clientData.cryptoEncrypted$.subscribe(
       (cryptoEncrypted: IEncryptedData) => {
-        this.encryptedData = cryptoEncrypted;
+        this.c = cryptoEncrypted.c;
+        this.eRecord = cryptoEncrypted.eRecord;
       },
     );
 
