@@ -22,7 +22,7 @@ const templateSelector: string = "crypto-graph";
 export class GraphComponent {
 
   private margin: number = 50;
-  private size: number = 400;
+  private size: number = 250;
   private tickCount: number = 5;
 
   constructor(

@@ -21,8 +21,18 @@ code {
   font-size: 1.2rem;
 }
 
+.calc-display-label {
+  font-weight: 600;
+}
+
+.pad-graph {
+  padding-left: 15px;
+  margin-right: -43px;
+  margin-top: 0;
+}
+
 .calc-display-value {
-  display: block;
+  display: flex;
   margin: 10px 0;
   padding: 10px;
   color: $palette-dark-blue;
@@ -32,6 +42,7 @@ code {
   background-color: $color-code-background;
   border: 1px solid $color-code-border;
   font-family: "Courier New", monospace;
+  word-break: break-all;
 }
 
 .subtext {
@@ -43,8 +54,8 @@ code {
 p {
   font-family: $font-body;
   color: $color-paragraph-text;
-  letter-spacing: 2px;
-  line-height: 30px;
+  letter-spacing: 1px;
+  line-height: 25px;
   margin: 20px 0;
 }
 
@@ -62,7 +73,7 @@ input {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
-  background-color: $color-code-background;
+  background-color: $color-button-background;
   border: 1px solid $color-code-border;
 }
 
