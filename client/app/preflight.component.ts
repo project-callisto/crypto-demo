@@ -11,11 +11,13 @@ import { AfterViewInit, Component } from "@angular/core";
 export class PreflightComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
-    // restart the page at the top
-    window.onbeforeunload = (): void => {
-      window.scrollTo(0, 0);
-    };
-    // clear any navigation hrefs
-    window.location.href = "#";
+      var isIphone = navigator.userAgent.indexOf("iPhone") != -1 ;
+      var isIpod = navigator.userAgent.indexOf("iPod") != -1 ;
+      var isIpad = navigator.userAgent.indexOf("iPad") != -1 ;
+      var isIos = isIphone || isIpod || isIpad ;
+
+      if(isIos) {
+          document.querySelector('.callisto-modal').style.display = 'block';
+      }
   }
 }
