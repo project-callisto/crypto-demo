@@ -14,7 +14,6 @@ export class FifthStepComponent {
 
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  public decryptedData: IDecryptedData;
   public pis: string[];
 
   constructor(
@@ -22,8 +21,7 @@ export class FifthStepComponent {
   ) {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
-        this.decryptedData = cryptoDecrypted;
-        const coords: ICoord[] = this.decryptedData.coords;
+        const coords: ICoord[] = cryptoDecrypted.coords;
         const pis: string[] = [];
         for (const i in coords) {
           pis.push(coords[i].pi);
