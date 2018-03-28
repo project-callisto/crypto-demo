@@ -21,25 +21,6 @@ import {
  */
 
 describe("Crypto service", () => {
-  
-  it("[VALUES] Prime is accurate", async () => {
-    (jasmine as any).expectCount(1);
-    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-
-      
-        // let pTAlice = crypto.submitData("XXXXXXX", "Alice");
-        // let pTBob = crypto.submitData("XXXXXXX", "Bob");
-
-        // expect(pTAlice.pHat).toEqual(pTBob.pHat);
-        // expect(pTAlice.U === pTBob.U).toEqual(false);
-        // expect(pTAlice.s === pTBob.s).toEqual(false);
-        // expect(pTAlice.a).toEqual(pTBob.a);
-        // expect(pTAlice.k).toEqual(pTBob.k);
-        // expect(pTAlice.pi).toEqual(pTBob.pi);
-        // expect(pTAlice.recordKey === pTBob.recordKey).toEqual(false);
-    });
-  });
-
 
   it("[VALUES] correct user values between two users with matching pis", async () => {
     (jasmine as any).expectCount(7);
