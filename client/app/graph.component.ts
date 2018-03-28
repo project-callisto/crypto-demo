@@ -116,7 +116,6 @@ export class GraphComponent {
   ): Array<[number, number]> {
 
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
-
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
 
