@@ -55,7 +55,7 @@ export class GraphComponent {
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([0, graphYMax]);
+      .domain([decryptedData.intercept.toJSNumber(), graphYMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -63,10 +63,9 @@ export class GraphComponent {
 
     svg.append("text")
       .attr("class", "axis-label x")
-      .text("hashedUserID")
+      .text("U")
       .attr("x", this.size / 2)
       .attr("y", this.size)
-      .attr("dx", "-3.5em")
       .attr("dy", "2.4em");
 
     svg.append("g")
@@ -74,8 +73,8 @@ export class GraphComponent {
 
     svg.append("text")
       .attr("class", "axis-label y")
-      .text("secretValue")
-      .attr("x", 0 - this.margin)
+      .text("S")
+      .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
     svg.selectAll(".dot")
@@ -108,17 +107,17 @@ export class GraphComponent {
   private applyCustomFormat(axis: any): any {
     return axis
       .ticks(this.tickCount)
-      .tickFormat(format(".2g"));
+      .tickFormat(format(".1g"));
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, coords: ICoord[],
+    decryptedData: IDecryptedData, coords: ICoord[],
     graphXMax: number, graphYMax: number,
     xScale: any, yScale: any,
   ): Array<[number, number]> {
 
-    const slope: number = cryptoDecrypted.slope.toJSNumber();
-    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
+    const slope: number = decryptedData.slope.toJSNumber();
+    const intercept: number = decryptedData.intercept.toJSNumber();
 
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
