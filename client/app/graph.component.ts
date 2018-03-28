@@ -133,29 +133,27 @@ export class GraphComponent {
     const lineStart: number[] = [0, yScale(cryptoDecrypted.intercept.toJSNumber())];
     let lineEnd: number[];
 
-    const slope: bigInt.BigInteger = cryptoDecrypted.slope;
     const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(cryptoDecrypted.intercept);
     const lineXMax: bigInt.BigInteger = graphYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope);
 
+    console.log("y intercept", cryptoDecrypted.intercept.toJSNumber());
     console.log("PRIME", PRIME.toJSNumber());
-    console.log("slope", slope.toJSNumber());
-    console.log("lineXMax", lineXMax.toJSNumber());
+    console.log("slope", cryptoDecrypted.slope.toJSNumber());
     console.log("lineYMax", lineYMax.toJSNumber());
+    console.log("lineXMax", lineXMax.toJSNumber());
 
     if (lineYMax.lesserOrEquals(graphYMax)) {
-      console.log("y clipped");
       lineEnd = [
         xScale(lineYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope).toJSNumber()),
         yScale(lineYMax.toJSNumber()),
       ];
-      console.log(lineEnd[0]);
+      console.log("y clipped position", lineEnd[0]);
     } else {
-      console.log("x clipped");
       lineEnd = [
         xScale(lineXMax.toJSNumber()),
         yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(cryptoDecrypted.intercept).toJSNumber()),
       ];
-      console.log(lineEnd[1]);
+      console.log("x clipped position", lineEnd[1]);
     }
     console.log([lineStart, lineEnd]);
     return [lineStart, lineEnd] as Array<[number, number]>;
