@@ -9,6 +9,7 @@ class ClientDataServiceBackend {
   public cryptoPlainTextSource: Subject<IPlainTextData> = new Subject<IPlainTextData>();
   public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
   public cryptoDecryptedSource: Subject<IDecryptedData> = new Subject<IDecryptedData>();
+  public cryptoDecrypted: IDecryptedData;
   public cryptoCoords: ICoord[] = [];
 
   public processUserInput(perp: string, user: string): void {
@@ -20,7 +21,9 @@ class ClientDataServiceBackend {
       this.updateCoords(crypto.submitData("1234" + perp, user + "Bob"));
       this.updateCoords(crypto.submitData(perp, user + user));
       this.cryptoEncryptedSource.next(crypto.getDataSubmissions()[0]);
-      this.cryptoDecryptedSource.next(crypto.decryptData());
+      const decryptedData: IDecryptedData = crypto.decryptData();
+      this.cryptoDecryptedSource.next(decryptedData); // for emitting the decrypted data update event
+      this.cryptoDecrypted = decryptedData; // for attaching the current source for decrypted data
     });
   }
 
@@ -39,6 +42,7 @@ class ClientDataServiceApi extends ClientDataServiceBackend {
   public cryptoPlainText$: Observable<IPlainTextData> = this.cryptoPlainTextSource.asObservable();
   public cryptoEncrypted$: Observable<IEncryptedData> = this.cryptoEncryptedSource.asObservable();
   public cryptoDecrypted$: Observable<IDecryptedData> = this.cryptoDecryptedSource.asObservable();
+  public cryptoDecrypted: IDecryptedData = this.cryptoDecrypted;
   public cryptoCoords: ICoord[] = this.cryptoCoords;
 
   public submitUserInput(perp: string, user: string): void {

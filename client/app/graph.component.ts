@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { AfterViewInit Component } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -19,7 +19,7 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent {
+export class GraphComponent implements AfterViewInit {
 
   private margin: number = 50;
   private size: number = 250;
@@ -28,11 +28,20 @@ export class GraphComponent {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(
-      (cryptoDecrypted: IDecryptedData) => {
-        select(`.${templateSelector} svg`).remove();
-        this.populateGraph(cryptoDecrypted, clientData.cryptoCoords);
-      },
+    clientData.cryptoDecrypted$.subscribe(() => {
+      this.updateGraphData();
+    });
+  }
+
+  public ngAfterViewInit(): void {
+    this.updateGraphData();
+  }
+
+  private updateGraphData(): void {
+    select(`.${templateSelector} svg`).remove();
+    this.populateGraph(
+      this.clientData.cryptoDecrypted,
+      this.clientData.cryptoCoords,
     );
   }
 
