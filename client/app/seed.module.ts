@@ -3,8 +3,20 @@ import { FormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 
 import { FifthStepComponent } from "./fifth-step.component";
+import { FourthStepComponent } from "./fourth-step.component";
 import { GraphComponent } from "./graph.component";
 import { ClientDataService } from "./services/client-data.service";
+
+/* tslint:disable */
+
+export class SeededFourthStepComponent extends FourthStepComponent {
+  constructor(
+    private seededClientData: ClientDataService = new ClientDataService(),
+  ) {
+    super(seededClientData);
+    seededClientData.submitUserInput("example perp", "asdadwad aiuwbd jd");
+  }
+}
 
 export class SeededFifthStepComponent extends FifthStepComponent {
   constructor(
@@ -28,6 +40,7 @@ export class SeededGraphComponent extends GraphComponent {
   declarations: [
     SeededGraphComponent,
     SeededFifthStepComponent,
+    SeededFourthStepComponent,
   ],
   imports: [
     BrowserModule,
