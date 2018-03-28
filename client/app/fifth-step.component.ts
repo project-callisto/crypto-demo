@@ -21,7 +21,7 @@ export class FifthStepComponent {
   ) {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
-        const coords: ICoord[] = cryptoDecrypted.coords;
+        const coords: ICoord[] = clientData.cryptoCoords;
         const pis: string[] = [];
         for (const i in coords) {
           pis.push(coords[i].pi);
