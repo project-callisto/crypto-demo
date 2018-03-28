@@ -200,7 +200,6 @@ export class CryptoService {
     const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
 
     const k: Uint8Array = this.stringToBytes(intercept.toString());
-  //  console.log('slope', slope.toString(),'intercept', intercept.toString(), 'intercept2', this.getIntercept(coordB, slope).toString());
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
     return {
