@@ -103,16 +103,14 @@ export class CryptoService {
     const eRecord: string = this.symmetricEncrypt(plainText.recordKey, JSON.stringify(plainText.record));
     const eRecordKey: string = this.symmetricEncrypt(plainText.k, this.sodium.to_base64(plainText.recordKey));
     const msg: IMessage = {
-      U: plainText.U, // TODO: hash?!
+      U: plainText.U,
       s: plainText.s,
       eRecordKey,
     };
 
-    const c = this.asymmetricEncrypt(msg);
-
     return {
       pi: plainText.pi,
-      c,
+      c: this.asymmetricEncrypt(msg),
       eRecord,
     };
   }
@@ -142,15 +140,17 @@ export class CryptoService {
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
   public submitData(perpId: string, userName: string): IPlainTextData {
-
+    if (perpId === "" || userName === "") {
+      return undefined;
+    }
+    // tslint:disable-next-line
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
-
+    // tslint:disable-next-line
     const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(32, 1, "derivation", pHat)));
     const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, "derivation", pHat);
     const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, "derivation", pHat));
-    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName)), this.HEX);
-
+    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
     const kStr: string = this.bytesToString(k);
     const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
@@ -200,8 +200,8 @@ export class CryptoService {
 
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
-    const k: Uint8Array = this.stringToBytes(intercept.toString());
 
+    const k: Uint8Array = this.stringToBytes(intercept.toString());
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
     return {
@@ -350,7 +350,6 @@ export class CryptoService {
     const messages: IMessage[] = [];
     for (const i in data) {
       const split: string[] = data[i].c.split("$");
-
       const c: Uint8Array = this.sodium.from_base64(split[0]);
       const nonce: Uint8Array = this.sodium.from_base64(split[1]);
 
@@ -363,6 +362,14 @@ export class CryptoService {
     return messages;
   }
 
+  // private modSubtract(x: bigInt.BigInteger, y: bigInt.BigInteger) {
+
+  //   if (x.lt(y)) {
+  //     x.add(this.PRIME);
+  //   }
+  //   return x.minus(y).mod(this.PRIME);
+  // }
+
   /**
    * Computes a slope based on the slope formula
    * @param {Coord} c1 - 1st coordinate
@@ -370,8 +377,8 @@ export class CryptoService {
    * @returns {bigInt.BigInteger} slope value
    */
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
-    const top: bigInt.BigInteger = c2.y.minus(c1.y);
-    const bottom: bigInt.BigInteger = c2.x.minus(c1.x);
+    const top: bigInt.BigInteger = this.realMod(c2.y.minus(c1.y));
+    const bottom: bigInt.BigInteger = this.realMod(c2.x.minus(c1.x));
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
   }
@@ -384,8 +391,18 @@ export class CryptoService {
   private getIntercept(c1: ICoord, slope: bigInt.BigInteger): bigInt.BigInteger {
     const x: bigInt.BigInteger = c1.x;
     const y: bigInt.BigInteger = c1.y;
-    const mult: bigInt.BigInteger = (slope.times(x)).mod(this.PRIME);
+    const mult: bigInt.BigInteger = (slope.times(x));
 
-    return (y.minus(mult).mod(this.PRIME));
+    return this.realMod(y.minus(mult));
+  }
+
+  /**
+   * Get real mod of value, instead of bigInt's mod() which returns the remainder.
+   * Necessary for negative values.
+   * @param {bigInt} val Input value
+   * @returns {bigInt.BigInteger} Value with real mod applied
+   */
+  private realMod(val: bigInt.BigInteger): bigInt.BigInteger {
+    return val.mod(this.PRIME).add(this.PRIME).mod(this.PRIME);
   }
 }

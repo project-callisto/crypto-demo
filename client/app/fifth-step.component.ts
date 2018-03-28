@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ClientDataService } from "./services/client-data.service";
-import { IDecryptedData } from "./services/crypto.service";
+import { ICoord, IDecryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "fifth-step",
@@ -15,7 +15,7 @@ export class FifthStepComponent {
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
   public decryptedData: IDecryptedData;
-  public pis: Array<string>;
+  public pis: string[];
 
   constructor(
     private clientData: ClientDataService,
@@ -23,8 +23,8 @@ export class FifthStepComponent {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
         this.decryptedData = cryptoDecrypted;
-        const coords = this.decryptedData.coords;
-        const pis = [];
+        const coords: ICoord[] = this.decryptedData.coords;
+        const pis: string[] = [];
         for (const i in coords) {
           pis.push(coords[i].pi);
         }
