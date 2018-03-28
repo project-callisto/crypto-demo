@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { AfterViewInit, Component } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -19,25 +19,35 @@ const templateSelector: string = "crypto-graph";
     "./styles/graph.scss",
   ],
 })
-export class GraphComponent {
+export class GraphComponent implements AfterViewInit {
 
   private margin: number = 50;
   private size: number = 250;
   private graphBufferFactor: number = 1.25;
-  private tickCount: number = 5;
 
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(
-      (cryptoDecrypted: IDecryptedData) => {
-        select(`.${templateSelector} svg`).remove();
-        this.populateGraph(cryptoDecrypted);
-      },
-    );
+    clientData.cryptoDecrypted$.subscribe(() => {
+      this.updateGraphData(this);
+    });
   }
 
-  private populateGraph(cryptoDecrypted: IDecryptedData): void {
+  public ngAfterViewInit(): void {
+    this.updateGraphData(this);
+  }
+
+  private updateGraphData(component: any): void {
+    if (component.clientData.cryptoDecrypted) {
+      select(`.${templateSelector} svg`).remove();
+      component.populateGraph(
+        component.clientData.cryptoDecrypted,
+        component.clientData.cryptoCoords,
+      );
+    }
+  }
+
+  private populateGraph(decryptedData: IDecryptedData, coords: ICoord[]): void {
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
@@ -46,8 +56,8 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
-    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
+    const graphXMax: number = this.xDomainMax(coords);
+    const graphYMax: number = this.yDomainMax(coords);
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -55,7 +65,7 @@ export class GraphComponent {
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([0, graphYMax]);
+      .domain([decryptedData.intercept.toJSNumber(), graphYMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -63,10 +73,9 @@ export class GraphComponent {
 
     svg.append("text")
       .attr("class", "axis-label x")
-      .text("hashedUserID")
+      .text("U")
       .attr("x", this.size / 2)
       .attr("y", this.size)
-      .attr("dx", "-3.5em")
       .attr("dy", "2.4em");
 
     svg.append("g")
@@ -74,12 +83,12 @@ export class GraphComponent {
 
     svg.append("text")
       .attr("class", "axis-label y")
-      .text("secretValue")
-      .attr("x", 0 - this.margin)
+      .text("s")
+      .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
     svg.selectAll(".dot")
-      .data(cryptoDecrypted.coords)
+      .data(coords)
       .enter()
       .append("circle")
       .attr("class", "dot data-point")
@@ -94,7 +103,7 @@ export class GraphComponent {
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
-        cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
+        decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
   }
 
   private xDomainMax(coords: ICoord[]): number {
@@ -107,19 +116,18 @@ export class GraphComponent {
 
   private applyCustomFormat(axis: any): any {
     return axis
-      .ticks(this.tickCount)
-      .tickFormat(format(".2g"));
+      .ticks(5)
+      .tickFormat(format(".1g"));
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+    decryptedData: IDecryptedData, coords: ICoord[],
+    graphXMax: number, graphYMax: number,
+    xScale: any, yScale: any,
   ): Array<[number, number]> {
 
-    const slope: number = cryptoDecrypted.slope.toJSNumber();
-    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
-
-    console.log(intercept);
-    console.log(slope);
+    const slope: number = decryptedData.slope.toJSNumber();
+    const intercept: number = decryptedData.intercept.toJSNumber();
 
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
@@ -128,21 +136,16 @@ export class GraphComponent {
     const lineXMax: number = (graphYMax - intercept) / slope;
 
     if (lineYMax <= graphYMax) {
-      console.log("x clipped");
       lineEnd = [
         xScale((lineYMax - intercept) / slope),
         yScale(lineYMax),
       ];
     } else {
-      console.log("y clipped");
-      console.log(lineXMax);
-      console.log(graphXMax);
       lineEnd = [
         xScale(lineXMax),
         yScale(slope * lineXMax + intercept),
       ];
     }
-    console.log(lineEnd);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 

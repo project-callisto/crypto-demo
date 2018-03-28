@@ -34,7 +34,7 @@ export class SeededGraphComponent extends GraphComponent {
     private seededClientData: ClientDataService = new ClientDataService(),
   ) {
     super(seededClientData);
-    seededClientData.submitUserInput("example perp", "asdadwad aiuwbd jd");
+    seededClientData.submitUserInput("example perp", "_____farts");
   }
 }
 

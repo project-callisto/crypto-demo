@@ -208,7 +208,7 @@ export class CryptoService {
       decryptedRecords,
       slope,
       intercept,
-      k
+      k,
     };
   }
 
