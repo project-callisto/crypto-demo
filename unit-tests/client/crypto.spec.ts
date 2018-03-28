@@ -60,19 +60,21 @@ describe("Crypto service", () => {
   });
 
   it("[VALUES] stress test", async () => {
-    const testNum = 1000;
-    (jasmine as any).expectCount(testNum);
+    const testNum = 100;
+    (jasmine as any).expectCount(2 * testNum);
     for (var i = 0; i < testNum; i++) {
       await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
         var perpName = createName();
         var userName = createName();
-        console.log(i, perpName, userName);
 
-        let ptA = crypto.submitData(perpName, userName);
-        let ptB = crypto.submitData(perpName, userName + userName);
+        const ptA = crypto.submitData(perpName, userName);
+        const ptB = crypto.submitData(perpName, userName + userName);
         
-        let decrypted = crypto.decryptData();
+        const decrypted = crypto.decryptData();
+        const perpId = decrypted.decryptedRecords[0].perpId;
+
         expect(decrypted.k).toEqual(ptA.k);
+        expect(perpId).toEqual(perpName);
       });
     }
   });
