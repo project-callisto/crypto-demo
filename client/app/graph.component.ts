@@ -23,7 +23,6 @@ export class GraphComponent {
 
   private margin: number = 50;
   private size: number = 400;
-  private graphBufferFactor: number = 1.25;
   private tickCount: number = 5;
 
   constructor(
@@ -104,7 +103,7 @@ export class GraphComponent {
         thisMax = coords[i].x;
       }
     }
-    return thisMax.multiply(this.graphBufferFactor);
+    return thisMax;
   }
 
   private yDomainMax(coords: ICoord[]): bigInt.BigInteger {
@@ -114,7 +113,7 @@ export class GraphComponent {
         thisMax = coords[i].y;
       }
     }
-    return thisMax.multiply(this.graphBufferFactor);
+    return thisMax;
   }
 
   private applyCustomFormat(axis: any): any {
@@ -137,20 +136,25 @@ export class GraphComponent {
     const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(cryptoDecrypted.intercept);
     const lineXMax: bigInt.BigInteger = graphYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope);
 
+    console.log("lineXMax", lineXMax.toJSNumber());
+    console.log("lineYMax", lineYMax.toJSNumber());
+
     if (lineYMax.lesserOrEquals(graphYMax)) {
       console.log("y clipped");
       lineEnd = [
-        xScale(lineYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope)),
-        yScale(lineYMax),
+        xScale(lineYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope).toJSNumber()),
+        yScale(lineYMax.toJSNumber()),
       ];
+      console.log(lineEnd[0]);
     } else {
       console.log("x clipped");
       lineEnd = [
-        xScale(lineXMax),
+        xScale(lineXMax.toJSNumber()),
         yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(cryptoDecrypted.intercept).toJSNumber()),
       ];
+      console.log(lineEnd[1]);
     }
-    console.log(lineEnd);
+    console.log([lineStart, lineEnd]);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
