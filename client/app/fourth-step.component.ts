@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ClientDataService } from "./services/client-data.service";
-import { IEncryptedData } from "./services/crypto.service";
+import { IEncryptedData, IPlainTextData } from "./services/crypto.service";
 
 @Component({
   selector: "fourth-step",
@@ -14,14 +14,23 @@ export class FourthStepComponent {
 
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  public encryptedData: IEncryptedData;
+  public recordKey: string;
+  public c: string;
+  public eRecord: string;
 
   constructor(
     private clientData: ClientDataService,
   ) {
     clientData.cryptoEncrypted$.subscribe(
       (cryptoEncrypted: IEncryptedData) => {
-        this.encryptedData = cryptoEncrypted;
+        this.c = cryptoEncrypted.c;
+        this.eRecord = cryptoEncrypted.eRecord;
+      },
+    );
+
+    clientData.cryptoPlainText$.subscribe(
+      (cryptoPlainText: IPlainTextData) => {
+        this.recordKey = cryptoPlainText.recordKeyStr;
       },
     );
   }
