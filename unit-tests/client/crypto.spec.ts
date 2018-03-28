@@ -40,14 +40,17 @@ function createName() {
 }
 
 describe("Crypto service", () => {
-
   it("[VALUES] Values match E2E", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
+      var perp = 'XXXXXX';
+      var user = 'Alice';
       let ptA = crypto.submitData('XXXXXX', 'Alice');
-      let ptB = crypto.submitData('XXXXXX', 'Bob');
+      crypto.submitData(perp + perp, user + "Alice");
+      crypto.submitData("1234" + perp, user + "Bob");
+      crypto.submitData(perp, user + user);
+
       let decrypted = crypto.decryptData();
-      console.log(ptA.k.toString(), decrypted.k.toString())
       expect(decrypted.k).toEqual(ptA.k);
     });
   });
