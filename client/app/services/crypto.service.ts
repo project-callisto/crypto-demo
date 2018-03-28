@@ -101,16 +101,14 @@ export class CryptoService {
     const eRecord: string = this.symmetricEncrypt(plainText.recordKey, JSON.stringify(plainText.record));
     const eRecordKey: string = this.symmetricEncrypt(plainText.k, this.sodium.to_base64(plainText.recordKey));
     const msg: IMessage = {
-      U: plainText.U, // TODO: hash?!
+      U: plainText.U,
       s: plainText.s,
       eRecordKey,
     };
 
-    const c = this.asymmetricEncrypt(msg);
-
     return {
       pi: plainText.pi,
-      c,
+      c: this.asymmetricEncrypt(msg),
       eRecord,
     };
   }
@@ -140,17 +138,18 @@ export class CryptoService {
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
   public submitData(perpId: string, userName: string): IPlainTextData {
-
+    if (perpId === "" || userName === "") {
+      return undefined;
+    }
+    // tslint:disable-next-line
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
-
+    // tslint:disable-next-line
     const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(32, 1, "derivation", pHat)));
     const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, "derivation", pHat);
     const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, "derivation", pHat));
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
-
     const kStr: string = this.bytesToString(k);
-    // console.log('kStr',kStr);
 
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
