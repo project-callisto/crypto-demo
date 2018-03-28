@@ -117,6 +117,10 @@ export class GraphComponent {
 
     const slope: number = cryptoDecrypted.slope.toJSNumber();
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
+
+    console.log(intercept);
+    console.log(slope);
+
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
 
@@ -124,16 +128,21 @@ export class GraphComponent {
     const lineXMax: number = (graphYMax - intercept) / slope;
 
     if (lineYMax <= graphYMax) {
+      console.log("x clipped");
       lineEnd = [
         xScale((lineYMax - intercept) / slope),
         yScale(lineYMax),
       ];
     } else {
+      console.log("y clipped");
+      console.log(lineXMax);
+      console.log(graphXMax);
       lineEnd = [
         xScale(lineXMax),
         yScale(slope * lineXMax + intercept),
       ];
     }
+    console.log(lineEnd);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 

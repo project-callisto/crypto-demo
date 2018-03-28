@@ -29,13 +29,13 @@ export interface IPlainTextData {
   readonly kStr: string;
   readonly pi: string;
   readonly recordKey: Uint8Array;
-  readonly recordKeyStr: string;
   readonly record: IRecord;
 }
 
 export interface IMessage {
   readonly U: bigInt.BigInteger;
   readonly s: bigInt.BigInteger;
+  // readonly eRecord: string;
   readonly eRecordKey: string;
 }
 
@@ -81,7 +81,7 @@ export class CryptoService {
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
   // tslint:disable-next-line
-  public PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  private PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -152,7 +152,6 @@ export class CryptoService {
     const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
-    const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
@@ -162,8 +161,7 @@ export class CryptoService {
       k,
       kStr,
       pi,
-      recordKey,
-      recordKeyStr: this.bytesToString(recordKey),
+      recordKey: this.sodium.crypto_secretbox_keygen(),
       record: { perpId, userName },
     };
 
@@ -239,7 +237,7 @@ export class CryptoService {
 
     for (let i: number = 0; i < 32; i++) {
       result.push(parseInt(value.and(255).toString(), 10));
-      value = value.divide(256);
+      value = value.shiftRight(8);
     }
 
     return Uint8Array.from(result);
