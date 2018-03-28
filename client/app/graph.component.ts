@@ -24,7 +24,6 @@ export class GraphComponent {
   private margin: number = 50;
   private size: number = 250;
   private graphBufferFactor: number = 1.25;
-  private tickCount: number = 5;
 
   constructor(
     private clientData: ClientDataService,
@@ -73,7 +72,7 @@ export class GraphComponent {
 
     svg.append("text")
       .attr("class", "axis-label y")
-      .text("S")
+      .text("s")
       .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
@@ -106,7 +105,7 @@ export class GraphComponent {
 
   private applyCustomFormat(axis: any): any {
     return axis
-      .ticks(this.tickCount)
+      .ticks(5)
       .tickFormat(format(".1g"));
   }
 
