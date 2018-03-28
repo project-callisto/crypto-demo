@@ -32,9 +32,13 @@ function getRandom(max) {
 function createName() {
   var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
   var name = '';
-    for (var i = 0; i < getRandom(50); i++) {
+    for (var i = 0; i < getRandom(128); i++) {
       var index = getRandom(alphabet.length);
       name += alphabet[index];
+    }
+
+    if (name === '') {
+      name = 'XXXXXX'
     }
   return name;
 }
@@ -62,7 +66,7 @@ describe("Crypto service", () => {
       await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
         var perpName = createName();
         var userName = createName();
-        console.log(i, perpName);
+        console.log(i, perpName, userName);
 
         let ptA = crypto.submitData(perpName, userName);
         let ptB = crypto.submitData(perpName, userName + userName);

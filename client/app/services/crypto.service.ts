@@ -141,6 +141,9 @@ export class CryptoService {
    * @returns {IPlainTextData} promise resolving a IPlainTextData object
    */
   public submitData(perpId: string, userName: string): IPlainTextData {
+    if (perpId === '' || userName === '') {
+      return undefined;
+    }
 
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
