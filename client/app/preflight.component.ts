@@ -11,10 +11,10 @@ import { AfterViewInit, Component } from "@angular/core";
 export class PreflightComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
-      const isIphone: int = navigator.userAgent.indexOf("iPhone") !== -1 ;
-      const isIpod: int = navigator.userAgent.indexOf("iPod") !== -1 ;
-      const isIpad: int = navigator.userAgent.indexOf("iPad") !== -1 ;
-      const isIos: int = isIphone || isIpod || isIpad ;
+      const isIphone: number = navigator.userAgent.indexOf("iPhone") !== -1 ;
+      const isIpod: number = navigator.userAgent.indexOf("iPod") !== -1 ;
+      const isIpad: number = navigator.userAgent.indexOf("iPad") !== -1 ;
+      const isIos: number = isIphone || isIpod || isIpad ;
 
       if (isIos) {
           const callistoModal: HTMLElement = document.querySelector(".callisto-modal");
