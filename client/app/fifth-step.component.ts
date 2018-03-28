@@ -22,6 +22,7 @@ export class FifthStepComponent {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
         this.decryptedData = cryptoDecrypted;
+        console.log(this.decryptedData);
       },
     );
   }
