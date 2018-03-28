@@ -46,8 +46,8 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
-    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
+    const graphXMax: bigInt.BigInteger = this.xDomainMax(cryptoDecrypted.coords);
+    const graphYMax: bigInt.BigInteger = this.yDomainMax(cryptoDecrypted.coords);
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -97,12 +97,24 @@ export class GraphComponent {
         cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
   }
 
-  private xDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
+  private xDomainMax(coords: ICoord[]): bigInt.BigInteger {
+    let thisMax: bigInt.BigInteger = bigInt.zero;
+    for (const i in coords) {
+      if (coords[i].x.greater(thisMax)) {
+        thisMax = coords[i].x;
+      }
+    }
+    return thisMax.multiply(this.graphBufferFactor);
   }
 
-  private yDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
+  private yDomainMax(coords: ICoord[]): bigInt.BigInteger {
+    let thisMax: bigInt.BigInteger = bigInt.zero;
+    for (const i in coords) {
+      if (coords[i].y.greater(thisMax)) {
+        thisMax = coords[i].y;
+      }
+    }
+    return thisMax.multiply(this.graphBufferFactor);
   }
 
   private applyCustomFormat(axis: any): any {
@@ -112,31 +124,30 @@ export class GraphComponent {
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+    cryptoDecrypted: IDecryptedData,
+    graphXMax: bigInt.BigInteger,
+    graphYMax: bigInt.BigInteger,
+    xScale: any,
+    yScale: any,
   ): Array<[number, number]> {
 
-    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
-
-    console.log(intercept);
-    console.log(slope);
-
-    const lineStart: number[] = [0, yScale(intercept)];
+    const lineStart: number[] = [0, yScale(cryptoDecrypted.intercept.toJSNumber())];
     let lineEnd: number[];
 
-    const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(intercept);
-    const lineXMax: number = (graphYMax - intercept) / cryptoDecrypted.slope;
+    const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(cryptoDecrypted.intercept);
+    const lineXMax: bigInt.BigInteger = graphYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope);
 
-    if (lineYMax <= graphYMax) {
+    if (lineYMax.lesserOrEquals(graphYMax)) {
       console.log("y clipped");
       lineEnd = [
-        xScale((lineYMax - intercept) / cryptoDecrypted.slope),
+        xScale(lineYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope)),
         yScale(lineYMax),
       ];
     } else {
       console.log("x clipped");
       lineEnd = [
         xScale(lineXMax),
-        yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(intercept).toJSNumber()),
+        yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(cryptoDecrypted.intercept).toJSNumber()),
       ];
     }
     console.log(lineEnd);
