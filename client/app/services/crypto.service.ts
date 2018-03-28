@@ -83,7 +83,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  public PRIME: bigInt.BigInteger = PRIME;
+  private PRIME: bigInt.BigInteger = PRIME;
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -218,43 +218,35 @@ export class CryptoService {
   }
 
   /**
-   * Converts a Uint8Array to string of numbers
+   * Converts a Uint8Array to a string representation of its integer value
    * @param {Uint8Array} k - 32 byte key
    * @returns {string}
    */
   public bytesToString(k: Uint8Array): string {
-    let numStr: string = "";
+    let result: bigInt.BigInteger = bigInt(0);
 
-    for (const i in k) {
-      let str: string = k[i].toString();
-
-      if (str.length === 2) {
-        str = "0" + str;
-      } else if (str.length === 1) {
-        str = "00" + str;
-      }
-      numStr += str;
+    for (let i: number = k.length - 1; i >= 0; i--) {
+      result = result.or(bigInt(k[i]).shiftLeft((i * 8)));
     }
-    return numStr;
+
+    return result.toString();
   }
 
   /**
-   * Converts string of numbers to a Uint8Array
+   * Converts a string representing an integer to a Uint8Array
    * @param {string} intercept
    * @returns {Uint8Array} 32-byte key
    */
   public stringToBytes(intercept: string): Uint8Array {
-    const diff: number = 96 - intercept.length;
-    for (let i: number = 0; i < diff; i++) {
-      intercept = "0" + intercept;
+    let value: bigInt.BigInteger = bigInt(intercept);
+    const result: number[] = [];
+
+    for (let i: number = 0; i < 32; i++) {
+      result.push(parseInt(value.and(255).toString(), 10));
+      value = value.shiftRight(8);
     }
 
-    const arr: number[] = [];
-    for (let i: number = 0; i < 96; i += 3) {
-      arr.push(parseInt(intercept.slice(i, i + 3)));
-    }
-
-    return Uint8Array.from(arr);
+    return Uint8Array.from(result);
   }
 
   /**
