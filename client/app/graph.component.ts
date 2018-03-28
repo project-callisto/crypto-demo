@@ -7,7 +7,7 @@ import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
 import { ClientDataService } from "./services/client-data.service";
-import { ICoord, IDecryptedData } from "./services/crypto.service";
+import { ICoord, IDecryptedData, PRIME } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
 
@@ -23,7 +23,6 @@ export class GraphComponent {
 
   private margin: number = 50;
   private size: number = 250;
-  private graphBufferFactor: number = 1.25;
   private tickCount: number = 5;
 
   constructor(
@@ -46,8 +45,8 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
-    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
+    const graphXMax: bigInt.BigInteger = this.xDomainMax(cryptoDecrypted.coords);
+    const graphYMax: bigInt.BigInteger = this.yDomainMax(cryptoDecrypted.coords);
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -97,12 +96,24 @@ export class GraphComponent {
         cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
   }
 
-  private xDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
+  private xDomainMax(coords: ICoord[]): bigInt.BigInteger {
+    let thisMax: bigInt.BigInteger = bigInt.zero;
+    for (const i in coords) {
+      if (coords[i].x.greater(thisMax)) {
+        thisMax = coords[i].x;
+      }
+    }
+    return thisMax;
   }
 
-  private yDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
+  private yDomainMax(coords: ICoord[]): bigInt.BigInteger {
+    let thisMax: bigInt.BigInteger = bigInt.zero;
+    for (const i in coords) {
+      if (coords[i].y.greater(thisMax)) {
+        thisMax = coords[i].y;
+      }
+    }
+    return thisMax;
   }
 
   private applyCustomFormat(axis: any): any {
@@ -112,37 +123,39 @@ export class GraphComponent {
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+    cryptoDecrypted: IDecryptedData,
+    graphXMax: bigInt.BigInteger,
+    graphYMax: bigInt.BigInteger,
+    xScale: any,
+    yScale: any,
   ): Array<[number, number]> {
 
-    const slope: number = cryptoDecrypted.slope.toJSNumber();
-    const intercept: number = cryptoDecrypted.intercept.toJSNumber();
-
-    console.log(intercept);
-    console.log(slope);
-
-    const lineStart: number[] = [0, yScale(intercept)];
+    const lineStart: number[] = [0, yScale(cryptoDecrypted.intercept.toJSNumber())];
     let lineEnd: number[];
 
-    const lineYMax: number = slope * graphXMax + intercept;
-    const lineXMax: number = (graphYMax - intercept) / slope;
+    const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(cryptoDecrypted.intercept);
+    const lineXMax: bigInt.BigInteger = graphYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope);
 
-    if (lineYMax <= graphYMax) {
-      console.log("x clipped");
+    console.log("y intercept", cryptoDecrypted.intercept.toJSNumber());
+    console.log("PRIME", PRIME.toJSNumber());
+    console.log("slope", cryptoDecrypted.slope.toJSNumber());
+    console.log("lineYMax", lineYMax.toJSNumber());
+    console.log("lineXMax", lineXMax.toJSNumber());
+
+    if (lineYMax.lesserOrEquals(graphYMax)) {
       lineEnd = [
-        xScale((lineYMax - intercept) / slope),
-        yScale(lineYMax),
+        xScale(lineYMax.minus(cryptoDecrypted.intercept).divide(cryptoDecrypted.slope).toJSNumber()),
+        yScale(lineYMax.toJSNumber()),
       ];
+      console.log("y clipped position", lineEnd[0]);
     } else {
-      console.log("y clipped");
-      console.log(lineXMax);
-      console.log(graphXMax);
       lineEnd = [
-        xScale(lineXMax),
-        yScale(slope * lineXMax + intercept),
+        xScale(lineXMax.toJSNumber()),
+        yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(cryptoDecrypted.intercept).toJSNumber()),
       ];
+      console.log("x clipped position", lineEnd[1]);
     }
-    console.log(lineEnd);
+    console.log([lineStart, lineEnd]);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 

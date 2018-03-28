@@ -47,7 +47,7 @@ export interface ICoord {
 
 export interface IDecryptedData {
   readonly decryptedRecords: object;
-  readonly slope: bigInt.BigInteger;
+  slope: bigInt.BigInteger;
   readonly intercept: bigInt.BigInteger;
   readonly coords: ICoord[];
   readonly k: Uint8Array;
@@ -57,6 +57,9 @@ export interface IRecord {
   readonly perpId: string;
   readonly userName: string;
 }
+
+// tslint:disable-next-line
+export const PRIME: bigInt.BigInteger = bigInt("115792089237316195423570985008687907853269984665640564039457584007913129639936").plus(bigInt(297));
 
 /**
  * CRYPTO SERVICE
@@ -80,8 +83,7 @@ export class CryptoService {
    */
   private dataSubmissions: IEncryptedData[] = [];
   private HEX: number = 16;
-  // tslint:disable-next-line
-  private PRIME: bigInt.BigInteger = bigInt('115792089237316195423570985008687907853269984665640564039457584007913129639936').plus(bigInt(297));
+  private PRIME: bigInt.BigInteger = PRIME;
 
   constructor(
     // the libsodium library, with the sodium.ready promise already resolved
@@ -153,6 +155,8 @@ export class CryptoService {
 
     const kStr: string = this.bytesToString(k);
 
+    console.log("IPlainTextData.a (slope)", a.toJSNumber());
+
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
       U,
@@ -199,6 +203,8 @@ export class CryptoService {
     const slope: bigInt.BigInteger = this.deriveSlope(coordA, coordB);
     const intercept: bigInt.BigInteger = this.getIntercept(coordA, slope);
     const k: Uint8Array = this.stringToBytes(intercept.toString());
+
+    console.log("decryptData slope", slope.toJSNumber());
 
     const decryptedRecords: IRecord[] = this.decryptRecords(messages, [data[0].eRecord, data[1].eRecord], k);
 
@@ -370,6 +376,16 @@ export class CryptoService {
   private deriveSlope(c1: ICoord, c2: ICoord): bigInt.BigInteger {
     const top: bigInt.BigInteger = this.realMod(c2.y.minus(c1.y));
     const bottom: bigInt.BigInteger = this.realMod(c2.x.minus(c1.x));
+
+    console.log("c2.y", c2.y.toJSNumber());
+    console.log("c1.y", c1.y.toJSNumber());
+    console.log("c2.x", c2.x.toJSNumber());
+    console.log("c1.x", c1.x.toJSNumber());
+
+    console.log("top.divide(bottom)", top.divide(bottom).toJSNumber());
+    console.log(
+      "top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME)",
+      top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME).toJSNumber());
 
     return top.multiply(bottom.modInv(this.PRIME)).mod(this.PRIME);
   }
