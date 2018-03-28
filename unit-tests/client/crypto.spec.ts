@@ -8,6 +8,10 @@ import {
   IPlainTextData,
 } from "../../client/app/services/crypto.service";
 
+import bigInt = require("big-integer");
+
+
+
 /*
  * NAMING CONVENTIONS
  *
@@ -20,7 +24,61 @@ import {
  * they fail when the relevant bug is present in CryptoService
  */
 
+function getRandom(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+
+}
+
+function createName() {
+  var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+  var name = '';
+    for (var i = 0; i < getRandom(50); i++) {
+      var index = getRandom(alphabet.length);
+      name += alphabet[index];
+    }
+  return name;
+}
+
 describe("Crypto service", () => {
+
+  it("[VALUES] Values match E2E", async () => {
+    (jasmine as any).expectCount(1);
+    await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
+      let ptA = crypto.submitData('XXXXXX', 'Alice');
+      let ptB = crypto.submitData('XXXXXX', 'Bob');
+      let decrypted = crypto.decryptData();
+      console.log(ptA.k.toString(), decrypted.k.toString())
+      expect(decrypted.k).toEqual(ptA.k);
+    });
+  });
+// 
+  // it("[VALUES] stress test", async () => {
+  //   (jasmine as any).expectCount(1);
+  //   for (var i = 0; i < 2; i++) {
+  //     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
+  //       var perpName = createName();
+  //       // console.log(perpName);
+  //       let ptA = crypto.submitData(perpName, createName());
+  //       let ptB = crypto.submitData(perpName, createName());
+        
+        
+  //       let decrypted = crypto.decryptData();
+  //       // console.log(decrypted);
+        
+      
+  //       expect(decrypted.k).toEqual(ptA.k);
+
+  //       // expect(crypto.decryptData).toBeDefined();
+  //       // let ptAlice = crypto.submitData("XXXXXXX", "Alice");
+  //       // let ptBob = crypto.submitData("XXXXXXX", "Bob");
+  //       // let decrypted = crypto.decryptData();
+  //       // expect(decrypted.k).toEqual(ptAlice.k);
+  //     });
+  //   }
+
+  // });
+
+
 
   it("[VALUES] correct user values between two users with matching pis", async () => {
     (jasmine as any).expectCount(7);
@@ -41,10 +99,9 @@ describe("Crypto service", () => {
   it("[VALUES] correct key value from encryption to decryption", async () => {
     (jasmine as any).expectCount(1);
     await asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-        const ptAlice = crypto.submitData("XXXXXXX", "Alice");
-        const ptBob = crypto.submitData("XXXXXXX", "Bob");
-
-        const decrypted = crypto.decryptData();
+        let ptAlice = crypto.submitData("XXXXXXX", "Alice");
+        let ptBob = crypto.submitData("XXXXXXX", "Bob");
+        let decrypted = crypto.decryptData();
 
         expect(decrypted.k).toEqual(ptAlice.k);
     });
