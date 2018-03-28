@@ -17,7 +17,8 @@ export class PreflightComponent implements AfterViewInit {
       const isIos = isIphone || isIpod || isIpad ;
 
       if (isIos) {
-          document.querySelector(".callisto-modal").style.display = "block";
+          const callistoModal: HTMLElement = document.querySelector(".callisto-modal");
+          callistoModal.style.display = "block";
       }
   }
 }
