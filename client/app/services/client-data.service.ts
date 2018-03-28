@@ -9,13 +9,13 @@ class ClientDataServiceBackend {
   public cryptoPlainTextSource: Subject<IPlainTextData> = new Subject<IPlainTextData>();
   public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
   public cryptoDecryptedSource: Subject<IDecryptedData> = new Subject<IDecryptedData>();
-  public coords: ICoord[] = [];
+  public cryptoCoords: ICoord[] = [];
 
   public processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-      const pT: IPlainTextData = crypto.submitData(perp, user);
-      this.updateCoords(pT);
-      this.cryptoPlainTextSource.next(pT);
+      const plainTextData: IPlainTextData = crypto.submitData(perp, user);
+      this.updateCoords(plainTextData);
+      this.cryptoPlainTextSource.next(plainTextData);
       this.updateCoords(crypto.submitData(perp + perp, user + "Alice"));
       this.updateCoords(crypto.submitData("1234" + perp, user + "Bob"));
       this.updateCoords(crypto.submitData(perp, user + user));
@@ -24,13 +24,12 @@ class ClientDataServiceBackend {
     });
   }
 
-  private updateCoords(pT: IPlainTextData): void {
-    let coord = {
-      x: pT.U,
-      y: pT.sU,
-      pi: pT.pi,
-    };
-    this.coords.push(coord);
+  private updateCoords(plainTextData: IPlainTextData): void {
+    this.cryptoCoords.push({
+      x: plainTextData.U,
+      y: plainTextData.sU,
+      pi: plainTextData.pi,
+    });
   }
 }
 
@@ -40,6 +39,7 @@ class ClientDataServiceApi extends ClientDataServiceBackend {
   public cryptoPlainText$: Observable<IPlainTextData> = this.cryptoPlainTextSource.asObservable();
   public cryptoEncrypted$: Observable<IEncryptedData> = this.cryptoEncryptedSource.asObservable();
   public cryptoDecrypted$: Observable<IDecryptedData> = this.cryptoDecryptedSource.asObservable();
+  public cryptoCoords: ICoord[] = this.cryptoCoords;
 
   public submitUserInput(perp: string, user: string): void {
     this.processUserInput(perp, user);

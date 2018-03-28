@@ -32,12 +32,12 @@ export class GraphComponent {
     clientData.cryptoDecrypted$.subscribe(
       (cryptoDecrypted: IDecryptedData) => {
         select(`.${templateSelector} svg`).remove();
-        this.populateGraph(cryptoDecrypted);
+        this.populateGraph(cryptoDecrypted, clientData.cryptoCoords);
       },
     );
   }
 
-  private populateGraph(cryptoDecrypted: IDecryptedData): void {
+  private populateGraph(decryptedData: IDecryptedData, coords: ICoord[]): void {
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
@@ -46,8 +46,8 @@ export class GraphComponent {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(cryptoDecrypted.coords);
-    const graphYMax: number = this.yDomainMax(cryptoDecrypted.coords);
+    const graphXMax: number = this.xDomainMax(coords);
+    const graphYMax: number = this.yDomainMax(coords);
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -79,7 +79,7 @@ export class GraphComponent {
       .attr("dy", "-.4em");
 
     svg.selectAll(".dot")
-      .data(cryptoDecrypted.coords)
+      .data(coords)
       .enter()
       .append("circle")
       .attr("class", "dot data-point")
@@ -94,7 +94,7 @@ export class GraphComponent {
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
-        cryptoDecrypted, graphXMax, graphYMax, xScale, yScale)));
+        decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
   }
 
   private xDomainMax(coords: ICoord[]): number {
@@ -112,14 +112,13 @@ export class GraphComponent {
   }
 
   private lineCoordsAsJSNumbers(
-    cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
+    cryptoDecrypted: IDecryptedData, coords: ICoord[],
+    graphXMax: number, graphYMax: number,
+    xScale: any, yScale: any,
   ): Array<[number, number]> {
 
     const slope: number = cryptoDecrypted.slope.toJSNumber();
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
-
-    console.log(intercept);
-    console.log(slope);
 
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
@@ -128,21 +127,16 @@ export class GraphComponent {
     const lineXMax: number = (graphYMax - intercept) / slope;
 
     if (lineYMax <= graphYMax) {
-      console.log("x clipped");
       lineEnd = [
         xScale((lineYMax - intercept) / slope),
         yScale(lineYMax),
       ];
     } else {
-      console.log("y clipped");
-      console.log(lineXMax);
-      console.log(graphXMax);
       lineEnd = [
         xScale(lineXMax),
         yScale(slope * lineXMax + intercept),
       ];
     }
-    console.log(lineEnd);
     return [lineStart, lineEnd] as Array<[number, number]>;
   }
 
