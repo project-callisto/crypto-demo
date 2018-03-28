@@ -29,6 +29,7 @@ export interface IPlainTextData {
   readonly kStr: string;
   readonly pi: string;
   readonly recordKey: Uint8Array;
+  readonly recordKeyStr: string;
   readonly record: IRecord;
 }
 
@@ -145,13 +146,13 @@ export class CryptoService {
     const kDemo: string = "MjQ2LDIyLDE2NiwyMzUsODEsMTgzLDIzMSwyMTgsMTE2LDUzLDEzNCwyNyw0Miw1OSwxMDQsMTkyLDExOCwxMCwzNCwyMj";
     const pHat: Uint8Array = (this.sodium.crypto_hash(perpId + kDemo)).slice(0, 32);
 
-    // slope is superficially small
     const a: bigInt.BigInteger = bigInt(this.bytesToString(this.sodium.crypto_kdf_derive_from_key(32, 1, "derivation", pHat)));
     const k: Uint8Array = this.sodium.crypto_kdf_derive_from_key(32, 2, "derivation", pHat);
     const pi: string = this.sodium.to_base64(this.sodium.crypto_kdf_derive_from_key(32, 3, "derivation", pHat));
-    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName).slice(0, 32)), this.HEX);
+    const U: bigInt.BigInteger = bigInt(this.sodium.to_hex(this.sodium.crypto_hash(userName)), this.HEX);
 
     const kStr: string = this.bytesToString(k);
+    const recordKey: Uint8Array = this.sodium.crypto_secretbox_keygen();
 
     const pT: IPlainTextData = {
       pHat: this.sodium.to_base64(pHat),
@@ -161,7 +162,8 @@ export class CryptoService {
       k,
       kStr,
       pi,
-      recordKey: this.sodium.crypto_secretbox_keygen(),
+      recordKey,
+      recordKeyStr: this.sodium.to_base64(recordKey),
       record: { perpId, userName },
     };
 
