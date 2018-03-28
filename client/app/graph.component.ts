@@ -1,4 +1,4 @@
-import { AfterViewInit Component } from "@angular/core";
+import { AfterViewInit, Component } from "@angular/core";
 import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -29,19 +29,19 @@ export class GraphComponent implements AfterViewInit {
     private clientData: ClientDataService,
   ) {
     clientData.cryptoDecrypted$.subscribe(() => {
-      this.updateGraphData();
+      this.updateGraphData(this);
     });
   }
 
   public ngAfterViewInit(): void {
-    this.updateGraphData();
+    this.updateGraphData(this);
   }
 
-  private updateGraphData(): void {
+  private updateGraphData(component: any): void {
     select(`.${templateSelector} svg`).remove();
-    this.populateGraph(
-      this.clientData.cryptoDecrypted,
-      this.clientData.cryptoCoords,
+    component.populateGraph(
+      component.clientData.cryptoDecrypted,
+      component.clientData.cryptoCoords,
     );
   }
 
