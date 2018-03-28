@@ -38,11 +38,13 @@ export class GraphComponent implements AfterViewInit {
   }
 
   private updateGraphData(component: any): void {
-    select(`.${templateSelector} svg`).remove();
-    component.populateGraph(
-      component.clientData.cryptoDecrypted,
-      component.clientData.cryptoCoords,
-    );
+    if (component.clientData.cryptoDecrypted) {
+      select(`.${templateSelector} svg`).remove();
+      component.populateGraph(
+        component.clientData.cryptoDecrypted,
+        component.clientData.cryptoCoords,
+      );
+    }
   }
 
   private populateGraph(decryptedData: IDecryptedData, coords: ICoord[]): void {
