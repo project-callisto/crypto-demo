@@ -12,12 +12,15 @@ class ClientDataServiceBackend {
 
   public processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-      this.cryptoPlainTextSource.next(crypto.submitData(perp, user));
+      const plainTextData: IPlainTextData = crypto.submitData(perp, user);
+      this.cryptoPlainTextSource.next(plainTextData);
       crypto.submitData(perp + perp, user + "Alice");
       crypto.submitData("1234" + perp, user + "Bob");
       crypto.submitData(perp, user + user);
+      const decryptedData: IDecryptedData = crypto.decryptData();
+      decryptedData.slope = plainTextData.a;
       this.cryptoEncryptedSource.next(crypto.getDataSubmissions()[0]);
-      this.cryptoDecryptedSource.next(crypto.decryptData());
+      this.cryptoDecryptedSource.next(decryptedData);
     });
   }
 

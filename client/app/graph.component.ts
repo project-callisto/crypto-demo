@@ -7,7 +7,7 @@ import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
 import { ClientDataService } from "./services/client-data.service";
-import { ICoord, IDecryptedData } from "./services/crypto.service";
+import { ICoord, IDecryptedData, PRIME } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
 
@@ -115,26 +115,25 @@ export class GraphComponent {
     cryptoDecrypted: IDecryptedData, graphXMax: number, graphYMax: number, xScale: any, yScale: any,
   ): Array<[number, number]> {
 
-    const slope: number = 0.26 * 10 ** 23;
-    console.log("manually fit slope", slope);
-    console.log("crypto service slope", cryptoDecrypted.slope.toJSNumber());
     const intercept: number = cryptoDecrypted.intercept.toJSNumber();
 
     const lineStart: number[] = [0, yScale(intercept)];
     let lineEnd: number[];
 
-    const lineYMax: number = slope * graphXMax + intercept;
-    const lineXMax: number = (graphYMax - intercept) / slope;
+    const lineYMax: bigInt.BigInteger = cryptoDecrypted.slope.multiply(graphXMax).plus(intercept);
+    const lineXMax: number = (graphYMax - intercept) / cryptoDecrypted.slope;
 
     if (lineYMax <= graphYMax) {
+      console.log("y clipped");
       lineEnd = [
-        xScale((lineYMax - intercept) / slope),
+        xScale((lineYMax - intercept) / cryptoDecrypted.slope),
         yScale(lineYMax),
       ];
     } else {
+      console.log("x clipped");
       lineEnd = [
         xScale(lineXMax),
-        yScale(slope * lineXMax + intercept),
+        yScale(cryptoDecrypted.slope.multiply(lineXMax).plus(intercept).toJSNumber()),
       ];
     }
     return [lineStart, lineEnd] as Array<[number, number]>;
