@@ -6,8 +6,8 @@ import { FirstStepComponent } from "./../../client/app/first-step.component";
 import { NavComponent } from "./../../client/app/nav.component";
 import { SecondStepComponent } from "./../../client/app/second-step.component";
 import {
-  SeededFifthStepComponent,
-  SeededFourthStepComponent,
+  // SeededFifthStepComponent,
+  // SeededFourthStepComponent,
   SeededGraphComponent,
 } from "./../../client/app/seed.module";
 import { ClientDataService } from "./../../client/app/services/client-data.service";
@@ -62,32 +62,32 @@ storiesOf("Valkyrie Demo", module)
     },
   }))
 
-  .add("fourth step", () => ({
-    component: SeededFourthStepComponent,
-    props: { shown: true },
-    moduleMetadata: {
-      providers: [
-        ClientDataService,
-      ],
-      declarations: [
-        NavComponent,
-      ],
-    },
-  }))
+  // .add("fourth step", () => ({
+  //   component: SeededFourthStepComponent,
+  //   props: { shown: true },
+  //   moduleMetadata: {
+  //     providers: [
+  //       ClientDataService,
+  //     ],
+  //     declarations: [
+  //       NavComponent,
+  //     ],
+  //   },
+  // }))
 
-  .add("fifth step", () => ({
-    component: SeededFifthStepComponent,
-    props: { shown: true },
-    moduleMetadata: {
-      providers: [
-        ClientDataService,
-      ],
-      declarations: [
-        NavComponent,
-        SeededGraphComponent,
-      ],
-    },
-  }))
+  // .add("fifth step", () => ({
+  //   component: SeededFifthStepComponent,
+  //   props: { shown: true },
+  //   moduleMetadata: {
+  //     providers: [
+  //       ClientDataService,
+  //     ],
+  //     declarations: [
+  //       NavComponent,
+  //       SeededGraphComponent,
+  //     ],
+  //   },
+  // }))
 
   .add("sixth step", () => ({
     component: SixthStepComponent,
