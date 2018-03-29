@@ -12,7 +12,7 @@ abstract class ClientDataServiceBackend {
   protected cryptoDecrypted: IDecryptedData;
   protected cryptoCoords: ICoord[] = [];
 
-  protected _processUserInput(perp: string, user: string): void {
+  protected processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const plainTextData: IPlainTextData = crypto.submitData(perp, user);
       this.updateCoords(plainTextData);
@@ -44,7 +44,7 @@ export class ClientDataService extends ClientDataServiceBackend {
   public readonly cryptoCoords: ICoord[] = this.cryptoCoords;
 
   public submitUserInput(perp: string, user: string): void {
-    this._processUserInput(perp, user);
+    this.processUserInput(perp, user);
   }
 
 }
