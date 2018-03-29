@@ -1,5 +1,7 @@
 # Callisto Cryptography Demo
 
+The source code for <https://cryptography.projectcallisto.org/#>. This code is intended to illustrate select components of Callisto's cryptographic approach. It is not a full demonstration of the product, nor an official reporting platform for victims of sexual assault and harassment.
+
 ## running the auto-linter
 
 ```
