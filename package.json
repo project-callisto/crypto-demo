@@ -32,7 +32,7 @@
     "bugs": {
         "url": "https://github.com/project-callisto/crypto-demo/issues"
     },
-    "homepage": "https://github.com/project-callisto/crypto-demo#readme",
+    "homepage": "https://cryptography.projectcallisto.org/#",
     "dependencies": {
         "@angular/cli": "^1.7.3",
         "@angular/common": "^5.2.9",
