@@ -10,13 +10,18 @@ import { AfterViewInit, Component } from "@angular/core";
 })
 export class PreflightComponent implements AfterViewInit {
 
+    public closeModal(event: Event): void {
+        const callistoModal: HTMLElement = document.querySelector(".callisto-modal");
+        callistoModal.style.display = "none";
+    }
+
   public ngAfterViewInit(): void {
       const isIphone: boolean = navigator.userAgent.indexOf("iPhone") !== -1 ;
       const isIpod: boolean = navigator.userAgent.indexOf("iPod") !== -1 ;
       const isIpad: boolean = navigator.userAgent.indexOf("iPad") !== -1 ;
       const isIos: boolean = isIphone || isIpod || isIpad ;
 
-      if (isIos) {
+      if (!isIos) {
           const callistoModal: HTMLElement = document.querySelector(".callisto-modal");
           callistoModal.style.display = "block";
       }

@@ -1,20 +1,53 @@
 @import "_meta";
 
 .callisto-modal {
-    display: none;
-    width: 80%;
-    left: 10%;
-    top: 15%;
-    position: fixed;
+  display: none;
+  width: 90%;
+  left: 5%;
+  top: 5%;
+  height: 90%;
+  position: fixed;
+  z-index: 1000;
+  margin: 0;
+  background-color: $color-article-background;
+
+  p {
+    margin: 5%;
+  }
 
   .callisto-modal-content {
-      background-color: $color-article-background;
-      border: 1;
-      height: 200px;
+    border: 1;
+    height: 200px;
+    text-align: center;
+    h3 {
+      padding-top: 2%;
+      font-family: $font-headers;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 40px;
+      margin-bottom: 3%;
+    }
+    .desktop-please {
+      margin-top: 20%;
+      margin-bottom: 20%;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 24px;
       text-align: center;
-      p {
-        padding-top: 2%;
-      }
+    }
+    button {
+      background-color: $palette-dark-blue;
+      border:0;
+      color: $palette-white;
+      font-family: $font-body;
+      font-size: 14px;
+      letter-spacing: 1px;
+      line-height: 24px;
+      text-align: center;
+      width: 64%;
+      padding-top: 3.5%;
+      padding-bottom: 3.5%;
+    }
   }
 }
 
