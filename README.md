@@ -1,4 +1,4 @@
-# Valkyrie Demo
+# Callisto Cryptography Demo
 
 ## running the auto-linter
 
