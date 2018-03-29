@@ -9,6 +9,7 @@
     },
     "scripts": {
         "clean": "tslint -p . --fix --force",
+        "postinstall": "libsodium-type-generator -o client/app/services/libsodium.d.ts",
         "test:unit": "ng test",
         "test:e2e": "ng e2e",
         "test:all": "npm run test:unit -- --single-run && npm run test:e2e -- --single-run",
@@ -65,9 +66,9 @@
         "zone.js": "^0.8.20"
     },
     "devDependencies": {
-        "@storybook/angular": "^3.4.0-rc.3",
-        "@storybook/addons": "^3.3.15",
         "@storybook/addon-actions": "^3.3.15",
+        "@storybook/addons": "^3.3.15",
+        "@storybook/angular": "^3.4.0-rc.3",
         "ajv": "^6.4.0",
         "babel-core": "^6.26.0",
         "faker": "^4.1.0",
@@ -81,6 +82,7 @@
         "karma-chrome-launcher": "^2.2.0",
         "karma-jasmine": "^1.1.1",
         "karma-spec-reporter": "0.0.32",
+        "libsodium-type-generator": "^2.0.4",
         "protractor": "^5.3.0",
         "tslint": "^5.9.1",
         "webdriver-manager": "^12.0.6"
