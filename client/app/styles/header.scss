@@ -50,3 +50,14 @@ a:link.start-btn {
 .start-btn {
     margin-bottom: 5%;
 }
+
+@media (max-width: $breakpoint-sm) {
+  a:link.start-btn {
+    padding: 10px 20%;
+    text-decoration: none;
+  }
+
+  .starter-header-3 {
+    width: 95%;
+  }
+}
