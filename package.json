@@ -1,5 +1,5 @@
 {
-    "name": "valkyrie-demo",
+    "name": "crypto-demo",
     "version": "1.0.0",
     "description": "",
     "main": "web-server/server.js",
@@ -26,13 +26,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/project-callisto/valkyrie-demo.git"
+        "url": "git+https://github.com/project-callisto/crypto-demo.git"
     },
     "author": "https://github.com/project-callisto",
     "bugs": {
-        "url": "https://github.com/project-callisto/valkyrie-demo/issues"
+        "url": "https://github.com/project-callisto/crypto-demo/issues"
     },
-    "homepage": "https://github.com/project-callisto/valkyrie-demo#readme",
+    "homepage": "https://github.com/project-callisto/crypto-demo#readme",
     "dependencies": {
         "@angular/cli": "^1.7.3",
         "@angular/common": "^5.2.9",
