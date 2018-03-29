@@ -7,6 +7,12 @@
 
 footer {
   padding: 20px 70px;
+  a:link {
+    text-decoration: none;
+    line-height: 26px;
+    font-weight: 500;
+    font-size: 14px;
+  }
 }
 
 .top-nav {
