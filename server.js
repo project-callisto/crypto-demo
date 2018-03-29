@@ -4,8 +4,6 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8080
 
-app.use(require('express-force-https'));
-
 var server = app.listen(PORT, () => {
   console.log('Listening on port %d', server.address().port)
 });
