@@ -7,7 +7,16 @@
     "exclude": "node_modules/*"
   },
   "rules": {
-    "max-classes-per-file": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore"
+    ],
+    "max-classes-per-file": [
+      true,
+      2
+    ],
     "indent": [
       true,
       "spaces",

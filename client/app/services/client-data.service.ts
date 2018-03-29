@@ -6,24 +6,22 @@ import { CryptoService, ICoord, IDecryptedData, IEncryptedData, IPlainTextData }
 
 class ClientDataServiceBackend {
 
-  public cryptoPlainTextSource: Subject<IPlainTextData> = new Subject<IPlainTextData>();
-  public cryptoEncryptedSource: Subject<IEncryptedData> = new Subject<IEncryptedData>();
-  public cryptoDecryptedSource: Subject<IDecryptedData> = new Subject<IDecryptedData>();
-  public cryptoDecrypted: IDecryptedData;
-  public cryptoCoords: ICoord[] = [];
+  protected cryptoEvent: Subject<void> = new Subject<void>();
+  protected cryptoEncrypted: IEncryptedData;
+  protected cryptoPlainText: IPlainTextData;
+  protected cryptoDecrypted: IDecryptedData;
+  protected cryptoCoords: ICoord[] = [];
 
-  public processUserInput(perp: string, user: string): void {
+  protected _processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       const plainTextData: IPlainTextData = crypto.submitData(perp, user);
       this.updateCoords(plainTextData);
-      this.cryptoPlainTextSource.next(plainTextData);
-      this.updateCoords(crypto.submitData(perp + perp, user + "Alice"));
-      this.updateCoords(crypto.submitData("1234" + perp, user + "Bob"));
-      this.updateCoords(crypto.submitData(perp, user + user));
-      this.cryptoEncryptedSource.next(crypto.getDataSubmissions()[0]);
-      const decryptedData: IDecryptedData = crypto.decryptData();
-      this.cryptoDecryptedSource.next(decryptedData); // for emitting the decrypted data update event
-      this.cryptoDecrypted = decryptedData; // for attaching the current source for decrypted data
+      this.updateCoords(crypto.submitData(perp + perp, user + "Alice")); // unmatched
+      this.updateCoords(crypto.submitData("1234" + perp, user + "Bob")); // unmatched
+      this.updateCoords(crypto.submitData(perp, user + user)); // matched!
+      this.cryptoPlainText = plainTextData;
+      this.cryptoDecrypted = crypto.decryptData();
+      this.cryptoEncrypted = crypto.getDataSubmissions()[0];
     });
   }
 
@@ -37,18 +35,16 @@ class ClientDataServiceBackend {
 }
 
 @Injectable()
-class ClientDataServiceApi extends ClientDataServiceBackend {
+export class ClientDataService extends ClientDataServiceBackend {
 
-  public cryptoPlainText$: Observable<IPlainTextData> = this.cryptoPlainTextSource.asObservable();
-  public cryptoEncrypted$: Observable<IEncryptedData> = this.cryptoEncryptedSource.asObservable();
-  public cryptoDecrypted$: Observable<IDecryptedData> = this.cryptoDecryptedSource.asObservable();
-  public cryptoDecrypted: IDecryptedData = this.cryptoDecrypted;
-  public cryptoCoords: ICoord[] = this.cryptoCoords;
+  public readonly cryptoEvent$: Observable<void> = this.cryptoEvent.asObservable();
+  public readonly cryptoEncrypted: IEncryptedData = this.cryptoEncrypted;
+  public readonly cryptoPlainText: IPlainTextData = this.cryptoPlainText;
+  public readonly cryptoDecrypted: IDecryptedData = this.cryptoDecrypted;
+  public readonly cryptoCoords: ICoord[] = this.cryptoCoords;
 
   public submitUserInput(perp: string, user: string): void {
-    this.processUserInput(perp, user);
+    this._processUserInput(perp, user);
   }
 
 }
-
-export { ClientDataServiceApi as ClientDataService };
