@@ -341,7 +341,7 @@ export class CryptoService {
   }
 
   /**
-   * Decrypts y value, which has been assymetrically encrypted
+   * Decrypts y value, which has been asymmetrically encrypted
    * @param {Array<IEncryptedData>} data - array of matched IEncryptedData values
    * @returns {Array<bigInt.BigInteger>} corresponding y values for data submissions
    */
