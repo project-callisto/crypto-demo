@@ -19,11 +19,9 @@ export class SecondStepComponent {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoPlainText$.subscribe(
-      (cryptoPlainText: IPlainTextData) => {
-        this.plainTextData = cryptoPlainText;
-      },
-    );
+    clientData.cryptoEvent$.subscribe(() => {
+      this.plainTextData = clientData.cryptoPlainText;
+    });
   }
 
 }

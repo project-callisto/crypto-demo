@@ -21,18 +21,11 @@ export class FourthStepComponent {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoEncrypted$.subscribe(
-      (cryptoEncrypted: IEncryptedData) => {
-        this.c = cryptoEncrypted.c;
-        this.eRecord = cryptoEncrypted.eRecord;
-      },
-    );
-
-    clientData.cryptoPlainText$.subscribe(
-      (cryptoPlainText: IPlainTextData) => {
-        this.recordKey = cryptoPlainText.recordKeyStr;
-      },
-    );
+    clientData.cryptoEvent$.subscribe(() => {
+      this.c = clientData.cryptoEncrypted.c;
+      this.eRecord = clientData.cryptoEncrypted.eRecord;
+      this.recordKey = clientData.cryptoPlainText.recordKeyStr;
+    });
   }
 
 }

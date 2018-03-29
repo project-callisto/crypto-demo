@@ -28,7 +28,7 @@ export class GraphComponent implements AfterViewInit {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(() => {
+    clientData.cryptoEvent$.subscribe(() => {
       this.updateGraphData(this);
     });
   }
@@ -37,7 +37,7 @@ export class GraphComponent implements AfterViewInit {
     this.updateGraphData(this);
   }
 
-  private updateGraphData(component: any): void {
+  private updateGraphData(component: GraphComponent): void {
     if (component.clientData.cryptoDecrypted) {
       select(`.${templateSelector} svg`).remove();
       component.populateGraph(
@@ -56,8 +56,8 @@ export class GraphComponent implements AfterViewInit {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(coords);
-    const graphYMax: number = this.yDomainMax(coords);
+    const graphXMax: number = max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
+    const graphYMax: number = max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -93,25 +93,13 @@ export class GraphComponent implements AfterViewInit {
       .append("circle")
       .attr("class", "dot data-point")
       .attr("r", 3.5)
-      .attr("cx", (coord: ICoord): number => {
-        return xScale(coord.x.toJSNumber());
-      })
-      .attr("cy", (coord: ICoord): number => {
-        return yScale(coord.y.toJSNumber());
-      });
+      .attr("cx", (coord: ICoord) => xScale(coord.x.toJSNumber()))
+      .attr("cy", (coord: ICoord) => yScale(coord.y.toJSNumber()));
 
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
         decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
-  }
-
-  private xDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
-  }
-
-  private yDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
   }
 
   private applyCustomFormat(axis: any): any {

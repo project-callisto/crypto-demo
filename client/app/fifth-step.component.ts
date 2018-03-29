@@ -19,16 +19,9 @@ export class FifthStepComponent {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(
-      (cryptoDecrypted: IDecryptedData) => {
-        const coords: ICoord[] = clientData.cryptoCoords;
-        const pis: string[] = [];
-        for (const i in coords) {
-          pis.push(coords[i].pi);
-        }
-        this.pis = pis;
-      },
-    );
+    clientData.cryptoEvent$.subscribe(() => {
+      this.pis = clientData.cryptoCoords.map((coord: ICoord) => coord.pi);
+    });
   }
 
 }
