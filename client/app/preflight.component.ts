@@ -21,7 +21,7 @@ export class PreflightComponent implements AfterViewInit {
       const isIpad: boolean = navigator.userAgent.indexOf("iPad") !== -1 ;
       const isIos: boolean = isIphone || isIpod || isIpad ;
 
-      if (!isIos) {
+      if (isIos) {
           const callistoModal: HTMLElement = document.querySelector(".callisto-modal");
           callistoModal.style.display = "block";
       }
