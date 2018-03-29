@@ -3,13 +3,13 @@
 // jasmine docs https://jasmine.github.io/api/3.0/matchers.html
 // // jasmine defines methods like toEqual, expect, toContain
 
-describe("Valkyrie Demo", () => {
+describe("Cryptography Demo", () => {
   beforeEach(() => {
     browser.get("/");
   });
 
   it("should have a title", () => {
-    expect(browser.getTitle()).toEqual("Valkyrie Demo");
+    expect(browser.getTitle()).toEqual("Cryptography Demo | Callisto: Tech to combat sexual assault & harassment");
   });
 
   it("displays article 1", () => {

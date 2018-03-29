@@ -6,3 +6,4 @@ npm-debug.log
 coverage/
 storybook-dist/
 storybook/preview-head.html
+libsodium.d.ts

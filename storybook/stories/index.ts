@@ -16,7 +16,7 @@ import { ThirdStepComponent } from "./../../client/app/third-step.component";
 
 /* tslint:disable */
 
-storiesOf("Valkyrie Demo", module)
+storiesOf("Cryptography Demo", module)
 
   .add("nav", () => ({
     component: NavComponent,
