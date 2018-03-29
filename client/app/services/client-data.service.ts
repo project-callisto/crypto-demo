@@ -4,7 +4,7 @@ import { Subject } from "rxjs/Subject";
 import { asyncCryptoServiceFactory } from "./async-crypto.service";
 import { CryptoService, ICoord, IDecryptedData, IEncryptedData, IPlainTextData } from "./crypto.service";
 
-class ClientDataServiceBackend {
+abstract class ClientDataServiceBackend {
 
   protected cryptoEvent: Subject<void> = new Subject<void>();
   protected cryptoEncrypted: IEncryptedData;
