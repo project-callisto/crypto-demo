@@ -8,7 +8,7 @@ import { FourthStepComponent } from "./../../client/app/fourth-step.component";
 import { GraphComponent } from "./../../client/app/graph.component";
 import { NavComponent } from "./../../client/app/nav.component";
 import { SecondStepComponent } from "./../../client/app/second-step.component";
-import { SeededClientDataService } from "./../../client/app/services/client-data.service";
+import { ClientDataService, SeededClientDataService } from "./../../client/app/services/client-data.service";
 import { SixthStepComponent } from "./../../client/app/sixth-step.component";
 import { ThirdStepComponent } from "./../../client/app/third-step.component";
 
@@ -26,7 +26,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -39,7 +39,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -52,7 +52,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -65,7 +65,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -78,7 +78,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -92,7 +92,7 @@ storiesOf("Cryptography Demo", module)
     props: { shown: true },
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
       declarations: [
         NavComponent,
@@ -104,7 +104,7 @@ storiesOf("Cryptography Demo", module)
     component: GraphComponent,
     moduleMetadata: {
       providers: [
-        SeededClientDataService,
+        { provide: ClientDataService, useClass: SeededClientDataService },
       ],
     },
   }))
