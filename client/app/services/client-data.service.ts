@@ -48,3 +48,10 @@ export class ClientDataService extends ClientDataServiceBackend {
   }
 
 }
+
+export class SeededClientDataService extends ClientDataService {
+  constructor() {
+    super();
+    this.submitUserInput("aodubadawd", "_______000!");
+  }
+}

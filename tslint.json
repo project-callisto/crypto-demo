@@ -15,7 +15,7 @@
     ],
     "max-classes-per-file": [
       true,
-      2
+      3
     ],
     "indent": [
       true,
