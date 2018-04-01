@@ -22,6 +22,7 @@ abstract class ClientDataServiceBackend {
       this.cryptoPlainText = plainTextData;
       this.cryptoDecrypted = crypto.decryptData();
       this.cryptoEncrypted = crypto.getDataSubmissions()[0];
+      this.cryptoEvent.next();
     });
   }
 
@@ -49,6 +50,7 @@ export class ClientDataService extends ClientDataServiceBackend {
 
 }
 
+@Injectable()
 export class SeededClientDataService extends ClientDataService {
   constructor() {
     super();

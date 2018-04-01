@@ -8,24 +8,24 @@
   <p>The pair (U, s) is one share of a Shamir secret sharing scheme for the secret k. All arithmetic operations are performed modulo a prime number p, where p = 2<sup>256</sup>+297.</p>
   <p>
     <code class="calc-display-label">Matching index (&#960;)</code>
-    <code class="calc-display-value">{{ plainTextData.pi }}</code>
+    <code class="calc-display-value">{{ pi }}</code>
   </p>
   <p>
     <code class="calc-display-label">Slope (a)</code>
-    <code class="calc-display-value">{{ plainTextData.a }}</code>
+    <code class="calc-display-value">{{ a }}</code>
   </p>
   <p>
     <code class="calc-display-label">y-intercept (k)</code>
-    <code class="calc-display-value">{{ plainTextData.kStr }}</code>
+    <code class="calc-display-value">{{ kStr }}</code>
   </p>
   <p>
     <code class="calc-display-label">User name (U)</code>
-    <code class="calc-display-value">{{ plainTextData.U }}</code>
+    <code class="calc-display-value">{{ U }}</code>
   </p>
   <!-- <p>These values are now the inputs for the line <code>s = aU + k</code></p> -->
   <p>
     <code class="calc-display-label">Secret share (s = aU + k mod p)</code>
-    <code class="calc-display-value">{{ plainTextData.s }}</code>
+    <code class="calc-display-value">{{ s }}</code>
   </p>
   <div class="align-right-on-large">
     <button class="advance-button btn" (click)="advanceStep.emit();">next</button>

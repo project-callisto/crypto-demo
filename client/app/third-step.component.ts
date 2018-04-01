@@ -14,13 +14,21 @@ export class ThirdStepComponent {
 
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  public plainTextData: IPlainTextData;
+  public pi: string;
+  public a: string;
+  public kStr: string;
+  public U: string;
+  public s: string;
 
   constructor(
     private clientData: ClientDataService,
   ) {
     clientData.cryptoEvent$.subscribe(() => {
-      this.plainTextData = clientData.cryptoPlainText;
+      this.pi = clientData.cryptoPlainText.pi;
+      this.a = clientData.cryptoPlainText.a.toString();
+      this.kStr = clientData.cryptoPlainText.kStr;
+      this.U = clientData.cryptoPlainText.U.toString();
+      this.s = clientData.cryptoPlainText.s.toString();
     });
   }
 

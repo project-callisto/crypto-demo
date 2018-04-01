@@ -14,13 +14,13 @@ export class SecondStepComponent {
 
   @Input() public shown: boolean = false;
   @Output() public advanceStep: EventEmitter<string> = new EventEmitter<string>();
-  public plainTextData: IPlainTextData;
+  public pHat: string;
 
   constructor(
     private clientData: ClientDataService,
   ) {
     clientData.cryptoEvent$.subscribe(() => {
-      this.plainTextData = clientData.cryptoPlainText;
+      this.pHat = clientData.cryptoPlainText.pHat;
     });
   }
 
