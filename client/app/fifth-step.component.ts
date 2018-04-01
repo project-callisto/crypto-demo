@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { ClientDataService } from "./services/client-data.service";
-import { ICoord, IDecryptedData } from "./services/crypto.service";
+import { ClientDataService, ICoordGraph } from "./services/client-data.service";
+import { IDecryptedData } from "./services/crypto.service";
 
 @Component({
   selector: "fifth-step",
@@ -20,7 +20,7 @@ export class FifthStepComponent {
     private clientData: ClientDataService,
   ) {
     clientData.cryptoEvent$.subscribe(() => {
-      this.pis = clientData.cryptoCoords.map((coord: ICoord) => coord.pi);
+      this.pis = clientData.coords.map((coord: ICoordGraph) => coord.pi);
     });
   }
 

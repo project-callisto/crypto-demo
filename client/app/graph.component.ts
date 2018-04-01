@@ -41,7 +41,7 @@ export class GraphComponent implements AfterViewInit {
       select(`.${templateSelector} svg`).remove();
       component.populateGraph(
         component.clientData.cryptoDecrypted,
-        component.clientData.cryptoCoords,
+        component.clientData.coords,
       );
     }
   }

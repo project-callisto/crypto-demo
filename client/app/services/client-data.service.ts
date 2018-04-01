@@ -8,7 +8,8 @@ import { CryptoService, IDecryptedData, IEncryptedData, IPlainTextData } from ".
 export interface ICoordGraph {
   readonly x: number;
   readonly y: number;
-  matched?: boolean;
+  pi?: string;
+  matching?: boolean;
 }
 
 abstract class ClientDataServiceBackend {
@@ -17,11 +18,11 @@ abstract class ClientDataServiceBackend {
   protected cryptoEncrypted: IEncryptedData;
   protected cryptoPlainText: IPlainTextData;
   protected cryptoDecrypted: IDecryptedData;
-  protected cryptoCoords: ICoordGraph[] = [];
+  protected coords: ICoordGraph[] = [];
 
   protected processUserInput(perp: string, user: string): void {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
-      this.cryptoCoords = [];
+      this.coords = [];
       const plainTextData: IPlainTextData = crypto.submitData(perp, user);
       this.transformAndAddCoord(plainTextData);
       this.transformAndAddCoord(crypto.submitData(perp + perp, user + "Alice")); // unmatched
@@ -41,20 +42,22 @@ abstract class ClientDataServiceBackend {
     coord = {
       x: plainTextData.U.toJSNumber(),
       y: plainTextData.sU.toJSNumber(),
+      pi: plainTextData.pi,
     };
     if (seenPhis.includes(plainTextData.pi)) {
-      coord.matched = true;
+      coord.matching = true;
     } else {
-      coord.matched = false;
+      coord.matching = false;
     }
-    this.cryptoCoords.push(coord);
+    this.coords.push(coord);
     seenPhis.push(plainTextData.pi);
   }
 
   private addInterceptCoord(): void {
-    this.cryptoCoords.push({
+    this.coords.push({
       x: 0,
       y: this.cryptoDecrypted.slope.toJSNumber(),
+      matching: true,
     });
   }
 
@@ -67,7 +70,7 @@ export class ClientDataService extends ClientDataServiceBackend {
   public readonly cryptoEncrypted: IEncryptedData = this.cryptoEncrypted;
   public readonly cryptoPlainText: IPlainTextData = this.cryptoPlainText;
   public readonly cryptoDecrypted: IDecryptedData = this.cryptoDecrypted;
-  public readonly cryptoCoords: ICoordGraph[] = this.cryptoCoords;
+  public readonly coords: ICoordGraph[] = this.coords;
 
   public submitUserInput(perp: string, user: string): void {
     this.processUserInput(perp, user);
