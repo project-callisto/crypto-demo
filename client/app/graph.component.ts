@@ -1,13 +1,12 @@
 import { AfterViewInit, Component } from "@angular/core";
-import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { format } from "d3-format";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
-import { ClientDataService } from "./services/client-data.service";
-import { ICoord, IDecryptedData } from "./services/crypto.service";
+import { ClientDataService, ICoordGraph } from "./services/client-data.service";
+import { IDecryptedData } from "./services/crypto.service";
 
 const templateSelector: string = "crypto-graph";
 
@@ -47,7 +46,7 @@ export class GraphComponent implements AfterViewInit {
     }
   }
 
-  private populateGraph(decryptedData: IDecryptedData, coords: ICoord[]): void {
+  private populateGraph(decryptedData: IDecryptedData, coords: ICoordGraph[]): void {
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
@@ -56,8 +55,8 @@ export class GraphComponent implements AfterViewInit {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
-    const graphYMax: number = max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
+    const graphXMax: number = max(coords, (datum: ICoordGraph) => datum.x) * this.graphBufferFactor;
+    const graphYMax: number = max(coords, (datum: ICoordGraph) => datum.y) * this.graphBufferFactor;
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -65,7 +64,7 @@ export class GraphComponent implements AfterViewInit {
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([decryptedData.intercept.toJSNumber(), graphYMax]);
+      .domain([decryptedData.intercept, graphYMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -93,8 +92,8 @@ export class GraphComponent implements AfterViewInit {
       .append("circle")
       .attr("class", "dot data-point")
       .attr("r", 3.5)
-      .attr("cx", (coord: ICoord) => xScale(coord.x.toJSNumber()))
-      .attr("cy", (coord: ICoord) => yScale(coord.y.toJSNumber()));
+      .attr("cx", (coord: ICoordGraph) => xScale(coord.x))
+      .attr("cy", (coord: ICoordGraph) => yScale(coord.y));
 
     svg.append("path")
       .attr("class", "matched-data-line")
@@ -109,7 +108,7 @@ export class GraphComponent implements AfterViewInit {
   }
 
   private lineCoordsAsJSNumbers(
-    decryptedData: IDecryptedData, coords: ICoord[],
+    decryptedData: IDecryptedData, coords: ICoordGraph[],
     graphXMax: number, graphYMax: number,
     xScale: any, yScale: any,
   ): Array<[number, number]> {
