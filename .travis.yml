@@ -18,7 +18,6 @@ script:
 # duplicated in README.md
 - bin/json-lint.sh
 - npm run heroku-postbuild
-- npm run storybook:run -- --smoke-test
 - npm run test:unit -- --single-run
 - npm run test:e2e -- --single-run
 notifications:

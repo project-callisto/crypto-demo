@@ -32,17 +32,11 @@ npm run start:mock-prod
 
 ( duplicated in `.travis.yml`)
 
-data-file validatity tests
+build / data integrity tests
 
 ```
 bin/json-lint.sh
-```
-
-build integrity tests
-
-```
 npm run heroku-postbuild
-npm run storybook:run -- --smoke-test
 ```
 
 application tests
