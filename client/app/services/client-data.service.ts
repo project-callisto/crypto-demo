@@ -9,7 +9,7 @@ export interface ICoordGraph {
   readonly x: number;
   readonly y: number;
   pi?: string;
-  matching?: boolean;
+  specialType?: string;
 }
 
 abstract class ClientDataServiceBackend {
@@ -24,10 +24,10 @@ abstract class ClientDataServiceBackend {
     asyncCryptoServiceFactory().then((crypto: CryptoService): void => {
       this.coords = [];
       const plainTextData: IPlainTextData = crypto.submitData(perp, user);
-      this.transformAndAddCoord(plainTextData);
+      this.transformAndAddCoord(plainTextData, "Your Point");
       this.transformAndAddCoord(crypto.submitData(perp + perp, user + "Alice")); // unmatched
       this.transformAndAddCoord(crypto.submitData("1234" + perp, user + "Bob")); // unmatched
-      this.transformAndAddCoord(crypto.submitData(perp, user + user)); // matched!
+      this.transformAndAddCoord(crypto.submitData(perp, user + user), "Matched Point"); // matched!
       this.cryptoPlainText = plainTextData;
       this.cryptoDecrypted = crypto.decryptData();
       this.cryptoEncrypted = crypto.getDataSubmissions()[0];
@@ -36,28 +36,20 @@ abstract class ClientDataServiceBackend {
     });
   }
 
-  private transformAndAddCoord(plainTextData: IPlainTextData): void {
-    const seenPhis: string[] = [];
-    let coord: ICoordGraph;
-    coord = {
+  private transformAndAddCoord(plainTextData: IPlainTextData, specialType: string = ""): void {
+    this.coords.push({
       x: plainTextData.U.toJSNumber(),
       y: plainTextData.sU.toJSNumber(),
       pi: plainTextData.pi,
-    };
-    if (seenPhis.includes(plainTextData.pi)) {
-      coord.matching = true;
-    } else {
-      coord.matching = false;
-    }
-    this.coords.push(coord);
-    seenPhis.push(plainTextData.pi);
+      specialType,
+    });
   }
 
   private addInterceptCoord(): void {
     this.coords.push({
       x: 0,
-      y: this.cryptoDecrypted.slope.toJSNumber(),
-      matching: true,
+      y: this.cryptoDecrypted.intercept.toJSNumber(),
+      specialType: "Intercept",
     });
   }
 
