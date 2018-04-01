@@ -23,10 +23,11 @@
     stroke-width: 3;
   }
 
+  foreignObject body {
+    text-align: left;
+  }
+
   foreignObject .tooltip {
-    position: relative;
-    top: 48px;
-    left: -10px;
     text-align: left;
     display: inline-block;
     padding: 2px 8px;
