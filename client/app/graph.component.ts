@@ -8,6 +8,8 @@ import { line, Line } from "d3-shape";
 import { ClientDataService, ICoordGraph } from "./services/client-data.service";
 import { IDecryptedData } from "./services/crypto.service";
 
+import * as $ from "jquery";
+
 const templateSelector: string = "crypto-graph";
 
 @Component({
@@ -86,15 +88,24 @@ export class GraphComponent implements AfterViewInit {
       .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
-    coords.forEach((coord: ICoordGraph) => {
+    svg.append("path")
+      .attr("class", "matched-data-line")
+      .attr("d", line()(this.lineCoordsAsJSNumbers(
+        decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
+
+    coords.forEach((coord: ICoordGraph, index: number) => {
+      const dataPointID: string = `graph-data-point-${index}`;
       svg.append("circle")
+        .attr("id", dataPointID)
         .attr("class", "dot data-point")
         .attr("r", 3.5)
         .attr("cx", xScale(coord.x))
         .attr("cy", yScale(coord.y));
 
       if (coord.specialType) {
+        const dataTooltipID: string = `graph-data-tooltip-${index}`;
         svg.append("foreignObject")
+          .attr("id", dataTooltipID)
           .attr("x", xScale(coord.x) + 10)
           .attr("y", yScale(coord.y) - 32)
           .attr("width", 200)
@@ -104,17 +115,17 @@ export class GraphComponent implements AfterViewInit {
           .attr("class", "tooltip")
           .html(`
             <p><b>${coord.specialType}</b></p>
-            <p>x: ${coord.x.toPrecision(2)}</p>
-            <p>y: ${coord.y.toPrecision(2)}</p>
+            <p>U: ${coord.x.toPrecision(2)}</p>
+            <p>s: ${coord.y.toPrecision(2)}</p>
           `);
+        $("#" + dataPointID).hover(() => {
+          $("#" + dataTooltipID).show();
+        }, () => {
+          $("#" + dataTooltipID).fadeOut(100);
+        });
       }
 
     });
-
-    svg.append("path")
-      .attr("class", "matched-data-line")
-      .attr("d", line()(this.lineCoordsAsJSNumbers(
-        decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
   }
 
   private applyCustomFormat(axis: any): any {
