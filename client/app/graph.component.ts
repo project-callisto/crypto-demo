@@ -86,14 +86,30 @@ export class GraphComponent implements AfterViewInit {
       .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
-    svg.selectAll(".dot")
-      .data(coords)
-      .enter()
-      .append("circle")
-      .attr("class", "dot data-point")
-      .attr("r", 3.5)
-      .attr("cx", (coord: ICoordGraph) => xScale(coord.x))
-      .attr("cy", (coord: ICoordGraph) => yScale(coord.y));
+    coords.forEach((coord: ICoordGraph) => {
+      svg.append("circle")
+        .attr("class", "dot data-point")
+        .attr("r", 3.5)
+        .attr("cx", xScale(coord.x))
+        .attr("cy", yScale(coord.y));
+
+      if (coord.specialType) {
+        svg.append("foreignObject")
+          .attr("x", xScale(coord.x) + 10)
+          .attr("y", yScale(coord.y) - 32)
+          .attr("width", 200)
+          .attr("height", 200)
+          .append("xhtml:body")
+          .append("div")
+          .attr("class", "tooltip")
+          .html(`
+            <p><b>${coord.specialType}</b></p>
+            <p>x: ${coord.x.toPrecision(2)}</p>
+            <p>y: ${coord.y.toPrecision(2)}</p>
+          `);
+      }
+
+    });
 
     svg.append("path")
       .attr("class", "matched-data-line")
