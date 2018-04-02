@@ -118,6 +118,7 @@ export class GraphComponent implements AfterViewInit {
             <p>U: ${coord.x.toPrecision(2)}</p>
             <p>s: ${coord.y.toPrecision(2)}</p>
           `);
+        $("#" + dataTooltipID).hide();
         $("#" + dataPointID).hover(() => {
           $("#" + dataTooltipID).show();
         }, () => {
