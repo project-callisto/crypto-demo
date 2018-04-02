@@ -1,13 +1,14 @@
 import { AfterViewInit, Component } from "@angular/core";
-import * as bigInt from "big-integer";
 import { max, min } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { format } from "d3-format";
 import { scaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line, Line } from "d3-shape";
-import { ClientDataService } from "./services/client-data.service";
-import { ICoord, IDecryptedData } from "./services/crypto.service";
+import { ClientDataService, ICoordGraph } from "./services/client-data.service";
+import { IDecryptedData } from "./services/crypto.service";
+
+import * as $ from "jquery";
 
 const templateSelector: string = "crypto-graph";
 
@@ -28,7 +29,7 @@ export class GraphComponent implements AfterViewInit {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(() => {
+    clientData.cryptoEvent$.subscribe(() => {
       this.updateGraphData(this);
     });
   }
@@ -37,17 +38,17 @@ export class GraphComponent implements AfterViewInit {
     this.updateGraphData(this);
   }
 
-  private updateGraphData(component: any): void {
+  private updateGraphData(component: GraphComponent): void {
     if (component.clientData.cryptoDecrypted) {
       select(`.${templateSelector} svg`).remove();
       component.populateGraph(
         component.clientData.cryptoDecrypted,
-        component.clientData.cryptoCoords,
+        component.clientData.coords,
       );
     }
   }
 
-  private populateGraph(decryptedData: IDecryptedData, coords: ICoord[]): void {
+  private populateGraph(decryptedData: IDecryptedData, coords: ICoordGraph[]): void {
 
     const svg: any = select(`.${templateSelector}`)
       .append("svg")
@@ -56,8 +57,8 @@ export class GraphComponent implements AfterViewInit {
       .append("g")
       .attr("transform", `translate(${this.margin},${this.margin})`);
 
-    const graphXMax: number = this.xDomainMax(coords);
-    const graphYMax: number = this.yDomainMax(coords);
+    const graphXMax: number = max(coords, (datum: ICoordGraph) => datum.x) * this.graphBufferFactor;
+    const graphYMax: number = max(coords, (datum: ICoordGraph) => datum.y) * this.graphBufferFactor;
 
     const xScale: any = scaleLinear()
       .rangeRound([0, this.size])
@@ -65,7 +66,7 @@ export class GraphComponent implements AfterViewInit {
 
     const yScale: any = scaleLinear()
       .rangeRound([this.size, 0])
-      .domain([decryptedData.intercept.toJSNumber(), graphYMax]);
+      .domain([decryptedData.intercept, graphYMax]);
 
     svg.append("g")
       .call(this.applyCustomFormat(axisBottom(xScale)))
@@ -87,31 +88,44 @@ export class GraphComponent implements AfterViewInit {
       .attr("x", 0 - this.margin / 2)
       .attr("dy", "-.4em");
 
-    svg.selectAll(".dot")
-      .data(coords)
-      .enter()
-      .append("circle")
-      .attr("class", "dot data-point")
-      .attr("r", 3.5)
-      .attr("cx", (coord: ICoord): number => {
-        return xScale(coord.x.toJSNumber());
-      })
-      .attr("cy", (coord: ICoord): number => {
-        return yScale(coord.y.toJSNumber());
-      });
-
     svg.append("path")
       .attr("class", "matched-data-line")
       .attr("d", line()(this.lineCoordsAsJSNumbers(
         decryptedData, coords, graphXMax, graphYMax, xScale, yScale)));
-  }
 
-  private xDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.x.toJSNumber()) * this.graphBufferFactor;
-  }
+    coords.forEach((coord: ICoordGraph, index: number) => {
+      const dataPointID: string = `graph-data-point-${index}`;
+      svg.append("circle")
+        .attr("id", dataPointID)
+        .attr("class", "dot data-point")
+        .attr("r", 3.5)
+        .attr("cx", xScale(coord.x))
+        .attr("cy", yScale(coord.y));
 
-  private yDomainMax(coords: ICoord[]): number {
-    return max(coords, (datum: ICoord) => datum.y.toJSNumber()) * this.graphBufferFactor;
+      if (coord.specialType) {
+        const dataTooltipID: string = `graph-data-tooltip-${index}`;
+        svg.append("foreignObject")
+          .attr("id", dataTooltipID)
+          .attr("x", xScale(coord.x) + 10)
+          .attr("y", yScale(coord.y) - 32)
+          .attr("width", 200)
+          .attr("height", 200)
+          .append("xhtml:body")
+          .append("div")
+          .attr("class", "tooltip")
+          .html(`
+            <p><b>${coord.specialType}</b></p>
+            <p>U: ${coord.x.toPrecision(2)}</p>
+            <p>s: ${coord.y.toPrecision(2)}</p>
+          `);
+        $("#" + dataPointID).hover(() => {
+          $("#" + dataTooltipID).show();
+        }, () => {
+          $("#" + dataTooltipID).fadeOut(100);
+        });
+      }
+
+    });
   }
 
   private applyCustomFormat(axis: any): any {
@@ -121,7 +135,7 @@ export class GraphComponent implements AfterViewInit {
   }
 
   private lineCoordsAsJSNumbers(
-    decryptedData: IDecryptedData, coords: ICoord[],
+    decryptedData: IDecryptedData, coords: ICoordGraph[],
     graphXMax: number, graphYMax: number,
     xScale: any, yScale: any,
   ): Array<[number, number]> {

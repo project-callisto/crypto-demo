@@ -19,11 +19,9 @@ export class SixthStepComponent {
   constructor(
     private clientData: ClientDataService,
   ) {
-    clientData.cryptoDecrypted$.subscribe(
-      (cryptoDecrypted: IDecryptedData) => {
-        this.perpId = JSON.stringify(cryptoDecrypted.decryptedRecords[0].perpId);
-      },
-    );
+    clientData.cryptoEvent$.subscribe(() => {
+      this.perpId = JSON.stringify(clientData.cryptoDecrypted.decryptedRecords[0].perpId);
+    });
   }
 
 }

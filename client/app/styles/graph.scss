@@ -9,6 +9,11 @@
     font-family: $font-body;    
   }
 
+  svg {
+    overflow: visible;
+    background-color: $color-article-background;
+  }
+
   circle {
     fill: $palette-dark-blue;
   }
@@ -17,4 +22,22 @@
     stroke: $palette-dark-blue;
     stroke-width: 3;
   }
+
+  foreignObject body {
+    text-align: left;
+  }
+
+  foreignObject .tooltip {
+    text-align: left;
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: white;
+    box-shadow: 0 0 1px 2px $color-tooltip-background;
+  }
+
+  foreignObject p {
+    font-size: 0.8rem;
+    margin: 5px 0;
+  }
+
 }
