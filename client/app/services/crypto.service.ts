@@ -66,7 +66,7 @@ export class CryptoService {
 
   /**
    * Key-Pair Generation
-   * @param {IKeyPair} ocKeys - Callisto Options Counselor public-private key pair (Uint8Array[32])
+   * @param {IKeyPair} ocKeys - Callisto Legal Options Counselor public-private key pair (Uint8Array[32])
    * @param {IKeyPair} userKeys - User public-private key pair (Uint8Array[32]) for message authentication
    */
   private ocKeys: IKeyPair;
